@@ -18,6 +18,8 @@ namespace MilkMolars
         int ActivationMethod;
         bool Shared;
 
+        public PlayerControllerB lastPlayerHeldBy;
+
         /* Activation Methods
          * 1 - Grab
          * 2 - Use

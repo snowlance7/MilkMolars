@@ -20,6 +20,8 @@ namespace MilkMolars
 
         public static PlayerControllerB PlayerFromId(ulong id) { return StartOfRound.Instance.allPlayerScripts[StartOfRound.Instance.ClientPlayerList[id]]; }
 
+        public static NetworkVariable<int> MegaMilkMolars = new NetworkVariable<int>(0);
+
         public override void OnNetworkSpawn()
         {
             if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
@@ -34,7 +36,43 @@ namespace MilkMolars
             logger.LogDebug("base.OnNetworkSpawn");
         }
 
+        [ServerRpc(RequireOwnership = false)]
+        public void AddMilkMolarServerRpc(ulong clientId)
+        {
+            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
+            {
+                AddMilkMolarClientRpc(clientId);
+            }
+        }
 
+        [ClientRpc]
+        private void AddMilkMolarClientRpc(ulong clientId)
+        {
+            if (localPlayer.actualClientId == clientId) { return; }
+            MilkMolarController.MilkMolars++;
+            PlayerControllerB player = PlayerFromId(clientId);
+            logger.LogDebug("Added milk molar found by " + player.playerUsername);
+            HUDManager.Instance.DisplayTip("Milk Molar found!", $"{player.playerUsername} found a Milk Molar! Open the upgrade menu to spend your Milk Molars. (M by default)");
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void AddMegaMilkMolarServerRpc(ulong clientId)
+        {
+            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
+            {
+                MegaMilkMolars.Value++;
+                AddMegaMilkMolarClientRpc(clientId);
+            }
+        }
+
+        [ClientRpc]
+        private void AddMegaMilkMolarClientRpc(ulong clientId)
+        {
+            if (localPlayer.actualClientId == clientId) { return; }
+            PlayerControllerB player = PlayerFromId(clientId);
+            logger.LogDebug("Added mega milk molar found by " + player.playerUsername);
+            HUDManager.Instance.DisplayTip("Mega Milk Molar found!", $"{player.playerUsername} found a Mega Milk Molar! Open the upgrade menu to spend Mega Milk Molars for the group. (M by default)");
+        }
     }
 
     [HarmonyPatch]

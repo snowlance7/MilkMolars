@@ -20,13 +20,12 @@ namespace MilkMolars
         public static UpgradeUIController Instance;
 
         public VisualElement veMain;
+        public ListView lvUpgradeList;
 
         public Button btnYou;
         public Button btnGroup;
 
-        public GrabbableObject HeadItem;
-        public GrabbableObject ChestItem;
-        public GrabbableObject FeetItem;
+        public bool LeftTabSelected = true;
 
         private void Start()
         {
@@ -55,27 +54,26 @@ namespace MilkMolars
             logger.LogDebug("Got root");
             root = uiDocument.rootVisualElement;
 
-            veMain = uiDocument.rootVisualElement.Q<VisualElement>("veMain");
+            veMain = root.Q<VisualElement>("veMain");
             veMain.style.display = DisplayStyle.None;
             if (veMain == null) { logger.LogError("veMain not found."); return; }
+
+            lvUpgradeList = root.Q<ListView>("lvUpgradeList");
+            if (lvUpgradeList == null) { logger.LogError("lvUpgradeList not found."); return; }
 
             // Find elements
 
             btnYou = root.Q<Button>("btnYou");
             if (btnYou == null) { logger.LogError("btnYou not found."); return; }
 
-            btnChest = root.Q<Button>("btnChest");
-            if (btnChest == null) { logger.LogError("btnChest not found."); return; }
-
-            btnFeet = root.Q<Button>("btnFeet");
-            if (btnFeet == null) { logger.LogError("btnFeet not found."); return; }
+            btnGroup = root.Q<Button>("btnGroup");
+            if (btnGroup == null) { logger.LogError("btnGroup not found."); return; }
 
             logger.LogDebug("Got Controls for UI");
 
             // Add event handlers
-            btnHead.clickable.clicked += () => ButtonHeadClicked();
-            btnChest.clickable.clicked += () => ButtonChestClicked();
-            btnFeet.clickable.clicked += () => ButtonFeetClicked();
+            btnYou.clickable.clicked += () => ButtonYouClicked();
+            btnGroup.clickable.clicked += () => ButtonGroupClicked();
 
             logger.LogDebug("UIControllerScript: Start() complete");
         }
@@ -84,7 +82,7 @@ namespace MilkMolars
         {
             if (veMain.style.display == DisplayStyle.Flex && (Keyboard.current.escapeKey.wasPressedThisFrame || Keyboard.current.tabKey.wasPressedThisFrame)) { HideUI(); }
 
-            if (SCPItemsInputs.Instance.OpenUIKey.WasPressedThisFrame() && localPlayer.CheckConditionsForEmote())
+            if (MilkMolarInputs.Instance.OpenUIKey.WasPressedThisFrame() && localPlayer.CheckConditionsForEmote())
             {
                 if (veMain.style.display == DisplayStyle.None) { ShowUI(); }
                 else { HideUI(); }
@@ -103,39 +101,8 @@ namespace MilkMolars
             logger.LogDebug("Showing UI");
             veMain.style.display = DisplayStyle.Flex;
 
-            // TODO: Change background to item icon and set text to item name
-            if (HeadItem != null)
-            {
-                btnHead.text = HeadItem.itemProperties.itemName;
-                btnHead.style.backgroundImage = new StyleBackground(HeadItem.itemProperties.itemIcon);
-            }
-            else
-            {
-                btnHead.text = "Head Slot";
-                btnHead.style.backgroundImage = null;
-            }
-
-            if (ChestItem != null)
-            {
-                btnChest.text = ChestItem.itemProperties.itemName;
-                btnChest.style.backgroundImage = new StyleBackground(ChestItem.itemProperties.itemIcon);
-            }
-            else
-            {
-                btnChest.text = "Chest Slot";
-                btnChest.style.backgroundImage = null;
-            }
-
-            if (FeetItem != null)
-            {
-                btnFeet.text = FeetItem.itemProperties.itemName;
-                btnFeet.style.backgroundImage = new StyleBackground(FeetItem.itemProperties.itemIcon);
-            }
-            else
-            {
-                btnFeet.text = "Feet Slot";
-                btnFeet.style.backgroundImage = null;
-            }
+            SelectTab(left: true);
+            
 
             UnityEngine.Cursor.lockState = CursorLockMode.None;
             UnityEngine.Cursor.visible = true;
@@ -156,31 +123,57 @@ namespace MilkMolars
             StartOfRound.Instance.localPlayerController.disableLookInput = false;
         }
 
-        private void ButtonHeadClicked()
+        public void SelectTab(bool left)
         {
-            logger.LogDebug("Button Head clicked");
+            if (left)
+            {
+                btnGroup.style.borderBottomWidth = 0;
+                btnGroup.style.borderTopWidth = 0;
+                btnGroup.style.borderRightWidth = 0;
+                btnGroup.style.borderLeftWidth = 0;
 
-            if (HeadItem == null) { return; }
-            HeadItem.GetComponent<WearableItemBehavior>().UnWear();
-            HideUI();
+                btnYou.style.borderBottomWidth = 2;
+                btnYou.style.borderTopWidth = 2;
+                btnYou.style.borderRightWidth = 2;
+                btnYou.style.borderLeftWidth = 2;
+                LeftTabSelected = true;
+
+
+            }
+            else
+            {
+                btnYou.style.borderBottomWidth = 0;
+                btnYou.style.borderTopWidth = 0;
+                btnYou.style.borderRightWidth = 0;
+                btnYou.style.borderLeftWidth = 0;
+
+                btnGroup.style.borderBottomWidth = 2;
+                btnGroup.style.borderTopWidth = 2;
+                btnGroup.style.borderRightWidth = 2;
+                btnGroup.style.borderLeftWidth = 2;
+                LeftTabSelected = false;
+
+
+            }
         }
 
-        private void ButtonChestClicked()
+        private void ButtonYouClicked()
+        {
+            logger.LogDebug("Button Head clicked");
+            if (!LeftTabSelected)
+            {
+                SelectTab(left: true);
+            }
+        }
+
+        private void ButtonGroupClicked()
         {
             logger.LogDebug("Button Chest clicked");
 
-            if (HeadItem == null) { return; }
-            ChestItem.GetComponent<WearableItemBehavior>().UnWear();
-            HideUI();
-        }
-
-        private void ButtonFeetClicked()
-        {
-            logger.LogDebug("Button Feet clicked");
-
-            if (HeadItem == null) { return; }
-            FeetItem.GetComponent<WearableItemBehavior>().UnWear();
-            HideUI();
+            if (LeftTabSelected)
+            {
+                SelectTab(left: false);
+            }
         }
     }
 }
