@@ -8,6 +8,7 @@ using HarmonyLib;
 using Unity.Netcode;
 using UnityEngine;
 using static Netcode.Transports.Facepunch.FacepunchTransport;
+using static MilkMolars.Plugin;
 
 namespace MilkMolars
 {
@@ -21,6 +22,7 @@ namespace MilkMolars
         public static PlayerControllerB PlayerFromId(ulong id) { return StartOfRound.Instance.allPlayerScripts[StartOfRound.Instance.ClientPlayerList[id]]; }
 
         public static NetworkVariable<int> MegaMilkMolars = new NetworkVariable<int>(0);
+
 
         public override void OnNetworkSpawn()
         {
@@ -52,7 +54,9 @@ namespace MilkMolars
             MilkMolarController.MilkMolars++;
             PlayerControllerB player = PlayerFromId(clientId);
             logger.LogDebug("Added milk molar found by " + player.playerUsername);
-            HUDManager.Instance.DisplayTip("Milk Molar found!", $"{player.playerUsername} found a Milk Molar! Open the upgrade menu to spend your Milk Molars. (M by default)");
+            if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 1f); }
+            if (configNotifyMethod.Value == 1) { HUDManager.Instance.DisplayTip($"{player.playerUsername} activated a Milk Molar!", $"You now have {MilkMolarController.MilkMolars} unspent Milk Molars. Open the upgrade menu to spend your Milk Molars. (M by default)"); }
+            else if (configNotifyMethod.Value == 2) { HUDManager.Instance.AddChatMessage($"{player.playerUsername} activated a Milk Molar! You now have {MilkMolarController.MilkMolars} unspent Milk Molars. Open the upgrade menu to spend your Milk Molars. (M by default)", "Server"); }
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -71,7 +75,26 @@ namespace MilkMolars
             if (localPlayer.actualClientId == clientId) { return; }
             PlayerControllerB player = PlayerFromId(clientId);
             logger.LogDebug("Added mega milk molar found by " + player.playerUsername);
-            HUDManager.Instance.DisplayTip("Mega Milk Molar found!", $"{player.playerUsername} found a Mega Milk Molar! Open the upgrade menu to spend Mega Milk Molars for the group. (M by default)");
+            if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 1f); }
+            if (configNotifyMethod.Value == 1) { HUDManager.Instance.DisplayTip($"{player.playerUsername} activated a Mega Milk Molar!", $"Your crew now has {MegaMilkMolars.Value} unspent Mega Milk Molars. Open the upgrade menu to spend them. (M by default)"); }
+            else if (configNotifyMethod.Value == 2) { HUDManager.Instance.AddChatMessage($"{player.playerUsername} activated a Mega Milk Molar! Your crew now has {MegaMilkMolars.Value} unspent Mega Milk Molars. Open the upgrade menu to spend them. (M by default)", "Server"); }
+        }
+
+        /*[ServerRpc(RequireOwnership = false)]
+        public void AddMultipleMegaMilkMolarsServerRpc(int amount)
+        {
+            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
+            {
+                MegaMilkMolars.Value += amount;
+                AddMultipleMegaMilkMolarsClientRpc(amount);
+            }
+        }*/
+
+        [ClientRpc]
+        public void AddMultipleMegaMilkMolarsClientRpc(int amount)
+        {
+            if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 1f); }
+            if (configNotifyMethod.Value != 3) { HUDManager.Instance.AddChatMessage($"{MegaMilkMolars.Value} Mega Milk Molars activated! Your crew now has {MegaMilkMolars.Value} unspent Mega Milk Molars. Open the upgrade menu to spend them. (M by default)", "Server"); }
         }
     }
 

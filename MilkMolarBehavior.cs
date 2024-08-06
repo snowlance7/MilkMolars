@@ -19,6 +19,7 @@ namespace MilkMolars
         bool Shared;
 
         public PlayerControllerB lastPlayerHeldBy;
+        public PlayerControllerB playerFoundBy;
 
         /* Activation Methods
          * 1 - Grab
@@ -51,6 +52,13 @@ namespace MilkMolars
         {
             base.Update();
 
+            if (playerHeldBy != null)
+            {
+                lastPlayerHeldBy = playerHeldBy;
+
+                if (playerFoundBy == null) { playerFoundBy = playerHeldBy; }
+            }
+
             if (ActivationMethod == 3 && isInShipRoom && playerHeldBy != null && playerHeldBy.isInHangarShipRoom)
             {
                 ActivateMolar();
@@ -76,7 +84,17 @@ namespace MilkMolars
 
         public void ActivateMolar()
         {
+            ItemSFX.Play();
+            playerHeldBy.DespawnHeldObject();
 
+            if (configUpgradePointsToFinder.Value)
+            {
+                MilkMolarController.AddMilkMolar(playerFoundBy);
+            }
+            else
+            {
+                MilkMolarController.AddMilkMolar(playerHeldBy);
+            }
         }
     }
 }
