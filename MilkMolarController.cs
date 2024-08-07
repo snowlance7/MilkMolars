@@ -13,21 +13,31 @@ namespace MilkMolars
     {
         public static int MilkMolars = 0;
 
-        public static Dictionary<string, MilkMolarUpgrade> MilkMolarUpgrades = new Dictionary<string, MilkMolarUpgrade>();
-        public static Dictionary<string, MilkMolarUpgrade> MegaMilkMolarUpgrades = new Dictionary<string, MilkMolarUpgrade>();
+        //public static Dictionary<string, MilkMolarUpgrade> MilkMolarUpgrades = new Dictionary<string, MilkMolarUpgrade>();
+        //public static Dictionary<string, MilkMolarUpgrade> MegaMilkMolarUpgrades = new Dictionary<string, MilkMolarUpgrade>();
+
+        public static List<MilkMolarUpgrade> MilkMolarUpgrades = new List<MilkMolarUpgrade>();
+        public static List<MilkMolarUpgrade> MegaMilkMolarUpgrades = new List<MilkMolarUpgrade>();
 
         public static void Init()
         {
             MilkMolarUpgrades.Clear();
-            MegaMilkMolarUpgrades.Clear();
 
-            //// Milk Molars
+            //// Milk Molars // TODO: Sync these with host
             // Shovel damage
             MilkMolarUpgrade shovelDamage = new MilkMolarUpgrade();
-            shovelDamage.type = MilkMolarUpgrade.UpgradeType.Int;
-            shovelDamage
+            shovelDamage.name = "ShovelDamage";
+            shovelDamage.type = MilkMolarUpgrade.UpgradeType.TierNumber;
+            shovelDamage.GetTiersFromConfig(configShovelDamageUpgrade.Value);
+            MilkMolarUpgrades.Add(shovelDamage);
 
             // Damage resistance
+            MilkMolarUpgrade damageResistance = new MilkMolarUpgrade();
+            damageResistance.name = "DamageResistance";
+            damageResistance.type = MilkMolarUpgrade.UpgradeType.TierPercent;
+            damageResistance.GetTiersFromConfig(configDamageResistanceUpgrade.Value);
+            MilkMolarUpgrades.Add(damageResistance);
+
             // Sprint speed
             // Sprint endurance
             // Sprint regeneration
@@ -54,7 +64,13 @@ namespace MilkMolars
             // Keep items on ship chance
             // Travel discount
             // Time on moon
+            // Company Cruiser health
+            // Company Cruiser acceleration
+            // Company Cruiser max speed
+            // Company Cruiser turning
+            // Company Cruiser damage reduction
 
+            // Revive player
 
         }
 
@@ -94,30 +110,96 @@ namespace MilkMolars
             }
         }
 
-        public static void BuyMilkMolarUpgrade(string upgradeName)
+        public static bool BuyMilkMolarUpgrade(string upgradeName)
         {
-            MilkMolarUpgrades[upgradeName]++;
+            MilkMolarUpgrade upgrade = MilkMolarUpgrades.Where(x => x.name == upgradeName).FirstOrDefault();
+            
+            if (upgrade.type == MilkMolarUpgrade.UpgradeType.Infinite)
+            {
+                if (MilkMolars >= upgrade.cost)
+                {
+                    MilkMolars -= upgrade.cost;
+                    ActivateRepeatableUpgrade(upgradeName);
+                    return true;
+                }
+            }
+
+            if (upgrade.type == MilkMolarUpgrade.UpgradeType.OneTimeUnlock)
+            {
+                if (MilkMolars >= upgrade.cost)
+                {
+                    upgrade.unlocked = true;
+                    //MilkMolarUpgrades[upgradeName] = upgrade;
+                    return true;
+                }
+            }
+
+            if (MilkMolars >= upgrade.costsPerTier[upgrade.currentTier + 1])
+            {
+                upgrade.GoToNextTier();
+                //MilkMolarUpgrades[upgradeName] = upgrade;
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool BuyMegaMilkMolarUpgrade(string upgradeName)
+        {
+            return false;
+        }
+
+        public static bool ActivateRepeatableUpgrade(string upgradeName)
+        {
+            return false;
         }
     }
 
     public class MilkMolarUpgrade
     {
+        public string name;
         public int cost;
         public UpgradeType type;
 
         public enum UpgradeType
         {
-            Unlock,
-            Percent,
-            Int,
-            Float
+            TierNumber,
+            TierPercent,
+            OneTimeUnlock,
+            Infinite
         }
 
-        public bool unlocked;
+        public float progress { get { return (float)currentTier / (float)maxTiers; } }
 
-        public int currentTier;
+        public bool unlocked;
+        public bool fullyUpgraded;
+
+        public int currentTier = -1;
         public int maxTiers;
         public float[] amountPerTier;
         public int[] costsPerTier;
+
+        public void GetTiersFromConfig(string configString)
+        {
+            string[] tiers = configString.Split(',');
+            maxTiers = tiers.Length;
+            costsPerTier = new int[maxTiers];
+            amountPerTier = new float[maxTiers];
+            for (int i = 0; i < maxTiers; i++)
+            {
+                string[] tierSplit = tiers[i].Split(':');
+                costsPerTier[i] = int.Parse(tierSplit[0]);
+                amountPerTier[i] = float.Parse(tierSplit[1]);
+            }
+        }
+
+        public void GoToNextTier()
+        {
+            currentTier++;
+            if (currentTier >= maxTiers)
+            {
+                fullyUpgraded = true;
+            }
+        }
     }
 }

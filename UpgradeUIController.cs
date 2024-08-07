@@ -27,7 +27,7 @@ namespace MilkMolars
 
         public bool LeftTabSelected = true;
 
-        private void Start()
+        private void Start() // TODO: Getting input string not in correct format error
         {
             logger.LogDebug("UIController: Start()");
 
@@ -35,6 +35,8 @@ namespace MilkMolars
             {
                 Instance = this;
             }
+
+            MilkMolarController.Init();
 
             // Get UIDocument
             logger.LogDebug("Getting UIDocument");
@@ -82,7 +84,7 @@ namespace MilkMolars
         {
             if (veMain.style.display == DisplayStyle.Flex && (Keyboard.current.escapeKey.wasPressedThisFrame || Keyboard.current.tabKey.wasPressedThisFrame)) { HideUI(); }
 
-            if (MilkMolarInputs.Instance.OpenUIKey.WasPressedThisFrame() && localPlayer.CheckConditionsForEmote())
+            if (MilkMolarInputs.Instance.OpenUIKey.WasPressedThisFrame()/* && localPlayer.CheckConditionsForEmote()*/)
             {
                 if (veMain.style.display == DisplayStyle.None) { ShowUI(); }
                 else { HideUI(); }
@@ -102,7 +104,6 @@ namespace MilkMolars
             veMain.style.display = DisplayStyle.Flex;
 
             SelectTab(left: true);
-            
 
             UnityEngine.Cursor.lockState = CursorLockMode.None;
             UnityEngine.Cursor.visible = true;
@@ -137,8 +138,6 @@ namespace MilkMolars
                 btnYou.style.borderRightWidth = 2;
                 btnYou.style.borderLeftWidth = 2;
                 LeftTabSelected = true;
-
-
             }
             else
             {
@@ -152,9 +151,84 @@ namespace MilkMolars
                 btnGroup.style.borderRightWidth = 2;
                 btnGroup.style.borderLeftWidth = 2;
                 LeftTabSelected = false;
-
-
             }
+
+            SetUpgradeList();
+        }
+
+        private void SetUpgradeList()
+        {
+            lvUpgradeList.Refresh();
+            lvUpgradeList.itemsSource = MilkMolarController.MilkMolarUpgrades;
+
+            lvUpgradeList.makeItem = () =>
+            {
+                var button = new Button();
+                var label = new Label();
+                var progressBar = new ProgressBar();
+
+                button.Add(label);
+                button.Add(progressBar);
+                return button;
+            };
+
+            lvUpgradeList.bindItem = (element, i) =>
+            {
+                MilkMolarUpgrade itemData;
+                if (LeftTabSelected)
+                {
+                    itemData = MilkMolarController.MilkMolarUpgrades[i];
+                }
+                else
+                {
+                    itemData = MilkMolarController.MegaMilkMolarUpgrades[i];
+                }
+
+
+                var button = element as Button;
+                var label = button.Q<Label>();
+                var progressBar = button.Q<ProgressBar>();
+
+                // Set label
+                switch (itemData.type)
+                {
+                    case MilkMolarUpgrade.UpgradeType.TierNumber:
+                        if (itemData.fullyUpgraded) { label.text = $"{itemData.name} Fully Upgraded: {itemData.amountPerTier[itemData.maxTiers - 1]}"; }
+                        else if (itemData.currentTier == -1) { label.text = $"{itemData.name}: 0 -> {itemData.amountPerTier[0]}"; }
+                        else { label.text = $"{itemData.name}: {itemData.amountPerTier[itemData.currentTier]} -> {itemData.amountPerTier[itemData.currentTier + 1]}"; }
+                        
+                        break;
+                    case MilkMolarUpgrade.UpgradeType.TierPercent:
+                        if (itemData.fullyUpgraded) { label.text = $"{itemData.name} Fully Upgraded: {itemData.amountPerTier[itemData.maxTiers - 1]}%"; }
+                        else if (itemData.currentTier == -1) { label.text = $"{itemData.name}: 0% -> {itemData.amountPerTier[0]}%"; }
+                        else { label.text = $"{itemData.name}: {itemData.amountPerTier[itemData.currentTier]}% -> {itemData.amountPerTier[itemData.currentTier + 1]}%"; }
+
+                        break;
+                    case MilkMolarUpgrade.UpgradeType.OneTimeUnlock:
+                        label.text = itemData.name;
+                        break;
+                    case MilkMolarUpgrade.UpgradeType.Infinite:
+                        label.text = itemData.name + " (Repeatable)";
+                        break;
+                    default:
+                        logger.LogError($"Unknown upgrade type: {itemData.type}");
+                        break;
+                }
+
+                // Set progress bar
+                if (itemData.type == MilkMolarUpgrade.UpgradeType.OneTimeUnlock || itemData.type == MilkMolarUpgrade.UpgradeType.Infinite)
+                {
+                    progressBar.style.display = DisplayStyle.None;
+                }
+                else
+                {
+                    progressBar.style.display = DisplayStyle.Flex;
+                    progressBar.value = (float)(itemData.currentTier + 1) / (float)itemData.maxTiers;
+                }
+
+                // Set button
+                button.clicked += () => OnItemClicked(button, i);
+            };
         }
 
         private void ButtonYouClicked()
@@ -174,6 +248,12 @@ namespace MilkMolars
             {
                 SelectTab(left: false);
             }
+        }
+
+        private void OnItemClicked(Button element, int i)
+        {
+            logger.LogDebug("OnItemClicked");
+
         }
     }
 }

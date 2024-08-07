@@ -96,6 +96,15 @@ namespace MilkMolars
             if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 1f); }
             if (configNotifyMethod.Value != 3) { HUDManager.Instance.AddChatMessage($"{MegaMilkMolars.Value} Mega Milk Molars activated! Your crew now has {MegaMilkMolars.Value} unspent Mega Milk Molars. Open the upgrade menu to spend them. (M by default)", "Server"); }
         }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void BuyMegaMilkMolarUpgradeServerRpc(string upgradeName, ulong clientId)
+        {
+            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
+            {
+
+            }
+        }
     }
 
     [HarmonyPatch]

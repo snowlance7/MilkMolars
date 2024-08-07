@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 1998709998
+CRC: 1410125218
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 768235bc787255f6a7883b8cf8b85365
+    Hash: 76b3ef0e9278600be15d98bc4ce7d020
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 2dcfc0e3918d55e02585b1fbaa8031f8
+    Hash: 34a62a70b02f48e33935f49a6abb0aa6
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 768235bc787255f6a7883b8cf8b85365
+    Hash: 76b3ef0e9278600be15d98bc4ce7d020
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -45,17 +45,17 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
 - Class: 114
+  Script: {fileID: 11500000, guid: c30496d6ae6d6f907456e10a94e01ec6, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 3c36d0a92cbb1f26a39169ef0eae393a, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+- Class: 114
   Script: {fileID: 258224418, guid: e402032d99d96ae43af281464160c1d1, type: 3}
 - Class: 114
   Script: {fileID: 1363348383, guid: e402032d99d96ae43af281464160c1d1, type: 3}
 - Class: 114
-  Script: {fileID: -597823891, guid: e402032d99d96ae43af281464160c1d1, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: c30496d6ae6d6f907456e10a94e01ec6, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 3c36d0a92cbb1f26a39169ef0eae393a, type: 3}
+  Script: {fileID: 491808410, guid: e402032d99d96ae43af281464160c1d1, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 128
@@ -105,4 +105,5 @@ Assets:
 - Assets/ModAssets/MilkMolars/NetworkHandlerMilkMolars.prefab
 - Assets/ModAssets/MilkMolars/MegaMilkMolarItem.asset
 - Assets/ModAssets/MilkMolars/MilkMolarItem.asset
+- Assets/ModAssets/MilkMolars/Audio/milkmolaractivate.mp3
 Dependencies: []

@@ -55,12 +55,35 @@ namespace MilkMolars
         public static ConfigEntry<int> configNotifyMethod;
         public static ConfigEntry<bool> configPlaySound;
 
-        // Upgrades
+        // Milk Molar Upgrades
         public static ConfigEntry<string> configShovelDamageUpgrade;
         public static ConfigEntry<string> configDamageResistanceUpgrade;
         public static ConfigEntry<string> configSprintSpeedUpgrade;
         public static ConfigEntry<string> configSprintEnduranceUpgrade;
-        // TODO: Continue here
+        public static ConfigEntry<string> configSprintRegenerationUpgrade;
+        public static ConfigEntry<string> configJumpHeightUpgrade;
+        public static ConfigEntry<string> configCarryWeightStaminaCostUpgrade;
+        public static ConfigEntry<string> configCarryWeightSprintSpeedUpgrade;
+        public static ConfigEntry<string> configIncreasedInventorySizeUpgrade;
+        public static ConfigEntry<string> configCritChanceUpgrade;
+        public static ConfigEntry<string> configClimbSpeedUpgrade;
+        public static ConfigEntry<string> configFallDamageReductionUpgrade;
+        public static ConfigEntry<string> configHealthRegenUpgrade;
+
+        // Mega Milk Molar Upgrades
+        public static ConfigEntry<string> configSignalTransmitterUpgrade;
+        public static ConfigEntry<string> configIncreasedShopDealsUpgrade;
+        public static ConfigEntry<string> configLandingSpeedUpgrade;
+        public static ConfigEntry<string> configItemDropshipLandingSpeedUpgrade;
+        public static ConfigEntry<string> configKeepItemsOnShipChanceUpgrade;
+        public static ConfigEntry<string> configTravelDiscountUpgrade;
+        public static ConfigEntry<string> configTimeOnMoonUpgrade;
+        public static ConfigEntry<string> configCompanyCruiserHealthUpgrade;
+        public static ConfigEntry<string> configCompanyCruiserAccelerationUpgrade;
+        public static ConfigEntry<string> configCompanyCruiserSpeedUpgrade;
+        public static ConfigEntry<string> configCompanyCruiserTurningUpgrade;
+        public static ConfigEntry<string> configCompanyCruiserDamageUpgrade;
+
 
         private void Awake()
         {
@@ -72,6 +95,8 @@ namespace MilkMolars
             LoggerInstance = PluginInstance.Logger;
 
             harmony.PatchAll();
+
+            MilkMolarInputs.Init();
 
             InitializeNetworkBehaviours();
 
@@ -97,6 +122,36 @@ namespace MilkMolars
             configNotifyMethod = Config.Bind("Client Settings", "Notify Method", 1, "The method in which players are notified of Milk Molar activations. 1 - Popup/DisplayTip, 2 - Chat Message, 3 - None");
             configPlaySound = Config.Bind("Client Settings", "Play Sound", true, "Play sound when milk molar is activated");
 
+            // Milk Molar Upgrades Configs
+            configShovelDamageUpgrade = Config.Bind("Milk Molar Upgrades", "Shovel Damage Upgrade", "5:1, 10:2", "");
+            configDamageResistanceUpgrade = Config.Bind("Milk Molar Upgrades", "Damage Resistance Upgrade", "1:5, 2:10, 3:15, 4:20, 5:25, 6:30, 7:35, 8:40, 9:45, 10:50", "");
+            configSprintSpeedUpgrade = Config.Bind("Milk Molar Upgrades", "Sprint Speed Upgrade", "", "");
+            configSprintEnduranceUpgrade = Config.Bind("Milk Molar Upgrades", "Sprint Endurance Upgrade", "", "");
+            configSprintRegenerationUpgrade = Config.Bind("Milk Molar Upgrades", "Sprint Regeneration Upgrade", "", "");
+            configJumpHeightUpgrade = Config.Bind("Milk Molar Upgrades", "Jump Height Upgrade", "", "");
+            configCarryWeightStaminaCostUpgrade = Config.Bind("Milk Molar Upgrades", "Carry Weight Stamina Cost Upgrade", "", "");
+            configCarryWeightSprintSpeedUpgrade = Config.Bind("Milk Molar Upgrades", "Carry Weight Sprint Speed Upgrade", "", "");
+            configIncreasedInventorySizeUpgrade = Config.Bind("Milk Molar Upgrades", "Increased Inventory Upgrade", "", "");
+            configCritChanceUpgrade = Config.Bind("Milk Molar Upgrades", "Crit Chance Upgrade", "", "");
+            configClimbSpeedUpgrade = Config.Bind("Milk Molar Upgrades", "Climb Speed Upgrade", "", "");
+            configFallDamageReductionUpgrade = Config.Bind("Milk Molar Upgrades", "Fall Damage Reduction Upgrade", "", "");
+            configHealthRegenUpgrade = Config.Bind("Milk Molar Upgrades", "Health Regen Upgrade", "", "");
+            
+
+            // Mega Milk Molar Upgrades Configs
+            configSignalTransmitterUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Signal Transmitter Upgrade", "", "");
+            configIncreasedShopDealsUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Increased Shop Deals Upgrade", "", "");
+            configLandingSpeedUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Landing Speed Upgrade", "", "");
+            configItemDropshipLandingSpeedUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Item Dropship Landing Speed Upgrade", "", "");
+            configKeepItemsOnShipChanceUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Keep Items On Ship Upgrade", "", "");
+            configTravelDiscountUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Travel Discount Upgrade", "", "");
+            configTimeOnMoonUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Time On Moon Upgrade", "", "");
+            configCompanyCruiserHealthUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Company Cruiser Health Upgrade", "", "");
+            configCompanyCruiserAccelerationUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Company Cruiser Acceleration Upgrade", "", "");
+            configCompanyCruiserSpeedUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Company Cruiser Speed Upgrade", "", "");
+            configCompanyCruiserTurningUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Company Cruiser Turning Upgrade", "", "");
+            configCompanyCruiserDamageUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Company Cruiser Damage Upgrade", "", "");
+
             // Loading Assets
             string sAssemblyLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
@@ -107,6 +162,10 @@ namespace MilkMolars
                 return;
             }
             LoggerInstance.LogDebug($"Got AssetBundle at: {Path.Combine(sAssemblyLocation, "milkmolar_assets")}");
+
+            ActivateSFX = ModAssets.LoadAsset<AudioClip>("Assets/ModAssets/MilkMolars/Audio/milkmolaractivate.mp3");
+            if (ActivateSFX == null) { LoggerInstance.LogError("Error: Couldnt get ActivateSFX from assets"); return; }
+            LoggerInstance.LogDebug($"Got ActivateSFX");
 
             // Getting MilkMolar
             Item MilkMolar = ModAssets.LoadAsset<Item>("Assets/ModAssets/MilkMolars/MilkMolarItem.asset");
