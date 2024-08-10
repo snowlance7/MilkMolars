@@ -3,6 +3,7 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
+using InteractiveTerminalAPI.UI;
 using LethalLib.Modules;
 using Steamworks.Data;
 using Steamworks.Ugc;
@@ -11,10 +12,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using TMPro;
 using Unity.Netcode;
 using Unity.Networking.Transport;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.TextCore.Text;
 
 namespace MilkMolars
 {
@@ -34,6 +37,8 @@ namespace MilkMolars
         public static AssetBundle? ModAssets;
 
         public static AudioClip ActivateSFX;
+
+        public static TMP_FontAsset NotoEmojiFA;
 
         // Milk Molar Configs
         public static ConfigEntry<string> configMilkMolarLevelRarities;
@@ -163,6 +168,10 @@ namespace MilkMolars
             }
             LoggerInstance.LogDebug($"Got AssetBundle at: {Path.Combine(sAssemblyLocation, "milkmolar_assets")}");
 
+            NotoEmojiFA = ModAssets.LoadAsset<TMP_FontAsset>("Assets/ModAssets/MilkMolars/NotoEmoji-Regular SDF.asset");
+            if (NotoEmojiFA == null) { LoggerInstance.LogError("Error: Couldnt get NotoEmojiFA from assets"); return; }
+            LoggerInstance.LogDebug($"Got NotoEmojiFA");
+
             ActivateSFX = ModAssets.LoadAsset<AudioClip>("Assets/ModAssets/MilkMolars/Audio/milkmolaractivate.mp3");
             if (ActivateSFX == null) { LoggerInstance.LogError("Error: Couldnt get ActivateSFX from assets"); return; }
             LoggerInstance.LogDebug($"Got ActivateSFX");
@@ -184,6 +193,8 @@ namespace MilkMolars
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(MegaMilkMolar.spawnPrefab);
             Utilities.FixMixerGroups(MegaMilkMolar.spawnPrefab);
             Items.RegisterScrap(MegaMilkMolar, GetLevelRarities(configMegaMilkMolarLevelRarities.Value), GetCustomLevelRarities(configMegaMilkMolarCustomLevelRarities.Value));
+
+            InteractiveTerminalManager.RegisterApplication<UpgradeTerminalUIPlayer>(["mmu", "milk molar upgrades", "milk molar"], caseSensitive: false);
 
             // Finished
             Logger.LogInfo($"{modGUID} v{modVersion} has loaded!");

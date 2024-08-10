@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 1410125218
+CRC: 1354774150
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 76b3ef0e9278600be15d98bc4ce7d020
+    Hash: 67e7d2f804c66e92434299a23ba58cf4
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 34a62a70b02f48e33935f49a6abb0aa6
+    Hash: 0e0af7e11592e64b0ac9e58c69e8304f
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 76b3ef0e9278600be15d98bc4ce7d020
+    Hash: 67e7d2f804c66e92434299a23ba58cf4
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -35,27 +35,17 @@ ClassTypes:
 - Class: 83
   Script: {instanceID: 0}
 - Class: 114
-  Script: {fileID: 11995, guid: 0000000000000000e000000000000000, type: 0}
-- Class: 114
-  Script: {fileID: 11998, guid: 0000000000000000e000000000000000, type: 0}
-- Class: 114
-  Script: {fileID: 19202, guid: 0000000000000000e000000000000000, type: 0}
-- Class: 114
-  Script: {fileID: 19101, guid: 0000000000000000e000000000000000, type: 0}
-- Class: 114
-  Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
-- Class: 114
   Script: {fileID: 11500000, guid: c30496d6ae6d6f907456e10a94e01ec6, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 3c36d0a92cbb1f26a39169ef0eae393a, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
+- Class: 114
   Script: {fileID: 258224418, guid: e402032d99d96ae43af281464160c1d1, type: 3}
 - Class: 114
   Script: {fileID: 1363348383, guid: e402032d99d96ae43af281464160c1d1, type: 3}
-- Class: 114
-  Script: {fileID: 491808410, guid: e402032d99d96ae43af281464160c1d1, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 128
@@ -71,37 +61,28 @@ ClassTypes:
 SerializeReferenceClassIdentifiers:
 - AssemblyName: Assembly-CSharp
   ClassName: Battery
-- AssemblyName: UnityEngine.UIElementsModule
-  ClassName: UnityEngine.UIElements.Button/UxmlFactory
-- AssemblyName: UnityEngine.UIElementsModule
-  ClassName: UnityEngine.UIElements.DynamicAtlasSettings
-- AssemblyName: UnityEngine.UIElementsModule
-  ClassName: UnityEngine.UIElements.ListView/UxmlFactory
-- AssemblyName: UnityEngine.UIElementsModule
-  ClassName: UnityEngine.UIElements.StyleComplexSelector
-- AssemblyName: UnityEngine.UIElementsModule
-  ClassName: UnityEngine.UIElements.StyleProperty
-- AssemblyName: UnityEngine.UIElementsModule
-  ClassName: UnityEngine.UIElements.StyleRule
-- AssemblyName: UnityEngine.UIElementsModule
-  ClassName: UnityEngine.UIElements.StyleSelector
-- AssemblyName: UnityEngine.UIElementsModule
-  ClassName: UnityEngine.UIElements.StyleSelectorPart
-- AssemblyName: UnityEngine.UIElementsModule
-  ClassName: UnityEngine.UIElements.StyleSheet/ImportStruct
-- AssemblyName: UnityEngine.UIElementsModule
-  ClassName: UnityEngine.UIElements.StyleSheets.Dimension
-- AssemblyName: UnityEngine.UIElementsModule
-  ClassName: UnityEngine.UIElements.StyleSheets.ScalableImage
-- AssemblyName: UnityEngine.UIElementsModule
-  ClassName: UnityEngine.UIElements.StyleValueHandle
-- AssemblyName: UnityEngine.UIElementsModule
-  ClassName: UnityEngine.UIElements.UxmlRootElementFactory
-- AssemblyName: UnityEngine.UIElementsModule
-  ClassName: UnityEngine.UIElements.VisualElement/UxmlFactory
-- AssemblyName: UnityEngine.UIElementsModule
-  ClassName: UnityEngine.UIElements.VisualElementAsset
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.FaceInfo_Legacy
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.FontAssetCreationSettings
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.KerningTable
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.TMP_Character
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.TMP_FontFeatureTable
+- AssemblyName: Unity.TextMeshPro
+  ClassName: TMPro.TMP_FontWeightPair
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.FaceInfo
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.Glyph
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.GlyphMetrics
+- AssemblyName: UnityEngine.TextCoreFontEngineModule
+  ClassName: UnityEngine.TextCore.GlyphRect
 Assets:
+- Assets/ModAssets/MilkMolars/NotoEmoji-Regular SDF.asset
 - Assets/ModAssets/MilkMolars/NetworkHandlerMilkMolars.prefab
 - Assets/ModAssets/MilkMolars/MegaMilkMolarItem.asset
 - Assets/ModAssets/MilkMolars/MilkMolarItem.asset

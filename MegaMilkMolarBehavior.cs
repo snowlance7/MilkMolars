@@ -77,7 +77,10 @@ namespace MilkMolars
 
         public void ActivateMolar()
         {
+            if (configPlaySound.Value) { ItemSFX.Play(); }
+            playerHeldBy.DespawnHeldObject();
 
+            MilkMolarController.AddMegaMilkMolar(playerHeldBy);
         }
     }
 }

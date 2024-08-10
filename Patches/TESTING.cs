@@ -8,6 +8,7 @@ using Unity.Collections.LowLevel.Unsafe;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static MilkMolars.Plugin;
 
 namespace MilkMolars.Patches
 {
@@ -36,6 +37,10 @@ namespace MilkMolars.Patches
             if (args[0] == "/refresh")
             {
                 RoundManager.Instance.RefreshEnemiesList();
+            }
+            if (args[0] == "/height")
+            {
+                //UpgradeUIController.setHeight = float.Parse(args[1]);
             }
         }
     }

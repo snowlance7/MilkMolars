@@ -21,7 +21,7 @@ namespace MilkMolars
 
         public static PlayerControllerB PlayerFromId(ulong id) { return StartOfRound.Instance.allPlayerScripts[StartOfRound.Instance.ClientPlayerList[id]]; }
 
-        public static NetworkVariable<int> MegaMilkMolars = new NetworkVariable<int>(0);
+        public NetworkVariable<int> MegaMilkMolars = new NetworkVariable<int>(0);
 
 
         public override void OnNetworkSpawn()
@@ -102,7 +102,7 @@ namespace MilkMolars
         {
             if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
-
+                
             }
         }
     }
