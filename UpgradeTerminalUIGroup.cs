@@ -86,7 +86,7 @@ namespace MilkMolars
             if (upgrade == null) return;
             logger.LogDebug("BuyUpgrade: " + upgrade.name);
 
-            if (MilkMolarController.BuyMegaMilkMolarUpgrade(upgrade.name))
+            if (MilkMolarController.BuyMegaMilkMolarUpgrade(upgrade, callRPC: true))
             {
                 element.Name = upgrade.GetUpgradeString();
                 logger.LogDebug("Bought upgrade " + upgrade.name);

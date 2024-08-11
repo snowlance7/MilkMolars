@@ -98,12 +98,21 @@ namespace MilkMolars
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void BuyMegaMilkMolarUpgradeServerRpc(string upgradeName, ulong clientId)
+        public void BuyMegaMilkMolarUpgradeServerRpc(string upgradeName, int cost, ulong clientId)
         {
             if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
-                
+                MegaMilkMolars.Value -= cost;
+                BuyMegaMilkMolarUpgradeClientRpc(upgradeName, clientId);
             }
+        }
+
+        [ClientRpc]
+        public void BuyMegaMilkMolarUpgradeClientRpc(string upgradeName, ulong clientId)
+        {
+            if (localPlayer.actualClientId == clientId) { return; }
+            MilkMolarUpgrade upgrade = MilkMolarController.MegaMilkMolarUpgrades.Where(x => x.name == upgradeName).FirstOrDefault();
+            MilkMolarController.BuyMegaMilkMolarUpgrade(upgrade, callRPC: false);
         }
     }
 

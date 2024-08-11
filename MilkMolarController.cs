@@ -46,6 +46,8 @@ namespace MilkMolars
             MilkMolarUpgrades.Add(damageResistance);
 
             // Sprint speed
+            
+
             // Sprint endurance
             // Sprint regeneration
             // Jump height
@@ -117,16 +119,14 @@ namespace MilkMolars
             }
         }
 
-        public static bool BuyMilkMolarUpgrade(string upgradeName)
+        public static bool BuyMilkMolarUpgrade(MilkMolarUpgrade upgrade)
         {
-            MilkMolarUpgrade upgrade = MilkMolarUpgrades.Where(x => x.name == upgradeName).FirstOrDefault();
-            
             if (upgrade.type == MilkMolarUpgrade.UpgradeType.Infinite)
             {
                 if (MilkMolars >= upgrade.cost)
                 {
                     MilkMolars -= upgrade.cost;
-                    ActivateRepeatableUpgrade(upgradeName);
+                    ActivateRepeatableUpgrade(upgrade);
                     return true;
                 }
             }
@@ -151,13 +151,42 @@ namespace MilkMolars
             return false;
         }
 
-        public static bool BuyMegaMilkMolarUpgrade(string upgradeName)
+        public static bool BuyMegaMilkMolarUpgrade(MilkMolarUpgrade upgrade, bool callRPC = false)
         {
+            if (upgrade.type == MilkMolarUpgrade.UpgradeType.Infinite)
+            {
+                if (NetworkHandler.Instance.MegaMilkMolars.Value >= upgrade.cost || callRPC == false)
+                {
+                    if (callRPC) { NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.cost, localPlayer.actualClientId); }
+                    ActivateRepeatableUpgrade(upgrade);
+                    return true;
+                }
+            }
+
+            if (upgrade.type == MilkMolarUpgrade.UpgradeType.OneTimeUnlock)
+            {
+                if (NetworkHandler.Instance.MegaMilkMolars.Value >= upgrade.cost || callRPC == false)
+                {
+                    if (callRPC) { NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.cost, localPlayer.actualClientId); }
+                    upgrade.unlocked = true;
+                    return true;
+                }
+            }
+
+            if (NetworkHandler.Instance.MegaMilkMolars.Value >= upgrade.costsPerTier[upgrade.currentTier + 1] || callRPC == false)
+            {
+                if (callRPC) { NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.costsPerTier[upgrade.currentTier + 1], localPlayer.actualClientId); }
+                upgrade.GoToNextTier();
+                return true;
+            }
+
             return false;
         }
 
-        public static bool ActivateRepeatableUpgrade(string upgradeName)
+        public static bool ActivateRepeatableUpgrade(MilkMolarUpgrade upgrade)
         {
+
+
             return false;
         }
     }
