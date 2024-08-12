@@ -20,7 +20,7 @@ namespace MilkMolars
         
         public override void Initialization()
         {
-            MilkMolarController.Init();
+            //MilkMolarController.Init();
             MilkMolarController.InUpgradeUI = false;
             MilkMolarController.InMegaUpgradeUI = true;
 

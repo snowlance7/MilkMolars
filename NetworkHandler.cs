@@ -9,6 +9,10 @@ using Unity.Netcode;
 using UnityEngine;
 using static Netcode.Transports.Facepunch.FacepunchTransport;
 using static MilkMolars.Plugin;
+using Newtonsoft.Json;
+using Steamworks.Data;
+using LethalModDataLib.Attributes;
+using LethalModDataLib.Enums;
 
 namespace MilkMolars
 {
@@ -21,7 +25,14 @@ namespace MilkMolars
 
         public static PlayerControllerB PlayerFromId(ulong id) { return StartOfRound.Instance.allPlayerScripts[StartOfRound.Instance.ClientPlayerList[id]]; }
 
-        public NetworkVariable<int> MegaMilkMolars = new NetworkVariable<int>(0);
+        [ModData(saveWhen: SaveWhen.OnSave, loadWhen: LoadWhen.OnLoad, saveLocation: SaveLocation.CurrentSave, resetWhen: ResetWhen.OnGameOver)]
+        public static NetworkVariable<int> MegaMilkMolars = new NetworkVariable<int>(0);
+
+        [ModData(saveWhen: SaveWhen.OnSave, loadWhen: LoadWhen.OnLoad, saveLocation: SaveLocation.CurrentSave, resetWhen: ResetWhen.OnGameOver)]
+        public static Dictionary<ulong, int> ClientsMilkMolars = new Dictionary<ulong, int>();
+
+        [ModData(saveWhen: SaveWhen.OnSave, loadWhen: LoadWhen.OnLoad, saveLocation: SaveLocation.CurrentSave, resetWhen: ResetWhen.OnGameOver)]
+        public static Dictionary<ulong, List<MilkMolarUpgrade>> ClientsMilkMolarUpgrades = new Dictionary<ulong, List<MilkMolarUpgrade>>(); // TODO: Get these
 
 
         public override void OnNetworkSpawn()
@@ -38,12 +49,85 @@ namespace MilkMolars
             logger.LogDebug("base.OnNetworkSpawn");
         }
 
-        [ServerRpc(RequireOwnership = false)]
-        public void AddMilkMolarServerRpc(ulong clientId)
+        public static void SendDataToClient(ulong clientId)
         {
             if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
-                AddMilkMolarClientRpc(clientId);
+                int amount = 0;
+                string upgrades;
+                var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
+                if (ClientsMilkMolars.ContainsKey(clientId) && ClientsMilkMolarUpgrades.ContainsKey(clientId))
+                {
+                    amount = ClientsMilkMolars[clientId];
+                    upgrades = JsonConvert.SerializeObject(ClientsMilkMolarUpgrades[clientId], settings);
+                }
+                else
+                {
+                    List<MilkMolarUpgrade> upgradesList = MilkMolarController.GetUpgrades();
+                    upgrades = JsonConvert.SerializeObject(upgradesList, settings);
+                }
+
+                string? megaUpgrades = JsonConvert.SerializeObject(MilkMolarController.MegaMilkMolarUpgrades);
+                Instance.SendDataToClientClientRpc(clientId, upgrades, megaUpgrades, amount);
+            }
+        }
+
+        [ClientRpc]
+        private void SendDataToClientClientRpc(ulong clientId, string upgrades, string megaUpgrades, int amount = 0)
+        {
+            if (localPlayer.actualClientId == clientId)
+            {
+                var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
+
+                MilkMolarController.MilkMolars = amount;
+
+                MilkMolarController.MilkMolarUpgrades = JsonConvert.DeserializeObject<List<MilkMolarUpgrade>>(upgrades, settings);
+
+                MilkMolarController.MegaMilkMolarUpgrades = JsonConvert.DeserializeObject<List<MilkMolarUpgrade>>(megaUpgrades, settings);
+            }
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void UpdateMilkMolarsServerRpc(ulong clientId, int amount)
+        {
+            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
+            {
+                ClientsMilkMolars[clientId] = amount;
+            }
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void AddMilkMolarsServerRpc(ulong clientId, int amount = 1)
+        {
+            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
+            {
+                if (configSharedMilkMolars.Value)
+                {
+                    AddMilkMolarClientRpc(clientId);
+
+                    foreach (var player in StartOfRound.Instance.allPlayerScripts)
+                    {
+                        if (ClientsMilkMolars.ContainsKey(player.actualClientId))
+                        {
+                            ClientsMilkMolars[player.actualClientId] += amount;
+                        }
+                        else
+                        {
+                            ClientsMilkMolars.Add(player.actualClientId, amount);
+                        }
+                    }
+                }
+                else
+                {
+                    if (ClientsMilkMolars.ContainsKey(clientId))
+                    {
+                        ClientsMilkMolars[clientId] += amount;
+                    }
+                    else
+                    {
+                        ClientsMilkMolars.Add(clientId, amount);
+                    }
+                }
             }
         }
 
@@ -80,16 +164,6 @@ namespace MilkMolars
             else if (configNotifyMethod.Value == 2) { HUDManager.Instance.AddChatMessage($"{player.playerUsername} activated a Mega Milk Molar! Your crew now has {MegaMilkMolars.Value} unspent Mega Milk Molars. Open the upgrade menu to spend them. (M by default)", "Server"); }
         }
 
-        /*[ServerRpc(RequireOwnership = false)]
-        public void AddMultipleMegaMilkMolarsServerRpc(int amount)
-        {
-            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
-            {
-                MegaMilkMolars.Value += amount;
-                AddMultipleMegaMilkMolarsClientRpc(amount);
-            }
-        }*/
-
         [ClientRpc]
         public void AddMultipleMegaMilkMolarsClientRpc(int amount)
         {
@@ -111,7 +185,7 @@ namespace MilkMolars
         public void BuyMegaMilkMolarUpgradeClientRpc(string upgradeName, ulong clientId)
         {
             if (localPlayer.actualClientId == clientId) { return; }
-            MilkMolarUpgrade upgrade = MilkMolarController.MegaMilkMolarUpgrades.Where(x => x.name == upgradeName).FirstOrDefault();
+            MilkMolarUpgrade upgrade = MilkMolarController.GetUpgradeByName(upgradeName);
             MilkMolarController.BuyMegaMilkMolarUpgrade(upgrade, callRPC: false);
         }
     }

@@ -20,7 +20,7 @@ namespace MilkMolars
         
         public override void Initialization()
         {
-            MilkMolarController.Init();
+            //MilkMolarController.Init();
             MilkMolarController.InMegaUpgradeUI = false;
             MilkMolarController.InUpgradeUI = true;
 
@@ -81,7 +81,7 @@ namespace MilkMolars
             return 12;
         }
 
-        public void BuyUpgrade(MilkMolarUpgrade upgrade, CursorElement element)
+        public void BuyUpgrade(MilkMolarUpgrade upgrade, CursorElement element) // TODO: Causing error, fix it
         {
             if (upgrade == null) return;
             logger.LogDebug("BuyUpgrade: " + upgrade.name);

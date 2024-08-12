@@ -16,6 +16,7 @@ namespace MilkMolars
     internal class TerminalPatch
     {
         private static ManualLogSource logger = Plugin.LoggerInstance;
+        private const string tooth = "🦷";
 
         [HarmonyPostfix]
         [HarmonyPatch(nameof(Terminal.Awake))]
@@ -34,11 +35,11 @@ namespace MilkMolars
             {
                 if (MilkMolarController.InUpgradeUI)
                 {
-                    __instance.topRightText.text = MilkMolarUpgrade.tooth + MilkMolarController.MilkMolars.ToString();
+                    __instance.topRightText.text = tooth + MilkMolarController.MilkMolars.ToString();
                 }
                 else if (MilkMolarController.InMegaUpgradeUI)
                 {
-                    __instance.screenText.text = MilkMolarUpgrade.tooth + NetworkHandler.Instance.MegaMilkMolars.ToString();
+                    __instance.screenText.text = tooth + NetworkHandler.MegaMilkMolars.ToString();
                 }
             }
         }

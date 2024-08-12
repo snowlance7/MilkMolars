@@ -101,8 +101,6 @@ namespace MilkMolars
 
             harmony.PatchAll();
 
-            MilkMolarInputs.Init();
-
             InitializeNetworkBehaviours();
 
             // Configs
@@ -128,10 +126,10 @@ namespace MilkMolars
             configPlaySound = Config.Bind("Client Settings", "Play Sound", true, "Play sound when milk molar is activated");
 
             // Milk Molar Upgrades Configs
-            configShovelDamageUpgrade = Config.Bind("Milk Molar Upgrades", "Shovel Damage Upgrade", "5:1, 10:2", "");
-            configDamageResistanceUpgrade = Config.Bind("Milk Molar Upgrades", "Damage Resistance Upgrade", "1:5, 2:10, 3:15, 4:20, 5:25, 6:30, 7:35, 8:40, 9:45, 10:50", "");
-            configSprintSpeedUpgrade = Config.Bind("Milk Molar Upgrades", "Sprint Speed Upgrade", "", "");
-            configSprintEnduranceUpgrade = Config.Bind("Milk Molar Upgrades", "Sprint Endurance Upgrade", "", "");
+            configShovelDamageUpgrade = Config.Bind("Milk Molar Upgrades", "Shovel Damage Upgrade", "5:2, 10:3, 18:4", "Increases the damage of the shovel. Default is 1");
+            configDamageResistanceUpgrade = Config.Bind("Milk Molar Upgrades", "Damage Resistance Upgrade", "1:5, 2:10, 3:15, 4:20, 5:25, 6:30, 7:35, 8:40, 9:45, 10:50", "Percentage damage reduction. Default is 0");
+            configSprintSpeedUpgrade = Config.Bind("Milk Molar Upgrades", "Sprint Speed Upgrade", "1:0.56, 2:0.57, 3:0.59, 4:0.61, 5:0.63, 6:0.65, 10:7, 20:7.5, 30:8", "Default is 0.5");
+            configSprintEnduranceUpgrade = Config.Bind("Milk Molar Upgrades", "Sprint Endurance Upgrade", "1:6, 2:8, 3:10, 4:12, 5:14, 6:16, 10:20, 15:25, 20:30", "Increases sprint time. Default is 5");
             configSprintRegenerationUpgrade = Config.Bind("Milk Molar Upgrades", "Sprint Regeneration Upgrade", "", "");
             configJumpHeightUpgrade = Config.Bind("Milk Molar Upgrades", "Jump Height Upgrade", "", "");
             configCarryWeightStaminaCostUpgrade = Config.Bind("Milk Molar Upgrades", "Carry Weight Stamina Cost Upgrade", "", "");

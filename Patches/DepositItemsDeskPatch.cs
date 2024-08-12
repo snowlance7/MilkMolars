@@ -25,7 +25,7 @@ namespace MilkMolars
             {
                 int amount;
                 if (configUpgradePointsToFinder.Value) { amount = objectsOnDesk.OfType<MilkMolarBehavior>().Where(x => x.playerFoundBy == localPlayer).Count(); }
-                else { amount = objectsOnDesk.OfType<MilkMolarBehavior>().Where(x => x.playerHeldBy == localPlayer).Count(); }
+                else { amount = objectsOnDesk.OfType<MilkMolarBehavior>().Where(x => x.lastPlayerHeldBy == localPlayer).Count(); }
                 if (amount > 0) { MilkMolarController.AddMultipleMilkMolars(amount); }
             }
             else

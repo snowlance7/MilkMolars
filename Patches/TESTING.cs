@@ -23,6 +23,8 @@ namespace MilkMolars.Patches
         public static void PingScan_performedPostFix()
         {
             logger.LogDebug("Milk Molar Points: " + MilkMolarController.MilkMolars);
+            logger.LogDebug($"Milk molar upgrades: {MilkMolarController.MilkMolarUpgrades.Count}");
+            logger.LogDebug($"Mega Milk molar upgrades: {MilkMolarController.MegaMilkMolarUpgrades.Count}");
         }
 
         [HarmonyPrefix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.SubmitChat_performed))]
@@ -41,6 +43,10 @@ namespace MilkMolars.Patches
             if (args[0] == "/height")
             {
                 //UpgradeUIController.setHeight = float.Parse(args[1]);
+            }
+            if (args[0] == "/molar")
+            {
+                MilkMolarController.AddMultipleMilkMolars(int.Parse(args[1]));
             }
         }
     }

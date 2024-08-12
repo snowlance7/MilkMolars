@@ -66,6 +66,7 @@
 
     <ItemGroup>
       <Folder Include="Assets\" />
+      <Folder Include="Upgrades\" />
     </ItemGroup>
 
     <ItemGroup>
@@ -74,6 +75,9 @@
       </Reference>
       <Reference Include="LethalCompanyInputUtils">
         <HintPath>..\1Resources\1Assemblies\LethalCompanyInputUtils.dll</HintPath>
+      </Reference>
+      <Reference Include="MaxWasUnavailable.LethalModDataLib">
+        <HintPath>..\1Resources\1Assemblies\LethalModDataLib\MaxWasUnavailable.LethalModDataLib.dll</HintPath>
       </Reference>
     </ItemGroup>
 
