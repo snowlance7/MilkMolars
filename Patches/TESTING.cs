@@ -17,14 +17,12 @@ namespace MilkMolars.Patches
     {
         private static ManualLogSource logger = Plugin.LoggerInstance;
 
-        private static PlayerControllerB localPlayer { get { return StartOfRound.Instance.localPlayerController; } }
-
         [HarmonyPostfix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.PingScan_performed))]
         public static void PingScan_performedPostFix()
         {
             logger.LogDebug("Milk Molar Points: " + MilkMolarController.MilkMolars);
             logger.LogDebug($"Milk molar upgrades: {MilkMolarController.MilkMolarUpgrades.Count}");
-            logger.LogDebug($"Mega Milk molar upgrades: {MilkMolarController.MegaMilkMolarUpgrades.Count}");
+            logger.LogDebug($"Mega Milk molar upgrades: {NetworkHandler.MegaMilkMolarUpgrades.Count}");
         }
 
         [HarmonyPrefix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.SubmitChat_performed))]
@@ -46,8 +44,14 @@ namespace MilkMolars.Patches
             }
             if (args[0] == "/molar")
             {
-                MilkMolarController.AddMultipleMilkMolars(int.Parse(args[1]));
+
             }
+            if (args[0] == "/save")
+            {
+                NetworkHandler.ClientsMilkMolarUpgrades.Add(localPlayer.actualClientId, MilkMolarController.MilkMolarUpgrades);
+                NetworkHandler.SaveDataToFile();
+            }
+
         }
     }
 }

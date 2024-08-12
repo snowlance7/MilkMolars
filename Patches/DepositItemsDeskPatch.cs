@@ -20,26 +20,42 @@ namespace MilkMolars
         [HarmonyPatch(nameof(DepositItemsDesk.delayedAcceptanceOfItems))]
         public static void delayedAcceptanceOfItemsPostFix(GrabbableObject[] objectsOnDesk) // TODO: Test this
         {
-            // TODO: Assuming this runs on every client
-            if (!configSharedMilkMolars.Value)
-            {
-                int amount;
-                if (configUpgradePointsToFinder.Value) { amount = objectsOnDesk.OfType<MilkMolarBehavior>().Where(x => x.playerFoundBy == localPlayer).Count(); }
-                else { amount = objectsOnDesk.OfType<MilkMolarBehavior>().Where(x => x.lastPlayerHeldBy == localPlayer).Count(); }
-                if (amount > 0) { MilkMolarController.AddMultipleMilkMolars(amount); }
-            }
-            else
-            {
-                int amount = objectsOnDesk.OfType<MilkMolarBehavior>().Count();
-                if (amount > 0) { MilkMolarController.AddMultipleMilkMolars(amount); }
-            }
-
             if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
+                if (configSharedMilkMolars.Value)
+                {
+                    int amount = objectsOnDesk.OfType<MilkMolarBehavior>().Count();
+                    if (amount > 0)
+                    {
+                        foreach (var player in StartOfRound.Instance.allPlayerScripts)
+                        {
+                            NetworkHandler.UpdateClientsMilkMolars(player.actualClientId, amount, true);
+                        }
+
+                        NetworkHandler.Instance.AddMultipleMilkMolarsAllClientsClientRpc(amount);
+                    }
+                }
+                else
+                {
+                    foreach (var player in StartOfRound.Instance.allPlayerScripts)
+                    {
+                        int amount;
+                        if (configUpgradePointsToFinder.Value) { amount = objectsOnDesk.OfType<MilkMolarBehavior>().Where(x => x.playerFoundBy == player).Count(); }
+                        else { amount = objectsOnDesk.OfType<MilkMolarBehavior>().Where(x => x.lastPlayerHeldBy == player).Count(); }
+
+                        if (amount > 0)
+                        {
+                            NetworkHandler.UpdateClientsMilkMolars(player.actualClientId, amount, true);
+                            NetworkHandler.Instance.AddMultipleMilkMolarsClientRpc(player.actualClientId, amount);
+                        }
+                    }
+                }
+
                 int megaAmount = objectsOnDesk.OfType<MegaMilkMolarBehavior>().Count();
                 if (megaAmount > 0)
                 {
-                    MilkMolarController.AddMultipleMegaMilkMolars(megaAmount);
+                    NetworkHandler.MegaMilkMolars.Value += megaAmount;
+                    NetworkHandler.Instance.AddMultipleMegaMilkMolarsClientRpc(megaAmount);
                 }
             }
         }

@@ -73,12 +73,6 @@
       <Reference Include="InteractiveTerminalAPI">
         <HintPath>..\1Resources\1Assemblies\WhiteSpike-Interactive_Terminal_API-1.1.3\BepInEx\plugins\InteractiveTerminalAPI\InteractiveTerminalAPI.dll</HintPath>
       </Reference>
-      <Reference Include="LethalCompanyInputUtils">
-        <HintPath>..\1Resources\1Assemblies\LethalCompanyInputUtils.dll</HintPath>
-      </Reference>
-      <Reference Include="MaxWasUnavailable.LethalModDataLib">
-        <HintPath>..\1Resources\1Assemblies\LethalModDataLib\MaxWasUnavailable.LethalModDataLib.dll</HintPath>
-      </Reference>
     </ItemGroup>
 
     <!-- Netcode Patcher Post-Build Event -->

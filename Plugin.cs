@@ -32,7 +32,7 @@ namespace MilkMolars
         public static Plugin PluginInstance;
         public static ManualLogSource LoggerInstance;
         private readonly Harmony harmony = new Harmony(modGUID);
-        public static PlayerControllerB localPlayer { get { return StartOfRound.Instance.localPlayerController; } }
+        public static PlayerControllerB localPlayer { get { return GameNetworkManager.Instance.localPlayerController; } }
 
         public static AssetBundle? ModAssets;
 

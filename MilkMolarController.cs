@@ -9,9 +9,6 @@ using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine.PlayerLoop;
 using static MilkMolars.Plugin;
-using LethalModDataLib;
-using LethalModDataLib.Attributes;
-using LethalModDataLib.Enums;
 
 namespace MilkMolars
 {
@@ -22,11 +19,7 @@ namespace MilkMolars
         public static bool InUpgradeUI = false;
         public static bool InMegaUpgradeUI = false;
 
-        [ModData(saveWhen: SaveWhen.OnAutoSave, loadWhen: LoadWhen.Manual, saveLocation: SaveLocation.CurrentSave, resetWhen: ResetWhen.OnGameOver)]
-        public static List<MilkMolarUpgrade> MilkMolarUpgrades;
-
-        [ModData(saveWhen: SaveWhen.OnAutoSave, loadWhen: LoadWhen.Manual, saveLocation: SaveLocation.CurrentSave, resetWhen: ResetWhen.OnGameOver)] // TODO: Set up manual loading
-        public static List<MilkMolarUpgrade> MegaMilkMolarUpgrades;
+        public static List<MilkMolarUpgrade> MilkMolarUpgrades = new List<MilkMolarUpgrade>();
 
         public static List<MilkMolarUpgrade> ExtraMilkMolarUpgrades = new List<MilkMolarUpgrade>();
         public static List<MilkMolarUpgrade> ExtraMegaMilkMolarUpgrades = new List<MilkMolarUpgrade>();
@@ -36,20 +29,10 @@ namespace MilkMolars
             if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
                 LoggerInstance.LogDebug("Initing milk molar controller");
-                if (NetworkHandler.ClientsMilkMolars != null && NetworkHandler.ClientsMilkMolars.Count > 0 && NetworkHandler.ClientsMilkMolars.ContainsKey(localPlayer.actualClientId))
-                {
-                    LoggerInstance.LogDebug("getting milk molars");
-                    MilkMolars = NetworkHandler.ClientsMilkMolars[localPlayer.actualClientId];
-                    MilkMolarUpgrades = NetworkHandler.ClientsMilkMolarUpgrades[localPlayer.actualClientId];
-                }
-                else
-                {
-                    LoggerInstance.LogDebug("getting milk molar upgrades");
-                    MilkMolarUpgrades = GetUpgrades();
-                    LoggerInstance.LogDebug($"Got {MilkMolarUpgrades.Count} upgrades");
-                    LoggerInstance.LogDebug("getting mega milk molar upgrades");
-                    MegaMilkMolarUpgrades = GetUpgrades(mega: true);
-                }
+
+                MilkMolarUpgrades = GetUpgrades();
+                //NetworkHandler.ClientsMilkMolarUpgrades.Add(localPlayer.actualClientId, MilkMolarUpgrades);
+                NetworkHandler.MegaMilkMolarUpgrades = GetUpgrades(true);
             }
         }
 
@@ -144,9 +127,9 @@ namespace MilkMolars
         {
             if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
-                if (MegaMilkMolarUpgrades.Where(x => x.name == upgrade.name).FirstOrDefault() == null)
+                if (NetworkHandler.MegaMilkMolarUpgrades.Where(x => x.name == upgrade.name).FirstOrDefault() == null)
                 {
-                    MegaMilkMolarUpgrades.Add(upgrade);
+                    NetworkHandler.MegaMilkMolarUpgrades.Add(upgrade);
                 }
                 else
                 {
@@ -159,7 +142,7 @@ namespace MilkMolars
         {
             if (megaUpgrade)
             {
-                return MegaMilkMolarUpgrades.Find(x => x.name == name);
+                return NetworkHandler.MegaMilkMolarUpgrades.Find(x => x.name == name);
             }
             else
             {
@@ -169,36 +152,12 @@ namespace MilkMolars
 
         public static void AddMilkMolar(PlayerControllerB player)
         {
-            NetworkHandler.Instance.AddMilkMolarsServerRpc(player.actualClientId);
-            MilkMolars++;
-            if (configNotifyMethod.Value == 1) { HUDManager.Instance.DisplayTip("Milk Molar activated!", $"You now have {MilkMolars} unspent Milk Molars. Open the upgrade menu to spend your Milk Molars. (M by default)"); }
-            else if (configNotifyMethod.Value == 2) { HUDManager.Instance.AddChatMessage($"Milk Molar activated! You now have {MilkMolars} unspent Milk Molars. Open the upgrade menu to spend your Milk Molars. (M by default)", "Server"); }
+            NetworkHandler.Instance.AddMilkMolarServerRpc(player.actualClientId);
         }
 
-        public static void AddMultipleMilkMolars(int amount)
+        public static void AddMegaMilkMolar()
         {
-            MilkMolars += amount;
-            if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 1f); }
-            if (configNotifyMethod.Value == 1) { HUDManager.Instance.DisplayTip($"{amount} Milk Molars activated!", $"You now have {MilkMolars} unspent Milk Molars. Open the upgrade menu to spend your Milk Molars. (M by default)"); }
-            else if (configNotifyMethod.Value == 2) { HUDManager.Instance.AddChatMessage($"{amount} Milk Molars activated! You now have {MilkMolars} unspent Milk Molars. Open the upgrade menu to spend your Milk Molars. (M by default)", "Server"); }
-            NetworkHandler.Instance.UpdateMilkMolarsServerRpc(localPlayer.actualClientId ,MilkMolars);
-        }
-
-        public static void AddMegaMilkMolar(PlayerControllerB player)
-        {
-            NetworkHandler.Instance.AddMegaMilkMolarServerRpc(player.actualClientId);
-            if (configNotifyMethod.Value == 1) { HUDManager.Instance.DisplayTip("Mega Milk Molar activated!", $"Your group now has {NetworkHandler.MegaMilkMolars} unspent Mega Milk Molars. Open the upgrade menu to spend Mega Milk Molars for the group. (M by default)"); }
-            else if (configNotifyMethod.Value == 2) { HUDManager.Instance.AddChatMessage($"Mega Milk Molar activated! Your group now has {NetworkHandler.MegaMilkMolars} unspent Mega Milk Molars. Open the upgrade menu to spend Mega Milk Molars for the group. (M by default)", "Server"); }
-        }
-
-        // Only runs on server
-        public static void AddMultipleMegaMilkMolars(int amount)
-        {
-            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
-            {
-                NetworkHandler.MegaMilkMolars.Value += amount;
-                NetworkHandler.Instance.AddMultipleMegaMilkMolarsClientRpc(amount);
-            }
+            NetworkHandler.Instance.AddMegaMilkMolarServerRpc();
         }
 
         public static bool BuyMilkMolarUpgrade(MilkMolarUpgrade upgrade)
@@ -209,9 +168,10 @@ namespace MilkMolars
                 {
                     MilkMolars -= upgrade.cost;
                     upgrade.ActivateRepeatableUpgrade();
-                    NetworkHandler.Instance.UpdateMilkMolarsServerRpc(localPlayer.actualClientId, MilkMolars);
+                    NetworkHandler.Instance.UpdateMilkMolarsServerRpc(MilkMolars, localPlayer.actualClientId);
                     return true;
                 }
+                return false;
             }
 
             if (upgrade.type == MilkMolarUpgrade.UpgradeType.OneTimeUnlock)
@@ -220,9 +180,10 @@ namespace MilkMolars
                 {
                     MilkMolars -= upgrade.cost;
                     upgrade.ActivateOneTimeUpgrade();
-                    NetworkHandler.Instance.UpdateMilkMolarsServerRpc(localPlayer.actualClientId, MilkMolars);
+                    NetworkHandler.Instance.UpdateMilkMolarsServerRpc(MilkMolars, localPlayer.actualClientId);
                     return true;
                 }
+                return false;
             }
 
             if (!upgrade.fullyUpgraded && MilkMolars >= upgrade.nextTierCost)
@@ -230,14 +191,14 @@ namespace MilkMolars
                 MilkMolars -= upgrade.nextTierCost;
                 upgrade.GoToNextTier();
                 upgrade.ActivateCurrentTierUpgrade();
-                NetworkHandler.Instance.UpdateMilkMolarsServerRpc(localPlayer.actualClientId, MilkMolars);
+                NetworkHandler.Instance.UpdateMilkMolarsServerRpc(MilkMolars, localPlayer.actualClientId);
                 return true;
             }
 
             return false;
         }
 
-        public static bool BuyMegaMilkMolarUpgrade(MilkMolarUpgrade upgrade, bool callRPC = false)
+        public static bool BuyMegaMilkMolarUpgrade(MilkMolarUpgrade upgrade, bool callRPC = false) // THIS IS GOOD DONT TOUCH IT
         {
             if (upgrade.type == MilkMolarUpgrade.UpgradeType.Repeatable)
             {

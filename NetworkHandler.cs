@@ -11,8 +11,7 @@ using static Netcode.Transports.Facepunch.FacepunchTransport;
 using static MilkMolars.Plugin;
 using Newtonsoft.Json;
 using Steamworks.Data;
-using LethalModDataLib.Attributes;
-using LethalModDataLib.Enums;
+using System.IO;
 
 namespace MilkMolars
 {
@@ -21,17 +20,15 @@ namespace MilkMolars
         private static ManualLogSource logger = Plugin.LoggerInstance;
 
         public static NetworkHandler Instance { get; private set; }
-        public static PlayerControllerB localPlayer { get { return StartOfRound.Instance.localPlayerController; } }
 
         public static PlayerControllerB PlayerFromId(ulong id) { return StartOfRound.Instance.allPlayerScripts[StartOfRound.Instance.ClientPlayerList[id]]; }
 
-        [ModData(saveWhen: SaveWhen.OnSave, loadWhen: LoadWhen.OnLoad, saveLocation: SaveLocation.CurrentSave, resetWhen: ResetWhen.OnGameOver)]
         public static NetworkVariable<int> MegaMilkMolars = new NetworkVariable<int>(0);
 
-        [ModData(saveWhen: SaveWhen.OnSave, loadWhen: LoadWhen.OnLoad, saveLocation: SaveLocation.CurrentSave, resetWhen: ResetWhen.OnGameOver)]
+        public static List<MilkMolarUpgrade> MegaMilkMolarUpgrades;
+
         public static Dictionary<ulong, int> ClientsMilkMolars = new Dictionary<ulong, int>();
 
-        [ModData(saveWhen: SaveWhen.OnSave, loadWhen: LoadWhen.OnLoad, saveLocation: SaveLocation.CurrentSave, resetWhen: ResetWhen.OnGameOver)]
         public static Dictionary<ulong, List<MilkMolarUpgrade>> ClientsMilkMolarUpgrades = new Dictionary<ulong, List<MilkMolarUpgrade>>(); // TODO: Get these
 
 
@@ -49,84 +46,110 @@ namespace MilkMolars
             logger.LogDebug("base.OnNetworkSpawn");
         }
 
+        public static void UpdateClientsMilkMolars(ulong clientId, int amount, bool adding = false)
+        {
+            if (ClientsMilkMolars.ContainsKey(clientId))
+            {
+                if (adding) { ClientsMilkMolars[clientId] += amount; }
+                else { ClientsMilkMolars[clientId] = amount; }
+            }
+            else
+            {
+                ClientsMilkMolars.Add(clientId, amount);
+            }
+        }
+
+        public static void ResetAllData()
+        {
+            ClientsMilkMolars = new Dictionary<ulong, int>();
+            ClientsMilkMolarUpgrades = new Dictionary<ulong, List<MilkMolarUpgrade>>();
+            MegaMilkMolars = new NetworkVariable<int>(0);
+            MegaMilkMolarUpgrades = new List<MilkMolarUpgrade>();
+
+            SaveDataToFile();
+        }
+
+        public static void SaveDataToFile()
+        {
+            ES3.Save($"{GameNetworkManager.Instance.currentSaveFileName}-ClientsMilkMolars", ClientsMilkMolars);
+            ES3.Save($"{GameNetworkManager.Instance.currentSaveFileName}-ClientsMilkMolarUpgrades", ClientsMilkMolarUpgrades);
+            ES3.Save($"{GameNetworkManager.Instance.currentSaveFileName}-MegaMilkMolars", MegaMilkMolars);
+            ES3.Save($"{GameNetworkManager.Instance.currentSaveFileName}-MegaMilkMolarUpgrades", MegaMilkMolarUpgrades);
+
+            //string location = "C:\\Users\\snowl\\source\\repos\\1Lethal Company Debugging\\BepInEx\\plugins\\ClientsMilkMolarUpgrades.json";
+            //var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
+            //string json = JsonConvert.SerializeObject(ClientsMilkMolarUpgrades, settings);
+            //File.WriteAllText(location, json);
+
+        }
+
+        public static void LoadDataFromFile()
+        {
+            ES3.Load($"{GameNetworkManager.Instance.currentSaveFileName}-ClientsMilkMolars", ClientsMilkMolars);
+            ES3.Load($"{GameNetworkManager.Instance.currentSaveFileName}-ClientsMilkMolarUpgrades", ClientsMilkMolarUpgrades);
+            ES3.Load($"{GameNetworkManager.Instance.currentSaveFileName}-MegaMilkMolars", MegaMilkMolars);
+            ES3.Load($"{GameNetworkManager.Instance.currentSaveFileName}-MegaMilkMolarUpgrades", MegaMilkMolarUpgrades);
+        }
+
         public static void SendDataToClient(ulong clientId)
         {
             if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
-                int amount = 0;
-                string upgrades;
-                var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
-                if (ClientsMilkMolars.ContainsKey(clientId) && ClientsMilkMolarUpgrades.ContainsKey(clientId))
+                if (ClientsMilkMolars != null && ClientsMilkMolars.ContainsKey(clientId))
                 {
-                    amount = ClientsMilkMolars[clientId];
-                    upgrades = JsonConvert.SerializeObject(ClientsMilkMolarUpgrades[clientId], settings);
+                    
                 }
-                else
-                {
-                    List<MilkMolarUpgrade> upgradesList = MilkMolarController.GetUpgrades();
-                    upgrades = JsonConvert.SerializeObject(upgradesList, settings);
-                }
+            }
+        }
 
-                string? megaUpgrades = JsonConvert.SerializeObject(MilkMolarController.MegaMilkMolarUpgrades);
-                Instance.SendDataToClientClientRpc(clientId, upgrades, megaUpgrades, amount);
+        [ServerRpc(RequireOwnership = false)]
+        public void UpdateMilkMolarsServerRpc(int newAmount, ulong clientId)
+        {
+            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
+            {
+                UpdateClientsMilkMolars(clientId, newAmount);
             }
         }
 
         [ClientRpc]
-        private void SendDataToClientClientRpc(ulong clientId, string upgrades, string megaUpgrades, int amount = 0)
+        private void SendDataToClientClientRpc(ulong clientId, string upgrades, string megaUpgrades, int milkMolars = 0)
         {
             if (localPlayer.actualClientId == clientId)
             {
-                var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
-
-                MilkMolarController.MilkMolars = amount;
-
-                MilkMolarController.MilkMolarUpgrades = JsonConvert.DeserializeObject<List<MilkMolarUpgrade>>(upgrades, settings);
-
-                MilkMolarController.MegaMilkMolarUpgrades = JsonConvert.DeserializeObject<List<MilkMolarUpgrade>>(megaUpgrades, settings);
+                // TODO: Implement
             }
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void UpdateMilkMolarsServerRpc(ulong clientId, int amount)
+        public void SendUpgradeDataToServerServerRpc(string data, ulong clientId)
         {
             if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
-                ClientsMilkMolars[clientId] = amount;
+                //ClientsMilkMolarUpgrades[clientId] = JsonConvert.DeserializeObject<List<MilkMolarUpgrade>>(data); // TODO: Temp for testing
             }
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void AddMilkMolarsServerRpc(ulong clientId, int amount = 1)
+        public void AddMilkMolarServerRpc(ulong clientId)
         {
             if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
                 if (configSharedMilkMolars.Value)
                 {
-                    AddMilkMolarClientRpc(clientId);
-
                     foreach (var player in StartOfRound.Instance.allPlayerScripts)
                     {
-                        if (ClientsMilkMolars.ContainsKey(player.actualClientId))
-                        {
-                            ClientsMilkMolars[player.actualClientId] += amount;
-                        }
-                        else
-                        {
-                            ClientsMilkMolars.Add(player.actualClientId, amount);
-                        }
+                        if (ClientsMilkMolars.ContainsKey(player.actualClientId)) { ClientsMilkMolars[player.actualClientId]++; }
+                        else { ClientsMilkMolars.Add(player.actualClientId, 1); }
                     }
+
+                    AddMilkMolarToAllClientsClientRpc();
                 }
                 else
                 {
-                    if (ClientsMilkMolars.ContainsKey(clientId))
-                    {
-                        ClientsMilkMolars[clientId] += amount;
-                    }
-                    else
-                    {
-                        ClientsMilkMolars.Add(clientId, amount);
-                    }
+                    if (ClientsMilkMolars.ContainsKey(clientId)) { ClientsMilkMolars[clientId]++; }
+                    else { ClientsMilkMolars.Add(clientId, 1); }
+
+                    AddMilkMolarClientRpc(clientId);
                 }
             }
         }
@@ -134,41 +157,67 @@ namespace MilkMolars
         [ClientRpc]
         private void AddMilkMolarClientRpc(ulong clientId)
         {
-            if (localPlayer.actualClientId == clientId) { return; }
-            MilkMolarController.MilkMolars++;
-            PlayerControllerB player = PlayerFromId(clientId);
-            logger.LogDebug("Added milk molar found by " + player.playerUsername);
-            if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 1f); }
-            if (configNotifyMethod.Value == 1) { HUDManager.Instance.DisplayTip($"{player.playerUsername} activated a Milk Molar!", $"You now have {MilkMolarController.MilkMolars} unspent Milk Molars. Open the upgrade menu to spend your Milk Molars. (M by default)"); }
-            else if (configNotifyMethod.Value == 2) { HUDManager.Instance.AddChatMessage($"{player.playerUsername} activated a Milk Molar! You now have {MilkMolarController.MilkMolars} unspent Milk Molars. Open the upgrade menu to spend your Milk Molars. (M by default)", "Server"); }
-        }
-
-        [ServerRpc(RequireOwnership = false)]
-        public void AddMegaMilkMolarServerRpc(ulong clientId)
-        {
-            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
+            if (localPlayer.actualClientId == clientId)
             {
-                MegaMilkMolars.Value++;
-                AddMegaMilkMolarClientRpc(clientId);
+                MilkMolarController.MilkMolars++;
+                if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 1f); }
+                if (configNotifyMethod.Value == 1) { HUDManager.Instance.DisplayTip($"Milk Molar activated", $"You now have {MilkMolarController.MilkMolars} unspent Milk Molars."); }
+                else if (configNotifyMethod.Value == 2) { HUDManager.Instance.AddChatMessage($"Milk Molar activated! You now have {MilkMolarController.MilkMolars} unspent Milk Molars.", "Server"); }
             }
         }
 
         [ClientRpc]
-        private void AddMegaMilkMolarClientRpc(ulong clientId)
+        private void AddMilkMolarToAllClientsClientRpc()
         {
-            if (localPlayer.actualClientId == clientId) { return; }
-            PlayerControllerB player = PlayerFromId(clientId);
-            logger.LogDebug("Added mega milk molar found by " + player.playerUsername);
+            MilkMolarController.MilkMolars++;
             if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 1f); }
-            if (configNotifyMethod.Value == 1) { HUDManager.Instance.DisplayTip($"{player.playerUsername} activated a Mega Milk Molar!", $"Your crew now has {MegaMilkMolars.Value} unspent Mega Milk Molars. Open the upgrade menu to spend them. (M by default)"); }
-            else if (configNotifyMethod.Value == 2) { HUDManager.Instance.AddChatMessage($"{player.playerUsername} activated a Mega Milk Molar! Your crew now has {MegaMilkMolars.Value} unspent Mega Milk Molars. Open the upgrade menu to spend them. (M by default)", "Server"); }
+            if (configNotifyMethod.Value == 1) { HUDManager.Instance.DisplayTip($"Milk Molar activated", $"You now have {MilkMolarController.MilkMolars} unspent Milk Molars."); }
+            else if (configNotifyMethod.Value == 2) { HUDManager.Instance.AddChatMessage($"Milk Molar activated! You now have {MilkMolarController.MilkMolars} unspent Milk Molars.", "Server"); }
+        }
+
+        [ClientRpc]
+        public void AddMultipleMilkMolarsClientRpc(ulong clientId, int amount)
+        {
+            if (localPlayer.actualClientId == clientId)
+            {
+                MilkMolarController.MilkMolars += amount;
+                if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 0.5f); }
+                if (configNotifyMethod.Value != 3) { HUDManager.Instance.AddChatMessage($"{amount} Milk Molars activated! Your now have {MilkMolarController.MilkMolars} unspent Milk Molars.", "Server"); }
+            }
+        }
+
+        [ClientRpc]
+        public void AddMultipleMilkMolarsAllClientsClientRpc(int amount)
+        {
+            MilkMolarController.MilkMolars += amount;
+            if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 0.5f); }
+            if (configNotifyMethod.Value != 3) { HUDManager.Instance.AddChatMessage($"{MegaMilkMolars.Value} Mega Milk Molars activated! Your crew now has {MegaMilkMolars.Value} unspent Mega Milk Molars.", "Server"); }
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void AddMegaMilkMolarServerRpc()
+        {
+            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
+            {
+                MegaMilkMolars.Value++;
+                AddMegaMilkMolarClientRpc();
+            }
+        }
+
+        [ClientRpc]
+        private void AddMegaMilkMolarClientRpc()
+        {
+            logger.LogDebug("Added mega milk molar");
+            if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 1f); }
+            if (configNotifyMethod.Value == 1) { HUDManager.Instance.DisplayTip($"Mega Milk Molar activated", $"Your crew now has {MegaMilkMolars.Value} unspent Mega Milk Molars."); }
+            else if (configNotifyMethod.Value == 2) { HUDManager.Instance.AddChatMessage($"Mega Milk Molar activated! Your group now has {MegaMilkMolars.Value} unspent Mega Milk Molars.", "Server"); }
         }
 
         [ClientRpc]
         public void AddMultipleMegaMilkMolarsClientRpc(int amount)
         {
-            if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 1f); }
-            if (configNotifyMethod.Value != 3) { HUDManager.Instance.AddChatMessage($"{MegaMilkMolars.Value} Mega Milk Molars activated! Your crew now has {MegaMilkMolars.Value} unspent Mega Milk Molars. Open the upgrade menu to spend them. (M by default)", "Server"); }
+            if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 0.5f); }
+            if (configNotifyMethod.Value != 3) { HUDManager.Instance.AddChatMessage($"{MegaMilkMolars.Value} Mega Milk Molars activated! Your crew now has {MegaMilkMolars.Value} unspent Mega Milk Molars.", "Server"); }
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -185,6 +234,7 @@ namespace MilkMolars
         public void BuyMegaMilkMolarUpgradeClientRpc(string upgradeName, ulong clientId)
         {
             if (localPlayer.actualClientId == clientId) { return; }
+            logger.LogDebug("Buying mega milk molar upgrade");
             MilkMolarUpgrade upgrade = MilkMolarController.GetUpgradeByName(upgradeName);
             MilkMolarController.BuyMegaMilkMolarUpgrade(upgrade, callRPC: false);
         }

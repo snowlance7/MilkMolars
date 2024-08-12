@@ -24,7 +24,7 @@ namespace MilkMolars
             MilkMolarController.InUpgradeUI = false;
             MilkMolarController.InMegaUpgradeUI = true;
 
-            (MilkMolarUpgrade[][], CursorMenu[], IScreen[]) entries = GetPageEntries(MilkMolarController.MegaMilkMolarUpgrades.ToArray());
+            (MilkMolarUpgrade[][], CursorMenu[], IScreen[]) entries = GetPageEntries(NetworkHandler.MegaMilkMolarUpgrades.ToArray());
 
             MilkMolarUpgrade[][] pagesUpgrades = entries.Item1;
             CursorMenu[] cursorMenus = entries.Item2;

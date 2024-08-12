@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -31,8 +32,11 @@ namespace MilkMolars
         public int[] costsPerTier;
 
         public bool fullyUpgraded;
+        [JsonIgnore]
         public float currentTierPercent { get { return amountPerTier[currentTier] / 100; } }
+        [JsonIgnore]
         public float currentTierAmount { get { return amountPerTier[currentTier]; } }
+        [JsonIgnore]
         public int nextTierCost { get { return costsPerTier[currentTier + 1]; } }
 
         public MilkMolarUpgrade()
