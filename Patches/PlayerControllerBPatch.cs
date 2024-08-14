@@ -31,7 +31,7 @@ namespace MilkMolars
             }
             else
             {
-                NetworkHandler.Instance.GetDataFromServerServerRpc(localPlayer.playerSteamId);
+                NetworkHandler.Instance.GetDataFromServerServerRpc(localPlayerId);
             }
         }
     }

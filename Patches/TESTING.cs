@@ -24,9 +24,10 @@ namespace MilkMolars.Patches
             logger.LogDebug("Mega Milk Molars: " + NetworkHandler.MegaMilkMolars.Value);
             logger.LogDebug($"Milk molar upgrades: {MilkMolarController.MilkMolarUpgrades.Count}");
             logger.LogDebug($"Mega Milk molar upgrades: {NetworkHandler.MegaMilkMolarUpgrades.Count}");
-            logger.LogDebug(localPlayer.playerClientId);
-            logger.LogDebug(localPlayer.playerSteamId);
-            logger.LogDebug(localPlayer.playerUsername);
+
+            logger.LogDebug("Jump force: " + localPlayer.jumpForce);
+            logger.LogDebug("Sprint multiplier: " + localPlayer.sprintMultiplier);
+            
         }
 
         [HarmonyPrefix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.SubmitChat_performed))]
@@ -72,6 +73,14 @@ namespace MilkMolars.Patches
             {
                 NetworkHandler.ResetAllData();
                 HUDManager.Instance.DisplayTip("Testing", "Reset Data");
+            }
+            if (args[0] == "/sprintTime")
+            {
+                localPlayer.sprintTime = float.Parse(args[1]);
+            }
+            if (args[0] == "/sprintMultiplier")
+            {
+                localPlayer.sprintMultiplier = float.Parse(args[1]);
             }
         }
     }

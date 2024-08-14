@@ -160,7 +160,7 @@ namespace MilkMolars
 
         public static void AddMilkMolar(PlayerControllerB player)
         {
-            NetworkHandler.Instance.AddMilkMolarServerRpc(player.playerSteamId);
+            NetworkHandler.Instance.AddMilkMolarServerRpc(player.actualClientId); // TODO: Change this to steamId later
         }
 
         public static void AddMegaMilkMolar()
@@ -180,7 +180,7 @@ namespace MilkMolars
                     MilkMolars -= upgrade.cost;
                     logger.LogDebug("Conditions met. Activating Repeatable upgrade and updating server.");
                     upgrade.ActivateRepeatableUpgrade();
-                    NetworkHandler.Instance.UpdateMilkMolarsServerRpc(MilkMolars, localPlayer.playerSteamId);
+                    NetworkHandler.Instance.UpdateMilkMolarsServerRpc(MilkMolars, localPlayerId);
                     return true;
                 }
                 logger.LogDebug("Not enough Milk Molars for Repeatable upgrade.");
@@ -195,7 +195,7 @@ namespace MilkMolars
                     MilkMolars -= upgrade.cost;
                     logger.LogDebug("Conditions met. Activating OneTimeUnlock upgrade and updating server.");
                     upgrade.ActivateOneTimeUpgrade();
-                    NetworkHandler.Instance.UpdateMilkMolarsServerRpc(MilkMolars, localPlayer.playerSteamId);
+                    NetworkHandler.Instance.UpdateMilkMolarsServerRpc(MilkMolars, localPlayerId);
                     return true;
                 }
                 logger.LogDebug("Not enough Milk Molars or upgrade is fully upgraded.");
@@ -209,7 +209,7 @@ namespace MilkMolars
                 logger.LogDebug("Conditions met. Going to next tier, activating current tier upgrade, and updating server.");
                 upgrade.GoToNextTier();
                 upgrade.ActivateCurrentTierUpgrade();
-                NetworkHandler.Instance.UpdateMilkMolarsServerRpc(MilkMolars, localPlayer.playerSteamId);
+                NetworkHandler.Instance.UpdateMilkMolarsServerRpc(MilkMolars, localPlayerId);
                 return true;
             }
 
@@ -231,7 +231,7 @@ namespace MilkMolars
                     if (callRPC)
                     {
                         logger.LogDebug("Calling server RPC to buy upgrade.");
-                        NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.cost, localPlayer.playerSteamId);
+                        NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.cost, localPlayerId);
                     }
                     upgrade.ActivateRepeatableUpgrade();
                     return true;
@@ -247,7 +247,7 @@ namespace MilkMolars
                     if (callRPC)
                     {
                         logger.LogDebug("Calling server RPC to buy upgrade.");
-                        NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.cost, localPlayer.playerSteamId);
+                        NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.cost, localPlayerId);
                     }
                     upgrade.ActivateOneTimeUpgrade();
                     return true;
@@ -261,7 +261,7 @@ namespace MilkMolars
                 if (callRPC)
                 {
                     logger.LogDebug("Calling server RPC to buy upgrade.");
-                    NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.nextTierCost, localPlayer.playerSteamId);
+                    NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.nextTierCost, localPlayerId);
                 }
                 upgrade.GoToNextTier();
                 upgrade.ActivateCurrentTierUpgrade();

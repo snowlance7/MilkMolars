@@ -1,12 +1,16 @@
-﻿using Newtonsoft.Json;
+﻿using BepInEx.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace MilkMolars
 {
     public class MilkMolarUpgrade
     {
+        private static ManualLogSource logger = Plugin.LoggerInstance;
+
         private const string upgradePoint = "\u2B1C";
         private const string filledUpgradePoint = "\u2B1B";
         private const string tooth = "🦷";
@@ -26,12 +30,16 @@ namespace MilkMolars
         public int cost;
         public bool unlocked;
 
-        public int currentTier = -1;
-        public int maxTiers;
+        public int currentTier = 0;
         public float[] amountPerTier;
         public int[] costsPerTier;
 
         public bool fullyUpgraded;
+
+        [JsonIgnore]
+        public int count { get { return costsPerTier.Length; } }
+        [JsonIgnore]
+        public int maxTier { get { return count - 1; } }
         [JsonIgnore]
         public float currentTierPercent { get { return amountPerTier[currentTier] / 100; } }
         [JsonIgnore]
@@ -83,10 +91,9 @@ namespace MilkMolars
         public void GetTiersFromString(string configString)
         {
             string[] tiers = configString.Split(',');
-            maxTiers = tiers.Length;
-            costsPerTier = new int[maxTiers];
-            amountPerTier = new float[maxTiers];
-            for (int i = 0; i < maxTiers; i++)
+            costsPerTier = new int[tiers.Length];
+            amountPerTier = new float[tiers.Length];
+            for (int i = 0; i < tiers.Length; i++)
             {
                 string[] tierSplit = tiers[i].Split(':');
                 costsPerTier[i] = int.Parse(tierSplit[0].Trim());
@@ -96,8 +103,9 @@ namespace MilkMolars
 
         public void GoToNextTier()
         {
+            logger.LogDebug("Going to next tier");
             currentTier++;
-            if (currentTier >= maxTiers)
+            if (currentTier >= maxTier)
             {
                 fullyUpgraded = true;
             }
@@ -105,6 +113,7 @@ namespace MilkMolars
 
         public string GetUpgradeString()
         {
+            logger.LogDebug("Getting upgrade string");
             string upgradeString = "";
 
             switch (type)
@@ -113,19 +122,12 @@ namespace MilkMolars
                     if (fullyUpgraded)
                     {
                         upgradeString = $"{title} (Fully Upgraded) " +
-                            $"{amountPerTier[maxTiers - 1]}";
-                        upgradeString += $"\n{GetUpgradeSymbols()}";
-                    }
-                    else if (currentTier == -1)
-                    {
-                        upgradeString = $"{costsPerTier[currentTier + 1]}{tooth} " +
-                            $"{title}: " +
-                            $"0 -> {amountPerTier[0]}";
+                            $"{amountPerTier[maxTier]}";
                         upgradeString += $"\n{GetUpgradeSymbols()}";
                     }
                     else
                     {
-                        upgradeString = $"{costsPerTier[currentTier + 1]}{tooth} " +
+                        upgradeString = $"{nextTierCost}{tooth} " +
                             $"{title}: " +
                             $"{amountPerTier[currentTier]} -> {amountPerTier[currentTier + 1]}";
                         upgradeString += $"\n{GetUpgradeSymbols()}";
@@ -135,19 +137,12 @@ namespace MilkMolars
                     if (fullyUpgraded)
                     {
                         upgradeString = $"{title} (Fully Upgraded) " +
-                            $"{amountPerTier[maxTiers - 1]}%";
-                        upgradeString += $"\n{GetUpgradeSymbols()}";
-                    }
-                    else if (currentTier == -1)
-                    {
-                        upgradeString = $"{costsPerTier[currentTier + 1]}{tooth} " +
-                            $"{title}: " +
-                            $"0% -> {amountPerTier[0]}%";
+                            $"{amountPerTier[maxTier]}%";
                         upgradeString += $"\n{GetUpgradeSymbols()}";
                     }
                     else
                     {
-                        upgradeString = $"{costsPerTier[currentTier + 1]}{tooth} " +
+                        upgradeString = $"{nextTierCost}{tooth} " +
                             $"{title}: " +
                             $"{amountPerTier[currentTier]}% -> {amountPerTier[currentTier + 1]}%";
                         upgradeString += $"\n{GetUpgradeSymbols()}";
@@ -170,23 +165,13 @@ namespace MilkMolars
         private string GetUpgradeSymbols()
         {
             string text = "";
-            if (currentTier == -1)
+            for (int i = 0; i < currentTier; i++)
             {
-                for (int i = 0; i < maxTiers; i++)
-                {
-                    text += upgradePoint;
-                }
+                text += filledUpgradePoint;
             }
-            else
+            for (int i = currentTier; i < maxTier; i++)
             {
-                for (int i = 0; i < currentTier; i++)
-                {
-                    text += filledUpgradePoint;
-                }
-                for (int i = currentTier; i < maxTiers; i++)
-                {
-                    text += upgradePoint;
-                }
+                text += upgradePoint;
             }
             return text;
         }

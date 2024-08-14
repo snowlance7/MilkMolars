@@ -43,7 +43,7 @@ namespace MilkMolars
                     elements[j] = new CursorElement()
                     {
                         Name = upgrade.GetUpgradeString(),
-                        Action = () => BuyUpgrade(upgrade, elements[j])
+                        Action = () => BuyUpgrade(upgrade.name, j)
                     };
                 }
 
@@ -81,14 +81,16 @@ namespace MilkMolars
             return 12;
         }
 
-        public void BuyUpgrade(MilkMolarUpgrade upgrade, CursorElement element) // TODO: Causing error, fix it
+        public void BuyUpgrade(string upgradeName, int index) // TODO: Causing error, fix it
         {
+            logger.LogDebug("Buying upgrade");
+            MilkMolarUpgrade upgrade = MilkMolarController.GetUpgradeByName(upgradeName);
             if (upgrade == null) return;
             logger.LogDebug("BuyUpgrade: " + upgrade.name);
 
             if (MilkMolarController.BuyMilkMolarUpgrade(upgrade))
             {
-                element.Name = upgrade.GetUpgradeString();
+                currentCursorMenu.elements[currentCursorMenu.cursorIndex].Name = upgrade.GetUpgradeString();
                 logger.LogDebug("Bought upgrade " + upgrade.name);
             }
             else
