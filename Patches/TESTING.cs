@@ -82,6 +82,11 @@ namespace MilkMolars.Patches
             {
                 localPlayer.sprintMultiplier = float.Parse(args[1]);
             }
+            if (args[0] == "/climbSpeed")
+            {
+                localPlayer.climbSpeed = float.Parse(args[1]);
+            }
+
         }
     }
 }

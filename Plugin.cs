@@ -66,19 +66,20 @@ namespace MilkMolars
         public static ConfigEntry<string> configDamageResistanceUpgrade;
         public static ConfigEntry<string> configSprintSpeedUpgrade;
         public static ConfigEntry<string> configSprintEnduranceUpgrade;
-        public static ConfigEntry<string> configSprintRegenerationUpgrade;
+        //public static ConfigEntry<string> configSprintRegenerationUpgrade;
         public static ConfigEntry<string> configJumpHeightUpgrade;
-        public static ConfigEntry<string> configCarryWeightStaminaCostUpgrade;
-        public static ConfigEntry<string> configCarryWeightSprintSpeedUpgrade;
+        public static ConfigEntry<string> configCarryWeightUpgrade;
         public static ConfigEntry<string> configIncreasedInventorySizeUpgrade;
         public static ConfigEntry<string> configCritChanceUpgrade;
         public static ConfigEntry<string> configClimbSpeedUpgrade;
         public static ConfigEntry<string> configFallDamageReductionUpgrade;
         public static ConfigEntry<string> configHealthRegenUpgrade;
+        public static ConfigEntry<string> configBailOutUpgrade;
+        public static ConfigEntry<string> configCorporateKickbackUpgrade;
 
         // Mega Milk Molar Upgrades
         public static ConfigEntry<int> configSignalTransmitterUpgrade;
-        public static ConfigEntry<string> configIncreasedShopDealsUpgrade;
+        //public static ConfigEntry<string> configIncreasedShopDealsUpgrade;
         public static ConfigEntry<string> configLandingSpeedUpgrade;
         public static ConfigEntry<string> configItemDropshipLandingSpeedUpgrade;
         public static ConfigEntry<string> configKeepItemsOnShipChanceUpgrade;
@@ -89,6 +90,7 @@ namespace MilkMolars
         public static ConfigEntry<string> configCompanyCruiserSpeedUpgrade;
         public static ConfigEntry<string> configCompanyCruiserTurningUpgrade;
         public static ConfigEntry<string> configCompanyCruiserDamageUpgrade;
+        public static ConfigEntry<int> configRevivePlayerUpgrade;
 
 
         private void Awake()
@@ -131,20 +133,20 @@ namespace MilkMolars
             configDamageResistanceUpgrade = Config.Bind("Milk Molar Upgrades", "Damage Resistance Upgrade", "0:0, 1:5, 2:10, 3:15, 4:20, 5:25, 6:30, 7:35, 8:40, 9:45, 10:50", "Percentage damage reduction. Default is 0");
             configSprintSpeedUpgrade = Config.Bind("Milk Molar Upgrades", "Sprint Speed Upgrade", "0:0.5, 1:0.51, 2:0.52, 3:0.54, 5:0.56, 7:0.57, 10:0.6, 15:0.63, 20:0.66, 30:0.7", "Default is 0.5");
             configSprintEnduranceUpgrade = Config.Bind("Milk Molar Upgrades", "Sprint Endurance Upgrade", "0:5, 1:6, 2:8, 3:10, 4:12, 5:14, 6:16, 10:20, 15:25, 20:30", "Increases sprint time. Default is 5");
-            configSprintRegenerationUpgrade = Config.Bind("Milk Molar Upgrades", "Sprint Regeneration Upgrade", "", "");
+            //configSprintRegenerationUpgrade = Config.Bind("Milk Molar Upgrades", "Sprint Regeneration Upgrade", "", "");
             configJumpHeightUpgrade = Config.Bind("Milk Molar Upgrades", "Jump Height Upgrade", "0:13, 3:14, 4:16, 5:18, 6:20, 7:22, 8:25", "Jump force applied to player when jumping. Default is 5.");
-            configCarryWeightStaminaCostUpgrade = Config.Bind("Milk Molar Upgrades", "Carry Weight Stamina Cost Upgrade", "", "");
-            configCarryWeightSprintSpeedUpgrade = Config.Bind("Milk Molar Upgrades", "Carry Weight Sprint Speed Upgrade", "", "");
+            configCarryWeightUpgrade = Config.Bind("Milk Molar Upgrades", "Carry Weight Upgrade", "0:0, 1:2, 2:4, 3:6, 4:8, 5:10, 6:12, 7:14, 8:16, 9:18, 10:20", "Percent carry weight upgrade. Default is 0");
             configIncreasedInventorySizeUpgrade = Config.Bind("Milk Molar Upgrades", "Increased Inventory Upgrade", "0:4, 10:5, 15:6, 20:7, 25:8", "How many item slots the player has. Default is 4.");
-            configCritChanceUpgrade = Config.Bind("Milk Molar Upgrades", "Crit Chance Upgrade", "0:0, 5:1, 6:3, 7:5, 10:7, 15:10, 20:15, 30:25", "");
-            configClimbSpeedUpgrade = Config.Bind("Milk Molar Upgrades", "Climb Speed Upgrade", "", "");
-            configFallDamageReductionUpgrade = Config.Bind("Milk Molar Upgrades", "Fall Damage Reduction Upgrade", "", "");
+            configCritChanceUpgrade = Config.Bind("Milk Molar Upgrades", "Crit Chance Upgrade", "0:0, 5:1, 6:3, 7:5, 10:7, 15:10, 20:15, 30:25", "Percent chance of critical hits. Critical hits will deal double damage. Default is 0");
+            configClimbSpeedUpgrade = Config.Bind("Milk Molar Upgrades", "Climb Speed Upgrade", "0:4, 5:5, 6:6, 7:7, 8:8, 9:9, 10:10", "Climb speed when climbing ladders. Default is 4.");
+            configFallDamageReductionUpgrade = Config.Bind("Milk Molar Upgrades", "Fall Damage Reduction Upgrade", "0:0, 1:5, 2:10, 4:15, 5:20", "Percent damage reduction from falling. Default is 0");
             configHealthRegenUpgrade = Config.Bind("Milk Molar Upgrades", "Health Regen Upgrade", "0:0, 10:1, 20:2, 30:3, 35:4, 40:5", "Health given per second");
-            
+            configBailOutUpgrade = Config.Bind("Milk Molar Upgrades", "Bail Out Upgrade", "0:0, 5:1, 10:5, 15:10, 20:20, 25:30", "Chance to activate upgrade when player takes damage. When activated, the players damage will be negated. Default is 0.");
+            configCorporateKickbackUpgrade = Config.Bind("Milk Molar Upgrades", "Corporate Kickback Upgrade", "0:0, 5:2.5, 10:5, 15:6, 20:7, 25:8, 30:9, 35:10, 40:25", "Chance to activate upgrade when player takes damage. When activated, the player will heal");
 
             // Mega Milk Molar Upgrades Configs
             configSignalTransmitterUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Signal Transmitter Upgrade", 5, "Cost of the Signal Transmitter upgrade. One time purchase.");
-            configIncreasedShopDealsUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Increased Shop Deals Upgrade", "", "");
+            //configIncreasedShopDealsUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Increased Shop Deals Upgrade", "", "");
             configLandingSpeedUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Landing Speed Upgrade", "", "");
             configItemDropshipLandingSpeedUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Item Dropship Landing Speed Upgrade", "", "");
             configKeepItemsOnShipChanceUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Keep Items On Ship Upgrade", "", "");
@@ -155,6 +157,8 @@ namespace MilkMolars
             configCompanyCruiserSpeedUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Company Cruiser Speed Upgrade", "", "");
             configCompanyCruiserTurningUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Company Cruiser Turning Upgrade", "", "");
             configCompanyCruiserDamageUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Company Cruiser Damage Upgrade", "", "");
+            configRevivePlayerUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Revive Player Upgrade", 5, "Repeatable upgrade. Revives the player selected on the ship monitor.");
+
 
             // Loading Assets
             string sAssemblyLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -193,7 +197,8 @@ namespace MilkMolars
             Utilities.FixMixerGroups(MegaMilkMolar.spawnPrefab);
             Items.RegisterScrap(MegaMilkMolar, GetLevelRarities(configMegaMilkMolarLevelRarities.Value), GetCustomLevelRarities(configMegaMilkMolarCustomLevelRarities.Value));
 
-            InteractiveTerminalManager.RegisterApplication<UpgradeTerminalUIPlayer>(["mmu", "milk molar upgrades", "milk molar"], caseSensitive: false);
+            InteractiveTerminalManager.RegisterApplication<UpgradeTerminalUIPlayer>(["mmu", "milk molar upgrades", "milk molar", "mm player"], caseSensitive: false);
+            InteractiveTerminalManager.RegisterApplication<UpgradeTerminalUIGroup>(["mmmu", "mega milk molar upgrades", "mega molar", "mega", "mm group"], caseSensitive: false);
 
             // Finished
             Logger.LogInfo($"{modGUID} v{modVersion} has loaded!");
