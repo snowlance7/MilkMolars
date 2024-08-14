@@ -25,9 +25,9 @@ namespace MilkMolars
     [BepInDependency(LethalLib.Plugin.ModGUID)]
     public class Plugin : BaseUnityPlugin
     {
-        private const string modGUID = "Snowlance.MilkMolars";
-        private const string modName = "MilkMolars";
-        private const string modVersion = "1.0.0";
+        public const string modGUID = "Snowlance.MilkMolars";
+        public const string modName = "MilkMolars";
+        public const string modVersion = "1.0.0";
 
         public static Plugin PluginInstance;
         public static ManualLogSource LoggerInstance;
@@ -76,7 +76,7 @@ namespace MilkMolars
         public static ConfigEntry<string> configHealthRegenUpgrade;
 
         // Mega Milk Molar Upgrades
-        public static ConfigEntry<string> configSignalTransmitterUpgrade;
+        public static ConfigEntry<int> configSignalTransmitterUpgrade;
         public static ConfigEntry<string> configIncreasedShopDealsUpgrade;
         public static ConfigEntry<string> configLandingSpeedUpgrade;
         public static ConfigEntry<string> configItemDropshipLandingSpeedUpgrade;
@@ -142,7 +142,7 @@ namespace MilkMolars
             
 
             // Mega Milk Molar Upgrades Configs
-            configSignalTransmitterUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Signal Transmitter Upgrade", "", "");
+            configSignalTransmitterUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Signal Transmitter Upgrade", 5, "Cost of the Signal Transmitter upgrade. One time purchase.");
             configIncreasedShopDealsUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Increased Shop Deals Upgrade", "", "");
             configLandingSpeedUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Landing Speed Upgrade", "", "");
             configItemDropshipLandingSpeedUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Item Dropship Landing Speed Upgrade", "", "");

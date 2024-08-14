@@ -1,4 +1,5 @@
-﻿using GameNetcodeStuff;
+﻿using BepInEx.Logging;
+using GameNetcodeStuff;
 using Newtonsoft.Json;
 using Steamworks.Data;
 using System;
@@ -14,6 +15,8 @@ namespace MilkMolars
 {
     public static class MilkMolarController
     {
+        private static ManualLogSource logger = Plugin.LoggerInstance;
+
         public static int MilkMolars = 0;
 
         public static bool InUpgradeUI = false;
@@ -30,9 +33,7 @@ namespace MilkMolars
             {
                 LoggerInstance.LogDebug("Initing milk molar controller");
 
-                MilkMolarUpgrades = GetUpgrades();
-                //NetworkHandler.ClientsMilkMolarUpgrades.Add(localPlayer.actualClientId, MilkMolarUpgrades);
-                NetworkHandler.MegaMilkMolarUpgrades = GetUpgrades(true);
+                NetworkHandler.LoadDataFromFile();
             }
         }
 
@@ -83,6 +84,13 @@ namespace MilkMolars
             {
                 //// Mega Milk Molars
                 // Signal Transmitter Upgrade
+                MilkMolarUpgrade signalTransmitter = new MilkMolarUpgrade();
+                signalTransmitter.name = "SignalTransmitterUpgrade";
+                signalTransmitter.title = "Signal Transmitter Upgrade";
+                signalTransmitter.type = MilkMolarUpgrade.UpgradeType.OneTimeUnlock;
+                signalTransmitter.cost = configSignalTransmitterUpgrade.Value;
+                upgrades.Add(signalTransmitter);
+
                 // Increased shop deals: Increases the maximum amount of items that can be on sale in the store.
                 // Landing speed
                 // Item dropship landing speed
@@ -152,7 +160,7 @@ namespace MilkMolars
 
         public static void AddMilkMolar(PlayerControllerB player)
         {
-            NetworkHandler.Instance.AddMilkMolarServerRpc(player.actualClientId);
+            NetworkHandler.Instance.AddMilkMolarServerRpc(player.playerSteamId);
         }
 
         public static void AddMegaMilkMolar()
@@ -162,49 +170,69 @@ namespace MilkMolars
 
         public static bool BuyMilkMolarUpgrade(MilkMolarUpgrade upgrade)
         {
+            logger.LogDebug("Attempting to buy Milk Molar upgrade: " + upgrade.name);
+
             if (upgrade.type == MilkMolarUpgrade.UpgradeType.Repeatable)
             {
+                logger.LogDebug("Upgrade type is Repeatable. Checking if we have enough Milk Molars.");
                 if (MilkMolars >= upgrade.cost)
                 {
                     MilkMolars -= upgrade.cost;
+                    logger.LogDebug("Conditions met. Activating Repeatable upgrade and updating server.");
                     upgrade.ActivateRepeatableUpgrade();
-                    NetworkHandler.Instance.UpdateMilkMolarsServerRpc(MilkMolars, localPlayer.actualClientId);
+                    NetworkHandler.Instance.UpdateMilkMolarsServerRpc(MilkMolars, localPlayer.playerSteamId);
                     return true;
                 }
+                logger.LogDebug("Not enough Milk Molars for Repeatable upgrade.");
                 return false;
             }
 
             if (upgrade.type == MilkMolarUpgrade.UpgradeType.OneTimeUnlock)
             {
+                logger.LogDebug("Upgrade type is OneTimeUnlock. Checking if upgrade is not fully upgraded and if we have enough Milk Molars.");
                 if (!upgrade.fullyUpgraded && MilkMolars >= upgrade.cost)
                 {
                     MilkMolars -= upgrade.cost;
+                    logger.LogDebug("Conditions met. Activating OneTimeUnlock upgrade and updating server.");
                     upgrade.ActivateOneTimeUpgrade();
-                    NetworkHandler.Instance.UpdateMilkMolarsServerRpc(MilkMolars, localPlayer.actualClientId);
+                    NetworkHandler.Instance.UpdateMilkMolarsServerRpc(MilkMolars, localPlayer.playerSteamId);
                     return true;
                 }
+                logger.LogDebug("Not enough Milk Molars or upgrade is fully upgraded.");
                 return false;
             }
 
+            logger.LogDebug("Checking if upgrade is not fully upgraded and if we have enough Milk Molars for next tier.");
             if (!upgrade.fullyUpgraded && MilkMolars >= upgrade.nextTierCost)
             {
                 MilkMolars -= upgrade.nextTierCost;
+                logger.LogDebug("Conditions met. Going to next tier, activating current tier upgrade, and updating server.");
                 upgrade.GoToNextTier();
                 upgrade.ActivateCurrentTierUpgrade();
-                NetworkHandler.Instance.UpdateMilkMolarsServerRpc(MilkMolars, localPlayer.actualClientId);
+                NetworkHandler.Instance.UpdateMilkMolarsServerRpc(MilkMolars, localPlayer.playerSteamId);
                 return true;
             }
 
+            logger.LogDebug("Upgrade purchase failed. Conditions not met.");
             return false;
         }
 
+
         public static bool BuyMegaMilkMolarUpgrade(MilkMolarUpgrade upgrade, bool callRPC = false) // THIS IS GOOD DONT TOUCH IT
         {
+            logger.LogDebug("Attempting to buy Mega Milk Molar upgrade: " + upgrade.name);
+
             if (upgrade.type == MilkMolarUpgrade.UpgradeType.Repeatable)
             {
+                logger.LogDebug("Upgrade type is Repeatable. Checking if we have enough Mega Milk Molars or RPC is not required.");
                 if (NetworkHandler.MegaMilkMolars.Value >= upgrade.cost || callRPC == false)
                 {
-                    if (callRPC) { NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.cost, localPlayer.actualClientId); }
+                    logger.LogDebug("Conditions met. Activating Repeatable upgrade.");
+                    if (callRPC)
+                    {
+                        logger.LogDebug("Calling server RPC to buy upgrade.");
+                        NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.cost, localPlayer.playerSteamId);
+                    }
                     upgrade.ActivateRepeatableUpgrade();
                     return true;
                 }
@@ -212,23 +240,37 @@ namespace MilkMolars
 
             if (upgrade.type == MilkMolarUpgrade.UpgradeType.OneTimeUnlock)
             {
+                logger.LogDebug("Upgrade type is OneTimeUnlock. Checking if upgrade is not fully upgraded and if we have enough Mega Milk Molars or RPC is not required.");
                 if ((!upgrade.fullyUpgraded && NetworkHandler.MegaMilkMolars.Value >= upgrade.cost) || callRPC == false)
                 {
-                    if (callRPC) { NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.cost, localPlayer.actualClientId); }
+                    logger.LogDebug("Conditions met. Activating OneTimeUnlock upgrade.");
+                    if (callRPC)
+                    {
+                        logger.LogDebug("Calling server RPC to buy upgrade.");
+                        NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.cost, localPlayer.playerSteamId);
+                    }
                     upgrade.ActivateOneTimeUpgrade();
                     return true;
                 }
             }
 
+            logger.LogDebug("Checking if upgrade is not fully upgraded and if we have enough Mega Milk Molars or RPC is not required.");
             if ((!upgrade.fullyUpgraded && NetworkHandler.MegaMilkMolars.Value >= upgrade.nextTierCost) || callRPC == false)
             {
-                if (callRPC) { NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.nextTierCost, localPlayer.actualClientId); }
+                logger.LogDebug("Conditions met. Going to next tier and activating current tier upgrade.");
+                if (callRPC)
+                {
+                    logger.LogDebug("Calling server RPC to buy upgrade.");
+                    NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.nextTierCost, localPlayer.playerSteamId);
+                }
                 upgrade.GoToNextTier();
                 upgrade.ActivateCurrentTierUpgrade();
                 return true;
             }
 
+            logger.LogDebug("Upgrade purchase failed. Conditions not met.");
             return false;
         }
+
     }
 }

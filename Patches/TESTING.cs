@@ -20,9 +20,13 @@ namespace MilkMolars.Patches
         [HarmonyPostfix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.PingScan_performed))]
         public static void PingScan_performedPostFix()
         {
-            logger.LogDebug("Milk Molar Points: " + MilkMolarController.MilkMolars);
+            logger.LogDebug("Milk Molars: " + MilkMolarController.MilkMolars);
+            logger.LogDebug("Mega Milk Molars: " + NetworkHandler.MegaMilkMolars.Value);
             logger.LogDebug($"Milk molar upgrades: {MilkMolarController.MilkMolarUpgrades.Count}");
             logger.LogDebug($"Mega Milk molar upgrades: {NetworkHandler.MegaMilkMolarUpgrades.Count}");
+            logger.LogDebug(localPlayer.playerClientId);
+            logger.LogDebug(localPlayer.playerSteamId);
+            logger.LogDebug(localPlayer.playerUsername);
         }
 
         [HarmonyPrefix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.SubmitChat_performed))]
@@ -37,6 +41,7 @@ namespace MilkMolars.Patches
             if (args[0] == "/refresh")
             {
                 RoundManager.Instance.RefreshEnemiesList();
+                logger.LogDebug("Refreshed enemies list");
             }
             if (args[0] == "/height")
             {
@@ -44,14 +49,30 @@ namespace MilkMolars.Patches
             }
             if (args[0] == "/molar")
             {
-
+                MilkMolarController.MilkMolars = int.Parse(args[1]);
+                HUDManager.Instance.DisplayTip("Testing", $"Milk Molars: {MilkMolarController.MilkMolars}");
+            }
+            if (args[0] == "/mega")
+            {
+                NetworkHandler.MegaMilkMolars.Value = int.Parse(args[1]);
+                HUDManager.Instance.DisplayTip("Testing", $"Mega Milk Molars: {NetworkHandler.MegaMilkMolars.Value}");
             }
             if (args[0] == "/save")
             {
-                NetworkHandler.ClientsMilkMolarUpgrades.Add(localPlayer.actualClientId, MilkMolarController.MilkMolarUpgrades);
+                NetworkHandler.SendAllDataToServer();
                 NetworkHandler.SaveDataToFile();
+                HUDManager.Instance.DisplayTip("Testing", "Saved Data");
             }
-
+            if (args[0] == "/load")
+            {
+                NetworkHandler.LoadDataFromFile();
+                HUDManager.Instance.DisplayTip("Testing", "Loaded Data");
+            }
+            if (args[0] == "/reset")
+            {
+                NetworkHandler.ResetAllData();
+                HUDManager.Instance.DisplayTip("Testing", "Reset Data");
+            }
         }
     }
 }

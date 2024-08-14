@@ -12,6 +12,7 @@ using static MilkMolars.Plugin;
 using Newtonsoft.Json;
 using Steamworks.Data;
 using System.IO;
+using System.Threading;
 
 namespace MilkMolars
 {
@@ -46,91 +47,238 @@ namespace MilkMolars
             logger.LogDebug("base.OnNetworkSpawn");
         }
 
-        public static void UpdateClientsMilkMolars(ulong clientId, int amount, bool adding = false)
+        public static void UpdateClientsMilkMolars(ulong steamId, int amount, bool adding = false)
         {
-            if (ClientsMilkMolars.ContainsKey(clientId))
+            if (ClientsMilkMolars.ContainsKey(steamId))
             {
-                if (adding) { ClientsMilkMolars[clientId] += amount; }
-                else { ClientsMilkMolars[clientId] = amount; }
+                if (adding) { ClientsMilkMolars[steamId] += amount; }
+                else { ClientsMilkMolars[steamId] = amount; }
             }
             else
             {
-                ClientsMilkMolars.Add(clientId, amount);
+                ClientsMilkMolars.Add(steamId, amount);
+            }
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void UpdateMilkMolarsServerRpc(int newAmount, ulong steamId)
+        {
+            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
+            {
+                UpdateClientsMilkMolars(steamId, newAmount);
             }
         }
 
         public static void ResetAllData()
         {
+            MegaMilkMolars.Value = 0;
             ClientsMilkMolars = new Dictionary<ulong, int>();
             ClientsMilkMolarUpgrades = new Dictionary<ulong, List<MilkMolarUpgrade>>();
-            MegaMilkMolars = new NetworkVariable<int>(0);
-            MegaMilkMolarUpgrades = new List<MilkMolarUpgrade>();
+            List<MilkMolarUpgrade> upgrades = MilkMolarController.GetUpgrades();
+
+            foreach(var player in StartOfRound.Instance.allPlayerScripts)
+            {
+                ClientsMilkMolars.Add(player.playerSteamId, 0);
+                ClientsMilkMolarUpgrades.Add(player.playerSteamId, upgrades);
+            }
 
             SaveDataToFile();
+            Instance.ResetAllDataClientRpc();
+        }
+
+        [ClientRpc]
+        private void ResetAllDataClientRpc()
+        {
+            MegaMilkMolarUpgrades = new List<MilkMolarUpgrade>();
+            MegaMilkMolarUpgrades = MilkMolarController.GetUpgrades(mega: true);
+            MilkMolarController.MilkMolars = 0;
+            MilkMolarController.MilkMolarUpgrades = new List<MilkMolarUpgrade>();
+            MilkMolarController.MilkMolarUpgrades = MilkMolarController.GetUpgrades();
         }
 
         public static void SaveDataToFile()
         {
-            ES3.Save($"{GameNetworkManager.Instance.currentSaveFileName}-ClientsMilkMolars", ClientsMilkMolars);
-            ES3.Save($"{GameNetworkManager.Instance.currentSaveFileName}-ClientsMilkMolarUpgrades", ClientsMilkMolarUpgrades);
-            ES3.Save($"{GameNetworkManager.Instance.currentSaveFileName}-MegaMilkMolars", MegaMilkMolars);
-            ES3.Save($"{GameNetworkManager.Instance.currentSaveFileName}-MegaMilkMolarUpgrades", MegaMilkMolarUpgrades);
+            var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
+            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            logger.LogDebug("Got appData path at: " + appDataPath); // C:\Users\snowl\AppData\Local // C:\Users\snowl\AppData\LocalLow\ZeekerssRBLX\Lethal Company
+            string path = Path.Combine(appDataPath + "Low", "ZeekerssRBLX", "Lethal Company", modName);
+            logger.LogDebug("Got save path at: " + path);
 
-            //string location = "C:\\Users\\snowl\\source\\repos\\1Lethal Company Debugging\\BepInEx\\plugins\\ClientsMilkMolarUpgrades.json";
-            //var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
-            //string json = JsonConvert.SerializeObject(ClientsMilkMolarUpgrades, settings);
-            //File.WriteAllText(location, json);
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
 
+            string milkMolarsData = JsonConvert.SerializeObject(ClientsMilkMolars, settings);
+            string megaMilkMolarsData = MegaMilkMolars.Value.ToString();
+            string milkMolarUpgradesData = JsonConvert.SerializeObject(ClientsMilkMolarUpgrades, settings);
+            string megaMilkMolarUpgradesData = JsonConvert.SerializeObject(MegaMilkMolarUpgrades, settings);
+
+            File.WriteAllText(Path.Combine(path, $"{GameNetworkManager.Instance.currentSaveFileName}-ClientsMilkMolars.json"), milkMolarsData);
+            File.WriteAllText(Path.Combine(path, $"{GameNetworkManager.Instance.currentSaveFileName}-MegaMilkMolars.json"), megaMilkMolarsData);
+            File.WriteAllText(Path.Combine(path, $"{GameNetworkManager.Instance.currentSaveFileName}-ClientsMilkMolarUpgrades.json"), milkMolarUpgradesData);
+            File.WriteAllText(Path.Combine(path, $"{GameNetworkManager.Instance.currentSaveFileName}-MegaMilkMolarUpgrades.json"), megaMilkMolarUpgradesData);
+
+            logger.LogDebug("Finished saving data to " + path);
         }
 
         public static void LoadDataFromFile()
         {
-            ES3.Load($"{GameNetworkManager.Instance.currentSaveFileName}-ClientsMilkMolars", ClientsMilkMolars);
-            ES3.Load($"{GameNetworkManager.Instance.currentSaveFileName}-ClientsMilkMolarUpgrades", ClientsMilkMolarUpgrades);
-            ES3.Load($"{GameNetworkManager.Instance.currentSaveFileName}-MegaMilkMolars", MegaMilkMolars);
-            ES3.Load($"{GameNetworkManager.Instance.currentSaveFileName}-MegaMilkMolarUpgrades", MegaMilkMolarUpgrades);
+            var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
+            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            logger.LogDebug("Got appData path at: " + appDataPath); // C:\Users\snowl\AppData\Local // C:\Users\snowl\AppData\LocalLow\ZeekerssRBLX\Lethal Company
+            string path = Path.Combine(appDataPath + "Low", "ZeekerssRBLX", "Lethal Company", modName);
+            logger.LogDebug("Got save path at: " + path);
+
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            string milkMolarsPath = Path.Combine(path, $"{GameNetworkManager.Instance.currentSaveFileName}-ClientsMilkMolars.json");
+            string megaMilkMolarsPath = Path.Combine(path, $"{GameNetworkManager.Instance.currentSaveFileName}-MegaMilkMolars.json");
+            string milkMolarUpgradesPath = Path.Combine(path, $"{GameNetworkManager.Instance.currentSaveFileName}-ClientsMilkMolarUpgrades.json");
+            string megaMilkMolarUpgradesPath = Path.Combine(path, $"{GameNetworkManager.Instance.currentSaveFileName}-MegaMilkMolarUpgrades.json");
+
+            if (File.Exists(milkMolarsPath))
+            {
+                logger.LogDebug("Found save data for Milk Molars");
+                string milkMolarsData = File.ReadAllText(milkMolarsPath);
+                ClientsMilkMolars = JsonConvert.DeserializeObject<Dictionary<ulong, int>>(milkMolarsData, settings);
+            }
+            if (File.Exists(megaMilkMolarsPath))
+            {
+                logger.LogDebug("Found save data for Mega Milk Molars");
+                string megaMilkMolarsData = File.ReadAllText(megaMilkMolarsPath);
+                MegaMilkMolars.Value = int.Parse(megaMilkMolarsData);
+            }
+            if (File.Exists(milkMolarUpgradesPath))
+            {
+                logger.LogDebug("Found save data for Milk Molar Upgrades");
+                string milkMolarUpgradesData = File.ReadAllText(milkMolarUpgradesPath);
+                ClientsMilkMolarUpgrades = JsonConvert.DeserializeObject<Dictionary<ulong, List<MilkMolarUpgrade>>>(milkMolarUpgradesData, settings);
+            }
+            if (File.Exists(megaMilkMolarUpgradesPath))
+            {
+                logger.LogDebug("Found save data for Mega Milk Molar Upgrades");
+                string megaMilkMolarUpgradesData = File.ReadAllText(megaMilkMolarUpgradesPath);
+                MegaMilkMolarUpgrades = JsonConvert.DeserializeObject<List<MilkMolarUpgrade>>(megaMilkMolarUpgradesData, settings);
+            }
+
+
+            if (ClientsMilkMolars == null || ClientsMilkMolars.Count == 0)
+            {
+                logger.LogDebug("ClientsMilkMolars is null");
+                ClientsMilkMolars = new Dictionary<ulong, int>();
+                MilkMolarController.MilkMolars = 0;
+                ClientsMilkMolars.Add(localPlayer.playerSteamId, 0);
+                logger.LogDebug("Added data for ClientsMilkMolars");
+            }
+            if (ClientsMilkMolarUpgrades == null || ClientsMilkMolarUpgrades.Count == 0)
+            {
+                logger.LogDebug("ClientsMilkMolarUpgrades is null");
+                ClientsMilkMolarUpgrades = new Dictionary<ulong, List<MilkMolarUpgrade>>();
+                MilkMolarController.MilkMolarUpgrades = MilkMolarController.GetUpgrades();
+                ClientsMilkMolarUpgrades.Add(localPlayer.playerSteamId, MilkMolarController.MilkMolarUpgrades);
+                logger.LogDebug("Added data for ClientsMilkMolarUpgrades");
+            }
+            if (MegaMilkMolarUpgrades == null || MegaMilkMolarUpgrades.Count == 0)
+            {
+                logger.LogDebug("MegaMilkMolarUpgrades is null");
+                MegaMilkMolarUpgrades = MilkMolarController.GetUpgrades(mega: true);
+                logger.LogDebug("Added data for MegaMilkMolarUpgrades");
+            }
+
+            MilkMolarController.MilkMolars = ClientsMilkMolars[localPlayer.playerSteamId];
+            MilkMolarController.MilkMolarUpgrades = ClientsMilkMolarUpgrades[localPlayer.playerSteamId];
+
+            logger.LogDebug("Finished loading data");
         }
 
-        public static void SendDataToClient(ulong clientId)
+        [ServerRpc(RequireOwnership = false)]
+        public void GetDataFromServerServerRpc(ulong steamId)
         {
             if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
-                if (ClientsMilkMolars != null && ClientsMilkMolars.ContainsKey(clientId))
+                SendDataToClient(steamId);
+            }
+        }
+
+        public static void SendDataToClient(ulong steamId)
+        {
+            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
+            {
+                var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
+                if (ClientsMilkMolars != null && ClientsMilkMolars.ContainsKey(steamId))
                 {
-                    
+                    logger.LogDebug("Found data for client, sending data to client");
+                    string upgrades = JsonConvert.SerializeObject(ClientsMilkMolarUpgrades[steamId], settings);
+                    string megaUpgrades = JsonConvert.SerializeObject(MegaMilkMolarUpgrades, settings);
+                    Instance.SendDataToClientClientRpc(steamId, upgrades, megaUpgrades, ClientsMilkMolars[steamId]);
+                }
+                else
+                {
+                    logger.LogDebug("Sending default data to client");
+                    ClientsMilkMolarUpgrades.Add(steamId, MilkMolarController.GetUpgrades());
+                    ClientsMilkMolars.Add(steamId, 0);
+                    string megaUpgrades = JsonConvert.SerializeObject(MegaMilkMolarUpgrades, settings);
+                    Instance.SendDefaultDataClientRpc(steamId, megaUpgrades);
+                }
+            }
+        }
+
+        [ClientRpc]
+        private void SendDataToClientClientRpc(ulong steamId, string upgrades, string megaUpgrades, int milkMolars)
+        {
+            if (localPlayer.playerSteamId == steamId)
+            {
+                var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
+                MilkMolarController.MilkMolars = milkMolars;
+                MilkMolarController.MilkMolarUpgrades = JsonConvert.DeserializeObject<List<MilkMolarUpgrade>>(upgrades, settings);
+                MegaMilkMolarUpgrades = JsonConvert.DeserializeObject<List<MilkMolarUpgrade>>(megaUpgrades, settings); 
+            }
+        }
+
+        [ClientRpc]
+        private void SendDefaultDataClientRpc(ulong steamId, string megaUpgrades)
+        {
+            if (localPlayer.playerSteamId == steamId)
+            {
+                logger.LogDebug("Getting default data for self");
+                MilkMolarController.MilkMolars = 0;
+                MilkMolarController.MilkMolarUpgrades = MilkMolarController.GetUpgrades();
+                var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
+                MegaMilkMolarUpgrades = JsonConvert.DeserializeObject<List<MilkMolarUpgrade>>(megaUpgrades, settings);
+            }
+        }
+
+        public static void SendAllDataToServer()
+        {
+            Instance.UpdateMilkMolarsServerRpc(MilkMolarController.MilkMolars, localPlayer.playerSteamId);
+            var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
+            string upgrades = JsonConvert.SerializeObject(MilkMolarController.MilkMolarUpgrades, settings);
+            Instance.SendUpgradeDataToServerServerRpc(upgrades, localPlayer.playerSteamId);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void SendUpgradeDataToServerServerRpc(string data, ulong steamId)
+        {
+            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
+            {
+                var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
+                if (ClientsMilkMolarUpgrades.ContainsKey(steamId))
+                {
+                    ClientsMilkMolarUpgrades[steamId] = JsonConvert.DeserializeObject<List<MilkMolarUpgrade>>(data, settings);
+                }
+                else
+                {
+                    ClientsMilkMolarUpgrades.Add(steamId, JsonConvert.DeserializeObject<List<MilkMolarUpgrade>>(data, settings));
                 }
             }
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void UpdateMilkMolarsServerRpc(int newAmount, ulong clientId)
-        {
-            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
-            {
-                UpdateClientsMilkMolars(clientId, newAmount);
-            }
-        }
-
-        [ClientRpc]
-        private void SendDataToClientClientRpc(ulong clientId, string upgrades, string megaUpgrades, int milkMolars = 0)
-        {
-            if (localPlayer.actualClientId == clientId)
-            {
-                // TODO: Implement
-            }
-        }
-
-        [ServerRpc(RequireOwnership = false)]
-        public void SendUpgradeDataToServerServerRpc(string data, ulong clientId)
-        {
-            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
-            {
-                //ClientsMilkMolarUpgrades[clientId] = JsonConvert.DeserializeObject<List<MilkMolarUpgrade>>(data); // TODO: Temp for testing
-            }
-        }
-
-        [ServerRpc(RequireOwnership = false)]
-        public void AddMilkMolarServerRpc(ulong clientId)
+        public void AddMilkMolarServerRpc(ulong steamId)
         {
             if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
@@ -138,26 +286,26 @@ namespace MilkMolars
                 {
                     foreach (var player in StartOfRound.Instance.allPlayerScripts)
                     {
-                        if (ClientsMilkMolars.ContainsKey(player.actualClientId)) { ClientsMilkMolars[player.actualClientId]++; }
-                        else { ClientsMilkMolars.Add(player.actualClientId, 1); }
+                        if (ClientsMilkMolars.ContainsKey(player.playerSteamId)) { ClientsMilkMolars[player.playerSteamId]++; }
+                        else { ClientsMilkMolars.Add(player.playerSteamId, 1); }
                     }
 
                     AddMilkMolarToAllClientsClientRpc();
                 }
                 else
                 {
-                    if (ClientsMilkMolars.ContainsKey(clientId)) { ClientsMilkMolars[clientId]++; }
-                    else { ClientsMilkMolars.Add(clientId, 1); }
+                    if (ClientsMilkMolars.ContainsKey(steamId)) { ClientsMilkMolars[steamId]++; }
+                    else { ClientsMilkMolars.Add(steamId, 1); }
 
-                    AddMilkMolarClientRpc(clientId);
+                    AddMilkMolarClientRpc(steamId);
                 }
             }
         }
 
         [ClientRpc]
-        private void AddMilkMolarClientRpc(ulong clientId)
+        private void AddMilkMolarClientRpc(ulong steamId)
         {
-            if (localPlayer.actualClientId == clientId)
+            if (localPlayer.playerSteamId == steamId)
             {
                 MilkMolarController.MilkMolars++;
                 if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 1f); }
@@ -176,9 +324,9 @@ namespace MilkMolars
         }
 
         [ClientRpc]
-        public void AddMultipleMilkMolarsClientRpc(ulong clientId, int amount)
+        public void AddMultipleMilkMolarsClientRpc(ulong steamId, int amount)
         {
-            if (localPlayer.actualClientId == clientId)
+            if (localPlayer.playerSteamId == steamId)
             {
                 MilkMolarController.MilkMolars += amount;
                 if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 0.5f); }
@@ -221,19 +369,19 @@ namespace MilkMolars
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void BuyMegaMilkMolarUpgradeServerRpc(string upgradeName, int cost, ulong clientId)
+        public void BuyMegaMilkMolarUpgradeServerRpc(string upgradeName, int cost, ulong steamId)
         {
             if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
                 MegaMilkMolars.Value -= cost;
-                BuyMegaMilkMolarUpgradeClientRpc(upgradeName, clientId);
+                BuyMegaMilkMolarUpgradeClientRpc(upgradeName, steamId);
             }
         }
 
         [ClientRpc]
-        public void BuyMegaMilkMolarUpgradeClientRpc(string upgradeName, ulong clientId)
+        public void BuyMegaMilkMolarUpgradeClientRpc(string upgradeName, ulong steamId)
         {
-            if (localPlayer.actualClientId == clientId) { return; }
+            if (localPlayer.playerSteamId == steamId) { return; }
             logger.LogDebug("Buying mega milk molar upgrade");
             MilkMolarUpgrade upgrade = MilkMolarController.GetUpgradeByName(upgradeName);
             MilkMolarController.BuyMegaMilkMolarUpgrade(upgrade, callRPC: false);

@@ -18,35 +18,26 @@ namespace MilkMolars
     {
         private static ManualLogSource logger = Plugin.LoggerInstance;
 
-        [HarmonyPostfix]
+        /*[HarmonyPostfix]
         [HarmonyPatch(nameof(StartOfRound.OnClientConnect))]
-        public static void OnClientConnectPostfix(StartOfRound __instance, ulong clientId) // TODO: Test this
+        public static void OnClientConnectPostfix(StartOfRound __instance, ulong steamId) // TODO: Test this
         {
             if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
-                //logger.LogDebug("OnClientConnect: " + clientId);
-                //NetworkHandler.SendDataToClient(clientId);
+                logger.LogDebug("OnClientConnectPostfix called, sending data to client with id " + steamId);
+                NetworkHandler.SendDataToClient(steamId);
             }
-        }
-
-        [HarmonyPostfix]
-        [HarmonyPatch(nameof(StartOfRound.firstDayAnimation))]
-        public static void firstDayAnimationPostfix(StartOfRound __instance)
-        {
-            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
-            {
-                logger.LogError("FIRSTDAYANIMATION");
-                MilkMolarController.Init();
-            }
-        }
+        }*/
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(StartOfRound.AutoSaveShipData))]
         public static void AutoSaveShipDataPrefix(StartOfRound __instance)
         {
-            //var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
-            //string upgrades = JsonConvert.SerializeObject(MilkMolarController.MilkMolarUpgrades, settings);
-            //NetworkHandler.Instance.SendUpgradeDataToServerServerRpc(upgrades, localPlayer.actualClientId);
+            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
+            {
+                logger.LogDebug("AutoSaveShipDataPrefix called");
+                NetworkHandler.SendAllDataToServer();
+            }
         }
 
         [HarmonyPostfix]
@@ -55,7 +46,8 @@ namespace MilkMolars
         {
             if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
-                //NetworkHandler.SaveDataToFile();
+                logger.LogDebug("AutoSaveShipDataPostfix called");
+                NetworkHandler.SaveDataToFile();
             }
         }
 
@@ -65,7 +57,7 @@ namespace MilkMolars
         {
             if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
-                //NetworkHandler.SaveDataToFile();
+                NetworkHandler.ResetAllData();
                 
             }
         }
