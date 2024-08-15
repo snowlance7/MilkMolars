@@ -113,7 +113,7 @@ namespace MilkMolars
             configMilkMolarCustomLevelRarities = Config.Bind("Milk Molar Rarities", "Custom Level Rarities", "", "Rarities for modded levels. Same formatting as level rarities.");
             configMilkMolarSpawnAmount = Config.Bind("Milk Molar Rarities", "Spawn Amount Min Max", "ExperimentationLevel:1-2, AssuranceLevel:1-4, VowLevel:1-5, OffenseLevel:3-5, AdamanceLevel:4-8, MarchLevel:2-6, RendLevel:3-10, DineLevel:4-10, TitanLevel:6-15, ArtificeLevel:7-14, EmbrionLevel:10-20, All:1-5, Modded:1-10", "The minimum and maximum amount of Milk Molars to spawn after scrap spawns in round for each moon.");
             // TODO: Set up min max spawn amount
-            configMilkMolarActivateMethod = Config.Bind("Milk Molar", "Activate Method", 2, "Activation method for Milk Molars. 1 - Grab, 2 - Use, 3 - Ship, 4 - Sell.\nGrab: Grabbing the Milk Molar will activate it.\nUse: Using the Milk Molar while its in your inventory will activate it.\nShip: Milk Molar will activate when brought inside the ship.\nSell: Milk Molar will activate when sold to the company.");
+            configMilkMolarActivateMethod = Config.Bind("Milk Molar", "Activate Method", 1, "Activation method for Milk Molars. 1 - Grab, 2 - Use, 3 - Ship, 4 - Sell.\nGrab: Grabbing the Milk Molar will activate it.\nUse: Using the Milk Molar while its in your inventory will activate it.\nShip: Milk Molar will activate when brought inside the ship.\nSell: Milk Molar will activate when sold to the company.");
             configSharedMilkMolars = Config.Bind("Milk Molar", "Shared Milk Molars", true, "By default (true), Milk Molars will give 1 upgrade point to each player when activated. Setting this to false will only give 1 upgrade point to the player who activated it.");
             configUpgradePointsToFinder = Config.Bind("Milk Molar", "Upgrade Points to Finder", false, "This only works when configMilkMolarActivateMethod is SHIP or SELL and configSharedMilkMolars is false. Setting this to true will only give an upgrade point to the first person who held the Milk Molar when activating it.");
 
@@ -122,7 +122,7 @@ namespace MilkMolars
             configMegaMilkMolarCustomLevelRarities = Config.Bind("Mega Milk Molar Rarities", "Mega Milk Molar Custom Level Rarities", "", "Rarities for modded levels. Same formatting as level rarities.");
             configMegaMilkMolarSpawnAmount = Config.Bind("Mega Milk Molar Rarities", "Spawn Amount Min Max", "ExperimentationLevel:1-2, AssuranceLevel:1-3, VowLevel:1-3, OffenseLevel:2-3, AdamanceLevel:3-5, MarchLevel:2-3, RendLevel:3-5, DineLevel:3-6, TitanLevel:5-10, ArtificeLevel:5-12, EmbrionLevel:7-15, All:1-3, Modded:1-5", "The minimum and maximum amount of Mega Milk Molars to spawn after scrap spawns in round for each moon.");
 
-            configMegaMilkMolarActivateMethod = Config.Bind("Mega Milk Molar", "Activate Method", 3, "Activation method for Mega Milk Molars. 1 - Grab, 2 - Use, 3 - Ship, 4 - Sell.\nGrab: Grabbing the Mega Milk Molar will activate it.\nUse: Using the Mega Milk Molar while its in your inventory will activate it.\nShip: Mega Milk Molar will activate when brought inside the ship.\nSell: Mega Milk Molar will activate when sold to the company.");
+            configMegaMilkMolarActivateMethod = Config.Bind("Mega Milk Molar", "Activate Method", 1, "Activation method for Mega Milk Molars. 1 - Grab, 2 - Use, 3 - Ship, 4 - Sell.\nGrab: Grabbing the Mega Milk Molar will activate it.\nUse: Using the Mega Milk Molar while its in your inventory will activate it.\nShip: Mega Milk Molar will activate when brought inside the ship.\nSell: Mega Milk Molar will activate when sold to the company.");
 
             // Client Configs
             configNotifyMethod = Config.Bind("Client Settings", "Notify Method", 1, "The method in which players are notified of Milk Molar activations. 1 - Popup/DisplayTip, 2 - Chat Message, 3 - None");
@@ -149,8 +149,8 @@ namespace MilkMolars
             //configIncreasedShopDealsUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Increased Shop Deals Upgrade", "", "");
             configLandingSpeedUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Landing Speed Upgrade", "", "");
             configItemDropshipLandingSpeedUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Item Dropship Landing Speed Upgrade", "", "");
-            configKeepItemsOnShipChanceUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Keep Items On Ship Upgrade", "", "");
-            configTravelDiscountUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Travel Discount Upgrade", "", "");
+            configKeepItemsOnShipChanceUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Keep Items On Ship Upgrade", "0:0, 5:25, 10:50, 15:75, 20:100", "Chance of keeping scrap items on ship. Default is 0");
+            configTravelDiscountUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Travel Discount Upgrade", "0:0, 5:25, 10:50, 15:75, 20:100", "Percent travel discount. Default is 0");
             configTimeOnMoonUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Time On Moon Upgrade", "", "");
             configCompanyCruiserHealthUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Company Cruiser Health Upgrade", "", "");
             configCompanyCruiserAccelerationUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Company Cruiser Acceleration Upgrade", "", "");

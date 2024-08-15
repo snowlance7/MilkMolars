@@ -47,34 +47,59 @@ namespace MilkMolars
             {
                 //// Milk Molars // TODO: Sync these with host
                 // Shovel damage
-                MilkMolarUpgrade shovelDamage = new MilkMolarUpgrade();
-                shovelDamage.name = "ShovelDamage";
-                shovelDamage.title = "Shovel Damage";
-                shovelDamage.type = MilkMolarUpgrade.UpgradeType.TierNumber;
-                shovelDamage.GetTiersFromString(configShovelDamageUpgrade.Value);
+                MilkMolarUpgrade shovelDamage = new MilkMolarUpgrade("ShovelDamage", "Shovel Damage", MilkMolarUpgrade.UpgradeType.TierNumber, configShovelDamageUpgrade.Value);
                 upgrades.Add(shovelDamage);
 
                 // Damage resistance
-                MilkMolarUpgrade damageResistance = new MilkMolarUpgrade();
-                damageResistance.name = "DamageResistance";
-                damageResistance.title = "Damage Resistance";
-                damageResistance.type = MilkMolarUpgrade.UpgradeType.TierPercent;
-                damageResistance.GetTiersFromString(configDamageResistanceUpgrade.Value);
+                MilkMolarUpgrade damageResistance = new MilkMolarUpgrade("DamageResistance", "Damage Resistance", MilkMolarUpgrade.UpgradeType.TierPercent, configDamageResistanceUpgrade.Value);
                 upgrades.Add(damageResistance);
 
                 // Sprint speed
-
+                MilkMolarUpgrade sprintSpeed = new MilkMolarUpgrade("SprintSpeed", "Sprint Speed", MilkMolarUpgrade.UpgradeType.TierNumber, configSprintSpeedUpgrade.Value);
+                upgrades.Add(sprintSpeed);
 
                 // Sprint endurance
-                // Sprint regeneration
+                MilkMolarUpgrade sprintEndurance = new MilkMolarUpgrade("SprintEndurance", "Sprint Endurance", MilkMolarUpgrade.UpgradeType.TierNumber, configSprintEnduranceUpgrade.Value);
+                upgrades.Add(sprintEndurance);
+
+                // Sprint regeneration // TODO: implement
+
                 // Jump height
-                // Carry weight stamina cost
-                // Carry weight sprint speed
+                MilkMolarUpgrade jumpHeight = new MilkMolarUpgrade("JumpHeight", "Jump Height", MilkMolarUpgrade.UpgradeType.TierNumber, configJumpHeightUpgrade.Value);
+                upgrades.Add(jumpHeight);
+
+                // Carry weight
+                MilkMolarUpgrade carryWeight = new MilkMolarUpgrade("CarryWeight", "Carry Weight", MilkMolarUpgrade.UpgradeType.TierPercent, configCarryWeightUpgrade.Value);
+                upgrades.Add(carryWeight);
+
                 // Increased inventory
+                MilkMolarUpgrade increasedInventory = new MilkMolarUpgrade("IncreasedInventory", "Increased Inventory", MilkMolarUpgrade.UpgradeType.TierNumber, configIncreasedInventorySizeUpgrade.Value);
+                upgrades.Add(increasedInventory);
+
                 // Crit chance
+                MilkMolarUpgrade critChance = new MilkMolarUpgrade("CritChance", "Crit Chance", MilkMolarUpgrade.UpgradeType.TierPercent, configCritChanceUpgrade.Value);
+                upgrades.Add(critChance);
+
                 // Climb speed
-                // Stun gun upgrades
+                MilkMolarUpgrade climbSpeed = new MilkMolarUpgrade("ClimbSpeed", "Climb Speed", MilkMolarUpgrade.UpgradeType.TierNumber, configClimbSpeedUpgrade.Value);
+                upgrades.Add(climbSpeed);
+
                 // Fall damage reduction
+                MilkMolarUpgrade fallDamageReduction = new MilkMolarUpgrade("FallDamageReduction", "Fall Damage Reduction", MilkMolarUpgrade.UpgradeType.TierPercent, configFallDamageReductionUpgrade.Value);
+                upgrades.Add(fallDamageReduction);
+
+                // Health Regen
+                MilkMolarUpgrade healthRegen = new MilkMolarUpgrade("HealthRegen", "Health Regen", MilkMolarUpgrade.UpgradeType.TierNumber, configHealthRegenUpgrade.Value);
+                upgrades.Add(healthRegen);
+
+                // Bail Out
+                MilkMolarUpgrade bailOut = new MilkMolarUpgrade("BailOut", "Bail Out", MilkMolarUpgrade.UpgradeType.TierPercent, configBailOutUpgrade.Value);
+                upgrades.Add(bailOut);
+
+                // Corporate Kickback
+                MilkMolarUpgrade corporateKickback = new MilkMolarUpgrade("CorporateKickback", "Corporate Kickback", MilkMolarUpgrade.UpgradeType.TierPercent, configCorporateKickbackUpgrade.Value);
+                upgrades.Add(corporateKickback);
+
 
                 if (ExtraMilkMolarUpgrades.Count > 0)
                 {
@@ -115,11 +140,6 @@ namespace MilkMolars
             }
 
             return upgrades;
-        }
-
-        public static void UpdateMilkMolarUpgrades()
-        {
-            // TODO: Sync these with host
         }
         
         public static void RegisterMilkMolarUpgrade(MilkMolarUpgrade upgrade)
