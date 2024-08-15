@@ -33,11 +33,8 @@ namespace MilkMolars
         [HarmonyPatch(nameof(StartOfRound.AutoSaveShipData))]
         public static void AutoSaveShipDataPrefix(StartOfRound __instance)
         {
-            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
-            {
-                logger.LogDebug("AutoSaveShipDataPrefix called");
-                NetworkHandler.SendAllDataToServer();
-            }
+            logger.LogDebug("AutoSaveShipDataPrefix called");
+            NetworkHandler.SendAllDataToServer();
         }
 
         [HarmonyPostfix]

@@ -78,7 +78,7 @@ namespace MilkMolars
 
         protected override int GetEntriesPerPage<T>(T[] entries)
         {
-            return 12;
+            return 4;
         }
 
         public void BuyUpgrade(string upgradeName, int index) // TODO: Causing error, fix it

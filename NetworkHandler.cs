@@ -306,8 +306,7 @@ namespace MilkMolars
             {
                 MilkMolarController.MilkMolars++;
                 if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 1f); }
-                if (configNotifyMethod.Value == 1) { HUDManager.Instance.DisplayTip($"Milk Molar activated", $"You now have {MilkMolarController.MilkMolars} unspent Milk Molars."); }
-                else if (configNotifyMethod.Value == 2) { HUDManager.Instance.AddChatMessage($"Milk Molar activated! You now have {MilkMolarController.MilkMolars} unspent Milk Molars.", "Server"); }
+                HUDManager.Instance.AddChatMessage($"Milk Molar activated! You now have {MilkMolarController.MilkMolars} unspent Milk Molars.", "Server");
             }
         }
 
@@ -316,8 +315,7 @@ namespace MilkMolars
         {
             MilkMolarController.MilkMolars++;
             if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 1f); }
-            if (configNotifyMethod.Value == 1) { HUDManager.Instance.DisplayTip($"Milk Molar activated", $"You now have {MilkMolarController.MilkMolars} unspent Milk Molars."); }
-            else if (configNotifyMethod.Value == 2) { HUDManager.Instance.AddChatMessage($"Milk Molar activated! You now have {MilkMolarController.MilkMolars} unspent Milk Molars.", "Server"); }
+            HUDManager.Instance.AddChatMessage($"Milk Molar activated! You now have {MilkMolarController.MilkMolars} unspent Milk Molars.", "Server");
         }
 
         [ClientRpc]
@@ -327,7 +325,7 @@ namespace MilkMolars
             {
                 MilkMolarController.MilkMolars += amount;
                 if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 0.5f); }
-                if (configNotifyMethod.Value != 3) { HUDManager.Instance.AddChatMessage($"{amount} Milk Molars activated! Your now have {MilkMolarController.MilkMolars} unspent Milk Molars.", "Server"); }
+                HUDManager.Instance.AddChatMessage($"{amount} Milk Molars activated! Your now have {MilkMolarController.MilkMolars} unspent Milk Molars.", "Server");
             }
         }
 
@@ -336,7 +334,7 @@ namespace MilkMolars
         {
             MilkMolarController.MilkMolars += amount;
             if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 0.5f); }
-            if (configNotifyMethod.Value != 3) { HUDManager.Instance.AddChatMessage($"{MegaMilkMolars.Value} Mega Milk Molars activated! Your crew now has {MegaMilkMolars.Value} unspent Mega Milk Molars.", "Server"); }
+            HUDManager.Instance.AddChatMessage($"{MegaMilkMolars.Value} Mega Milk Molars activated! Your crew now has {MegaMilkMolars.Value} unspent Mega Milk Molars.", "Server");
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -354,15 +352,14 @@ namespace MilkMolars
         {
             logger.LogDebug("Added mega milk molar");
             if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 1f); }
-            if (configNotifyMethod.Value == 1) { HUDManager.Instance.DisplayTip($"Mega Milk Molar activated", $"Your crew now has {MegaMilkMolars.Value} unspent Mega Milk Molars."); }
-            else if (configNotifyMethod.Value == 2) { HUDManager.Instance.AddChatMessage($"Mega Milk Molar activated! Your group now has {MegaMilkMolars.Value} unspent Mega Milk Molars.", "Server"); }
+            HUDManager.Instance.AddChatMessage($"Mega Milk Molar activated! Your group now has {MegaMilkMolars.Value} unspent Mega Milk Molars.", "Server");
         }
 
         [ClientRpc]
         public void AddMultipleMegaMilkMolarsClientRpc(int amount)
         {
             if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 0.5f); }
-            if (configNotifyMethod.Value != 3) { HUDManager.Instance.AddChatMessage($"{MegaMilkMolars.Value} Mega Milk Molars activated! Your crew now has {MegaMilkMolars.Value} unspent Mega Milk Molars.", "Server"); }
+            HUDManager.Instance.AddChatMessage($"{MegaMilkMolars.Value} Mega Milk Molars activated! Your crew now has {MegaMilkMolars.Value} unspent Mega Milk Molars.", "Server");
         }
 
         [ServerRpc(RequireOwnership = false)]

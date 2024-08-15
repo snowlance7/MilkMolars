@@ -54,6 +54,7 @@ namespace MilkMolars
 
         public MilkMolarUpgrade(string name, string title, UpgradeType type, string tierString = null)
         {
+            logger.LogDebug("Adding " + name);
             this.name = name;
             this.title = title;
             this.type = type;
@@ -66,6 +67,7 @@ namespace MilkMolars
 
         public MilkMolarUpgrade(string name, string title, UpgradeType type, int cost)
         {
+            logger.LogDebug("Adding " + name);
             this.name = name;
             this.title = title;
             this.type = type;

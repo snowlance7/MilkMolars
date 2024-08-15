@@ -15,7 +15,7 @@ namespace MilkMolars
         public AudioSource ItemSFX;
         public ScanNodeProperties scanNode;
 
-        int ActivationMethod;
+        ActivateMethod ActivationMethod;
         bool Shared;
 
         public PlayerControllerB lastPlayerHeldBy;
@@ -38,11 +38,11 @@ namespace MilkMolars
             ActivationMethod = configMilkMolarActivateMethod.Value;
             Shared = configSharedMilkMolars.Value;
 
-            if (ActivationMethod == 2)
+            if (ActivationMethod == ActivateMethod.Use)
             {
                 itemProperties.toolTips[0] = "Activate [LMB]";
             }
-            if (ActivationMethod == 1)
+            if (ActivationMethod == ActivateMethod.Grab)
             {
                 customGrabTooltip = "Activate [E]";
             }
@@ -59,12 +59,12 @@ namespace MilkMolars
                 if (playerFoundBy == null) { playerFoundBy = playerHeldBy; }
             }
 
-            if (ActivationMethod == 3 && isInShipRoom && playerHeldBy != null && playerHeldBy.isInHangarShipRoom)
+            if (ActivationMethod == ActivateMethod.ReturnToShip && isInShipRoom && playerHeldBy != null && playerHeldBy.isInHangarShipRoom)
             {
                 ActivateMolar();
             }
 
-            if (ActivationMethod == 1 && playerHeldBy != null && isHeld && !isPocketed)
+            if (ActivationMethod == ActivateMethod.Grab && playerHeldBy != null && isHeld && !isPocketed)
             {
                 ActivateMolar();
             }
@@ -75,7 +75,7 @@ namespace MilkMolars
             base.ItemActivate(used, buttonDown);
             if (buttonDown)
             {
-                if (ActivationMethod == 2)
+                if (ActivationMethod == ActivateMethod.Use)
                 {
                     ActivateMolar();
                 }

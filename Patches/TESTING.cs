@@ -41,6 +41,7 @@ namespace MilkMolars.Patches
             string[] args = msg.Split(" ");
             logger.LogDebug(msg);
 
+            
 
             // Comment these out
             if (args[0] == "/refresh")
@@ -89,6 +90,14 @@ namespace MilkMolars.Patches
             if (args[0] == "/climbSpeed")
             {
                 localPlayer.climbSpeed = float.Parse(args[1]);
+            }
+            if (args[0] == "/itemLandSpeed")
+            {
+                ItemDropship dropShip = UnityEngine.Object.FindObjectsOfType<ItemDropship>().FirstOrDefault();
+                if (dropShip != null)
+                {
+                    dropShip.shipTimer = float.Parse(args[1]);
+                }
             }
 
         }
