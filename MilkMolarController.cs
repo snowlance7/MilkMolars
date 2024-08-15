@@ -5,11 +5,14 @@ using Steamworks.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using Unity.Collections;
 using Unity.Netcode;
+using UnityEngine;
 using UnityEngine.PlayerLoop;
 using static MilkMolars.Plugin;
+using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace MilkMolars
 {
@@ -272,5 +275,75 @@ namespace MilkMolars
             return false;
         }
 
+        public static void SpawnMolarsInLevel() // TODO: TEST THIS, JUST IMPLEMENTED
+        {
+            List<RandomScrapSpawn> spawnNodes = UnityEngine.Object.FindObjectsOfType<RandomScrapSpawn>().Where(x => !x.spawnUsed).ToList();
+
+            // Spawning Milk Molars
+            List<string> levelAmount = configMilkMolarSpawnAmount.Value.Split(",").ToList();
+            string? amount = levelAmount.Where(x => x.Trim().Split(":")[0] == RoundManager.Instance.currentLevel.name).FirstOrDefault();
+            if (amount == null) { logger.LogError("Unable to spawn molars, couldnt find level in MilkMolarSpawnAmount config"); return; }
+
+            string[] minmax = amount.Trim().Split(":")[1].Split("-");
+            int min = int.Parse(minmax[0]);
+            int max = int.Parse(minmax[1]);
+            int spawnAmount = UnityEngine.Random.Range(min, max + 1);
+
+            for (int i = 0; i < spawnAmount; i++)
+            {
+                if (spawnNodes.Count <= 0) break;
+
+                int index = UnityEngine.Random.Range(0, spawnNodes.Count);
+                RandomScrapSpawn randomScrapSpawn = spawnNodes[index];
+                UnityEngine.Vector3 vector = randomScrapSpawn.transform.position;
+                if (randomScrapSpawn.spawnedItemsCopyPosition)
+                {
+                    spawnNodes.RemoveAt(index);
+                }
+                else
+                {
+                    vector = RoundManager.Instance.GetRandomNavMeshPositionInRadiusSpherical(randomScrapSpawn.transform.position, randomScrapSpawn.itemSpawnRange, RoundManager.Instance.navHit);
+                }
+                // spawn item at random position
+                Item molar = LethalLib.Modules.Items.LethalLibItemList.Where(x => x.name == "").FirstOrDefault();
+                if (molar == null) { logger.LogError("Unable to find molar in LethalLibItemList"); return; }
+                GameObject gameObject = UnityEngine.Object.Instantiate(molar.spawnPrefab, vector, UnityEngine.Quaternion.identity, StartOfRound.Instance.propsContainer);
+                gameObject.GetComponent<GrabbableObject>().fallTime = 0f;
+                gameObject.GetComponent<NetworkObject>().Spawn();
+            }
+
+            // Spawning Mega Milk Molars
+            levelAmount = configMegaMilkMolarSpawnAmount.Value.Split(",").ToList();
+            amount = levelAmount.Where(x => x.Trim().Split(":")[0] == RoundManager.Instance.currentLevel.name).FirstOrDefault();
+            if (amount == null) { logger.LogError("Unable to spawn molars, couldnt find level in MegaMilkMolarSpawnAmount config"); return; }
+
+            minmax = amount.Trim().Split(":")[1].Split("-");
+            min = int.Parse(minmax[0]);
+            max = int.Parse(minmax[1]);
+            spawnAmount = UnityEngine.Random.Range(min, max + 1);
+
+            for (int i = 0; i < spawnAmount; i++)
+            {
+                if (spawnNodes.Count <= 0) break;
+
+                int index = UnityEngine.Random.Range(0, spawnNodes.Count);
+                RandomScrapSpawn randomScrapSpawn = spawnNodes[index];
+                UnityEngine.Vector3 vector = randomScrapSpawn.transform.position;
+                if (randomScrapSpawn.spawnedItemsCopyPosition)
+                {
+                    spawnNodes.RemoveAt(index);
+                }
+                else
+                {
+                    vector = RoundManager.Instance.GetRandomNavMeshPositionInRadiusSpherical(randomScrapSpawn.transform.position, randomScrapSpawn.itemSpawnRange, RoundManager.Instance.navHit);
+                }
+                // spawn item at random position
+                Item molar = LethalLib.Modules.Items.LethalLibItemList.Where(x => x.name == "").FirstOrDefault();
+                if (molar == null) { logger.LogError("Unable to find molar in LethalLibItemList"); return; }
+                GameObject gameObject = UnityEngine.Object.Instantiate(molar.spawnPrefab, vector, UnityEngine.Quaternion.identity, StartOfRound.Instance.propsContainer);
+                gameObject.GetComponent<GrabbableObject>().fallTime = 0f;
+                gameObject.GetComponent<NetworkObject>().Spawn();
+            }
+        }
     }
 }

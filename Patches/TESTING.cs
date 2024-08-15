@@ -25,9 +25,13 @@ namespace MilkMolars.Patches
             logger.LogDebug($"Milk molar upgrades: {MilkMolarController.MilkMolarUpgrades.Count}");
             logger.LogDebug($"Mega Milk molar upgrades: {NetworkHandler.MegaMilkMolarUpgrades.Count}");
 
-            logger.LogDebug("Jump force: " + localPlayer.jumpForce);
-            logger.LogDebug("Sprint multiplier: " + localPlayer.sprintMultiplier);
-            
+            logger.LogDebug(RoundManager.Instance.currentLevel.name);
+
+            ItemDropship dropShip = UnityEngine.Object.FindObjectsOfType<ItemDropship>().FirstOrDefault();
+            if (dropShip != null )
+            {
+                logger.LogDebug("Timer: " + dropShip.shipTimer);
+            }
         }
 
         [HarmonyPrefix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.SubmitChat_performed))]
