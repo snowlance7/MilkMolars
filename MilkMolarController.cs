@@ -112,26 +112,35 @@ namespace MilkMolars
             {
                 //// Mega Milk Molars
                 // Signal Transmitter Upgrade
-                MilkMolarUpgrade signalTransmitter = new MilkMolarUpgrade();
-                signalTransmitter.name = "SignalTransmitterUpgrade";
-                signalTransmitter.title = "Signal Transmitter Upgrade";
-                signalTransmitter.type = MilkMolarUpgrade.UpgradeType.OneTimeUnlock;
-                signalTransmitter.cost = configSignalTransmitterUpgrade.Value;
+                MilkMolarUpgrade signalTransmitter = new MilkMolarUpgrade("SignalTransmitterUpgrade", "Signal Transmitter Upgrades", MilkMolarUpgrade.UpgradeType.OneTimeUnlock, configSignalTransmitterUpgrade.Value);
                 upgrades.Add(signalTransmitter);
 
                 // Increased shop deals: Increases the maximum amount of items that can be on sale in the store.
-                // Landing speed
+
                 // Item dropship landing speed
+                MilkMolarUpgrade itemDropshipLandingSpeed = new MilkMolarUpgrade("itemDropshipLandingSpeed", "Item Dropship Landing Speed", MilkMolarUpgrade.UpgradeType.OneTimeUnlock, configItemDropshipLandingSpeedUpgrade.Value);
+                upgrades.Add(itemDropshipLandingSpeed);
+
                 // Keep items on ship chance
+                MilkMolarUpgrade keepItemsOnShipChance = new MilkMolarUpgrade("keepItemsOnShipChance", "Keep Items On Ship", MilkMolarUpgrade.UpgradeType.TierPercent, configKeepItemsOnShipChanceUpgrade.Value);
+                upgrades.Add(keepItemsOnShipChance);
+
                 // Travel discount
-                // Time on moon
+                MilkMolarUpgrade travelDiscount = new MilkMolarUpgrade("travelDiscount", "Travel Discount", MilkMolarUpgrade.UpgradeType.TierPercent, configTravelDiscountUpgrade.Value);
+                upgrades.Add(travelDiscount);
+
+                // Revive player
+                MilkMolarUpgrade revivePlayer = new MilkMolarUpgrade("revivePlayer", "Revive Player", MilkMolarUpgrade.UpgradeType.OneTimeUnlock, configRevivePlayerUpgrade.Value);
+                upgrades.Add(revivePlayer);
+
+
+
                 // Company Cruiser health
                 // Company Cruiser acceleration
                 // Company Cruiser max speed
                 // Company Cruiser turning
                 // Company Cruiser damage reduction
 
-                // Revive player
 
                 if (ExtraMegaMilkMolarUpgrades.Count > 0)
                 {

@@ -80,16 +80,14 @@ namespace MilkMolars
         // Mega Milk Molar Upgrades
         public static ConfigEntry<int> configSignalTransmitterUpgrade;
         //public static ConfigEntry<string> configIncreasedShopDealsUpgrade;
-        public static ConfigEntry<string> configLandingSpeedUpgrade;
-        public static ConfigEntry<string> configItemDropshipLandingSpeedUpgrade;
+        public static ConfigEntry<int> configItemDropshipLandingSpeedUpgrade;
         public static ConfigEntry<string> configKeepItemsOnShipChanceUpgrade;
         public static ConfigEntry<string> configTravelDiscountUpgrade;
-        public static ConfigEntry<string> configTimeOnMoonUpgrade;
-        public static ConfigEntry<string> configCompanyCruiserHealthUpgrade;
-        public static ConfigEntry<string> configCompanyCruiserAccelerationUpgrade;
-        public static ConfigEntry<string> configCompanyCruiserSpeedUpgrade;
-        public static ConfigEntry<string> configCompanyCruiserTurningUpgrade;
-        public static ConfigEntry<string> configCompanyCruiserDamageUpgrade;
+        //public static ConfigEntry<string> configCompanyCruiserHealthUpgrade;
+        //public static ConfigEntry<string> configCompanyCruiserAccelerationUpgrade;
+        //public static ConfigEntry<string> configCompanyCruiserSpeedUpgrade;
+        //public static ConfigEntry<string> configCompanyCruiserTurningUpgrade;
+        //public static ConfigEntry<string> configCompanyCruiserDamageUpgrade;
         public static ConfigEntry<int> configRevivePlayerUpgrade;
 
         public enum ActivateMethod
@@ -154,17 +152,19 @@ namespace MilkMolars
             // Mega Milk Molar Upgrades Configs
             configSignalTransmitterUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Signal Transmitter Upgrade", 5, "Cost of the Signal Transmitter upgrade. One time purchase.");
             //configIncreasedShopDealsUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Increased Shop Deals Upgrade", "", "");
-            configLandingSpeedUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Landing Speed Upgrade", "", "");
-            configItemDropshipLandingSpeedUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Item Dropship Landing Speed Upgrade", "", "");
+            configItemDropshipLandingSpeedUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Item Dropship Landing Speed Upgrade", 10, "");
             configKeepItemsOnShipChanceUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Keep Items On Ship Upgrade", "0:0, 5:25, 10:50, 15:75, 20:100", "Chance of keeping scrap items on ship. Default is 0");
-            configTravelDiscountUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Travel Discount Upgrade", "0:0, 5:25, 10:50, 15:75, 20:100", "Percent travel discount. Default is 0");
-            configTimeOnMoonUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Time On Moon Upgrade", "", "");
-            configCompanyCruiserHealthUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Company Cruiser Health Upgrade", "", "");
-            configCompanyCruiserAccelerationUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Company Cruiser Acceleration Upgrade", "", "");
-            configCompanyCruiserSpeedUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Company Cruiser Speed Upgrade", "", "");
-            configCompanyCruiserTurningUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Company Cruiser Turning Upgrade", "", "");
-            configCompanyCruiserDamageUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Company Cruiser Damage Upgrade", "", "");
+            configTravelDiscountUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Travel Discount Upgrade", "0:0, 5:25, 10:50, 20:75", "Percent travel discount. Default is 0");
+            //configCompanyCruiserHealthUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Company Cruiser Health Upgrade", "", "");
+            //configCompanyCruiserAccelerationUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Company Cruiser Acceleration Upgrade", "", "");
+            //configCompanyCruiserSpeedUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Company Cruiser Speed Upgrade", "", "");
+            //configCompanyCruiserTurningUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Company Cruiser Turning Upgrade", "", "");
+            //configCompanyCruiserDamageUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Company Cruiser Damage Upgrade", "", "");
             configRevivePlayerUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Revive Player Upgrade", 5, "Repeatable upgrade. Revives the player selected on the ship monitor.");
+            // insanity drain when together
+            // increased unlockables
+            // add more days to quota
+
 
             // Loading Assets
             string sAssemblyLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);

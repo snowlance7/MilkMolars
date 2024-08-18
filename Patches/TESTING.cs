@@ -32,6 +32,17 @@ namespace MilkMolars.Patches
             {
                 logger.LogDebug("Timer: " + dropShip.shipTimer);
             }
+
+            /*List<string> anims = new List<string>();
+            foreach (var item in Resources.FindObjectsOfTypeAll<GrabbableObject>())
+            {
+                if (!anims.Contains(item.itemProperties.throwAnim))
+                {
+                    anims.Add(item.itemProperties.throwAnim);
+                    logger.LogDebug(item.itemProperties.throwAnim);
+                }
+            }*/
+            // Grab anims: HoldShotgun, HoldLung, GrabClipboard, HoldJetpack, HoldKnife
         }
 
         [HarmonyPrefix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.SubmitChat_performed))]
@@ -91,7 +102,7 @@ namespace MilkMolars.Patches
             {
                 localPlayer.climbSpeed = float.Parse(args[1]);
             }
-            if (args[0] == "/itemLandSpeed")
+            if (args[0] == "/land")
             {
                 ItemDropship dropShip = UnityEngine.Object.FindObjectsOfType<ItemDropship>().FirstOrDefault();
                 if (dropShip != null)
@@ -99,7 +110,6 @@ namespace MilkMolars.Patches
                     dropShip.shipTimer = float.Parse(args[1]);
                 }
             }
-
         }
     }
 }

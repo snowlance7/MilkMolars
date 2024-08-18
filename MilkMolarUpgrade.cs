@@ -106,6 +106,7 @@ namespace MilkMolars
         public void GoToNextTier()
         {
             logger.LogDebug("Going to next tier");
+            unlocked = true;
             currentTier++;
             if (currentTier >= maxTier)
             {
