@@ -9,6 +9,9 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static MilkMolars.Plugin;
+using MoreShipUpgrades;
+using MoreShipUpgrades.Misc.TerminalNodes;
+using MoreShipUpgrades.UpgradeComponents.TierUpgrades.Player;
 
 namespace MilkMolars.Patches
 {
@@ -33,6 +36,19 @@ namespace MilkMolars.Patches
                 logger.LogDebug("Timer: " + dropShip.shipTimer);
             }
 
+            /*CustomTerminalNode[] filteredNodes = MoreShipUpgrades.Managers.UpgradeBus.Instance.terminalNodes.Where(x => x.Visible && (x.UnlockPrice > 0 || (x.OriginalName == NightVision.UPGRADE_NAME && (x.Prices.Length > 0 && x.Prices[0] != 0)))).ToArray();
+
+            foreach (var node in filteredNodes)
+            {
+                logger.LogDebug(node.OriginalName);
+                logger.LogDebug(node.Name);
+                logger.LogDebug("Unlock price: " + node.UnlockPrice);
+                logger.LogDebug("Prices: " + string.Join(", ", node.Prices));
+                logger.LogDebug("Max Upgrade: " + node.MaxUpgrade);
+            }*/
+
+            logger.LogDebug("LGUCompatible: " + LGUCompatibility.enabled);
+            logger.LogDebug(string.Join(", ", BepInEx.Bootstrap.Chainloader.PluginInfos.Keys));
             /*List<string> anims = new List<string>();
             foreach (var item in Resources.FindObjectsOfTypeAll<GrabbableObject>())
             {

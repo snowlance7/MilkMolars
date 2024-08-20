@@ -20,10 +20,13 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.TextCore.Text;
 
+// malco-Lategame_Upgrades-3.9.14
+
 namespace MilkMolars
 {
     [BepInPlugin(modGUID, modName, modVersion)]
     [BepInDependency(LethalLib.Plugin.ModGUID)]
+    [BepInDependency("malco.Lategame_Upgrades.3.9.14", BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
         public const string modGUID = "Snowlance.MilkMolars";
@@ -41,6 +44,11 @@ namespace MilkMolars
         public static AudioClip ActivateSFX;
 
         public static TMP_FontAsset NotoEmojiFA;
+
+        // LGU Compatibility Configs
+        public static ConfigEntry<bool> configLGUCompatible;
+        public static ConfigEntry<float> configLGUMilkMolarContributeAmount;
+        public static ConfigEntry<float> configLGUMegaMilkMolarContributeAmount;
 
         // Milk Molar Configs
         public static ConfigEntry<string> configMilkMolarLevelRarities;
@@ -113,6 +121,11 @@ namespace MilkMolars
             InitializeNetworkBehaviours();
 
             // Configs
+
+            // General Configs
+            configLGUCompatible = Config.Bind("LGU Compatibility", "LGU Compatible", false, "If true, Milk Molars will be compatible with Lategame Upgrades.");
+            configLGUMilkMolarContributeAmount = Config.Bind("LGU Compatibility", "Milk Molar Contribute Amount", 100f, "How much credits Milk Molars will contribute towards LGU Upgrades.");
+            configLGUMegaMilkMolarContributeAmount = Config.Bind("LGU Compatibility", "Mega Milk Molar Contribute Amount", 100f, "How much credits Mega Milk Molars will contribute towards LGU Upgrades.");
 
             // Milk Molar Configs
             configMilkMolarLevelRarities = Config.Bind("Milk Molar Rarities", "Level Rarities", "ExperimentationLevel:10, AssuranceLevel:10, VowLevel:10, OffenseLevel:30, AdamanceLevel:50, MarchLevel:50, RendLevel:50, DineLevel:50, TitanLevel:80, ArtificeLevel:80, EmbrionLevel:100, All:30, Modded:30", "Rarities for each level. See default for formatting.");

@@ -363,12 +363,12 @@ namespace MilkMolars
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void BuyMegaMilkMolarUpgradeServerRpc(string upgradeName, int cost, ulong steamId)
+        public void BuyMegaMilkMolarUpgradeServerRpc(string upgradeName, int cost, ulong steamId, bool lguUpgrade)
         {
             if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
                 MegaMilkMolars.Value -= cost;
-                BuyMegaMilkMolarUpgradeClientRpc(upgradeName, steamId);
+                if (!lguUpgrade) { BuyMegaMilkMolarUpgradeClientRpc(upgradeName, steamId); }
             }
         }
 

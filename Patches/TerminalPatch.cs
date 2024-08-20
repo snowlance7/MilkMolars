@@ -39,7 +39,8 @@ namespace MilkMolars
                 }
                 else if (MilkMolarController.InMegaUpgradeUI)
                 {
-                    __instance.screenText.text = tooth + NetworkHandler.MegaMilkMolars.ToString();
+                    //logger.LogDebug("in mega upgrade ui");
+                    __instance.topRightText.text = tooth + NetworkHandler.MegaMilkMolars.Value.ToString();
                 }
             }
         }

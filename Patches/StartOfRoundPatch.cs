@@ -10,6 +10,7 @@ using Unity.Netcode;
 using UnityEngine;
 using static MilkMolars.Plugin;
 using Newtonsoft.Json;
+using MoreShipUpgrades.Misc.UI.Application;
 
 namespace MilkMolars
 {
@@ -55,7 +56,6 @@ namespace MilkMolars
             if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
                 NetworkHandler.ResetAllData();
-                
             }
         }
     }

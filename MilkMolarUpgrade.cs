@@ -1,4 +1,5 @@
 ﻿using BepInEx.Logging;
+using MoreShipUpgrades.Misc.TerminalNodes;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,9 @@ namespace MilkMolars
             TierNumber,
             TierPercent,
             OneTimeUnlock,
-            Repeatable
+            Repeatable,
+            LGUTier,
+            LGUOneTimeUnlock
         }
 
         public string name;
@@ -35,6 +38,8 @@ namespace MilkMolars
         public int[] costsPerTier;
 
         public bool fullyUpgraded;
+
+        public bool LGUUpgrade = false;
 
         [JsonIgnore]
         public int count { get { return costsPerTier.Length; } }
@@ -157,6 +162,14 @@ namespace MilkMolars
                     break;
                 case MilkMolarUpgrade.UpgradeType.Repeatable:
                     upgradeString = $"{cost}{tooth} {title} (Repeatable)";
+                    break;
+                case MilkMolarUpgrade.UpgradeType.LGUTier:
+                    upgradeString = $"{nextTierCost}{tooth} {title}";
+                    upgradeString += $"\n{GetUpgradeSymbols()}";
+                    break;
+                case MilkMolarUpgrade.UpgradeType.LGUOneTimeUnlock:
+                    if (fullyUpgraded) { upgradeString = $"{title} (Fully Upgraded)\n "; }
+                    else { upgradeString = $"{cost}{tooth} {title}\n "; }
                     break;
                 default:
                     break;

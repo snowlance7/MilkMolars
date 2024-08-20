@@ -20,6 +20,7 @@ namespace MilkMolars
         
         public override void Initialization()
         {
+            logger.LogDebug("Initializing Upgrade Terminal UI Group");
             //MilkMolarController.Init();
             MilkMolarController.InUpgradeUI = false;
             MilkMolarController.InMegaUpgradeUI = true;
@@ -43,7 +44,7 @@ namespace MilkMolars
                     elements[j] = new CursorElement()
                     {
                         Name = upgrade.GetUpgradeString(),
-                        Action = () => BuyUpgrade(upgrade, elements[j])
+                        Action = () => BuyUpgrade(upgrade.name, j)
                     };
                 }
 
@@ -81,14 +82,16 @@ namespace MilkMolars
             return 4;
         }
 
-        public void BuyUpgrade(MilkMolarUpgrade upgrade, CursorElement element)
+        public void BuyUpgrade(string upgradeName, int index)
         {
+            logger.LogDebug("Buying upgrade");
+            MilkMolarUpgrade upgrade = MilkMolarController.GetUpgradeByName(upgradeName, megaUpgrade: true);
             if (upgrade == null) return;
             logger.LogDebug("BuyUpgrade: " + upgrade.name);
 
             if (MilkMolarController.BuyMegaMilkMolarUpgrade(upgrade, callRPC: true))
             {
-                element.Name = upgrade.GetUpgradeString();
+                currentCursorMenu.elements[currentCursorMenu.cursorIndex].Name = upgrade.GetUpgradeString();
                 logger.LogDebug("Bought upgrade " + upgrade.name);
             }
             else

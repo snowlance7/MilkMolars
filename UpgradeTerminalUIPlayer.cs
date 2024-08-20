@@ -21,6 +21,7 @@ namespace MilkMolars
         public override void Initialization()
         {
             //MilkMolarController.Init();
+            logger.LogDebug("Initializing UpgradeTerminalUIPlayer");
             MilkMolarController.InMegaUpgradeUI = false;
             MilkMolarController.InUpgradeUI = true;
 

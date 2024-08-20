@@ -46,31 +46,45 @@ namespace MilkMolars
             if (!mega)
             {
                 //// Milk Molars // TODO: Sync these with host
-                // Shovel damage
-                MilkMolarUpgrade shovelDamage = new MilkMolarUpgrade("ShovelDamage", "Shovel Damage", MilkMolarUpgrade.UpgradeType.TierNumber, configShovelDamageUpgrade.Value);
-                upgrades.Add(shovelDamage);
+
+                if (!configLGUCompatible.Value || !LGUCompatibility.enabled)
+                {
+                    // Fall damage reduction
+                    MilkMolarUpgrade fallDamageReduction = new MilkMolarUpgrade("FallDamageReduction", "Fall Damage Reduction", MilkMolarUpgrade.UpgradeType.TierPercent, configFallDamageReductionUpgrade.Value);
+                    upgrades.Add(fallDamageReduction);
+
+                    // Shovel damage
+                    MilkMolarUpgrade shovelDamage = new MilkMolarUpgrade("ShovelDamage", "Shovel Damage", MilkMolarUpgrade.UpgradeType.TierNumber, configShovelDamageUpgrade.Value);
+                    upgrades.Add(shovelDamage);
+
+                    // Sprint speed
+                    MilkMolarUpgrade sprintSpeed = new MilkMolarUpgrade("SprintSpeed", "Sprint Speed", MilkMolarUpgrade.UpgradeType.TierNumber, configSprintSpeedUpgrade.Value);
+                    upgrades.Add(sprintSpeed);
+
+                    // Sprint endurance
+                    MilkMolarUpgrade sprintEndurance = new MilkMolarUpgrade("SprintEndurance", "Sprint Endurance", MilkMolarUpgrade.UpgradeType.TierNumber, configSprintEnduranceUpgrade.Value);
+                    upgrades.Add(sprintEndurance);
+
+                    // Sprint regeneration // TODO: implement
+
+                    // Jump height
+                    MilkMolarUpgrade jumpHeight = new MilkMolarUpgrade("JumpHeight", "Jump Height", MilkMolarUpgrade.UpgradeType.TierNumber, configJumpHeightUpgrade.Value);
+                    upgrades.Add(jumpHeight);
+
+                    // Carry weight
+                    MilkMolarUpgrade carryWeight = new MilkMolarUpgrade("CarryWeight", "Carry Weight", MilkMolarUpgrade.UpgradeType.TierPercent, configCarryWeightUpgrade.Value);
+                    upgrades.Add(carryWeight);
+                }
+                else
+                {
+                    List<MilkMolarUpgrade> lguUpgrades = new List<MilkMolarUpgrade>();
+                    lguUpgrades = LGUCompatibility.GetLGUUpgrades(mega);
+                    upgrades.AddRange(lguUpgrades);
+                }
 
                 // Damage resistance
                 MilkMolarUpgrade damageResistance = new MilkMolarUpgrade("DamageResistance", "Damage Resistance", MilkMolarUpgrade.UpgradeType.TierPercent, configDamageResistanceUpgrade.Value);
                 upgrades.Add(damageResistance);
-
-                // Sprint speed
-                MilkMolarUpgrade sprintSpeed = new MilkMolarUpgrade("SprintSpeed", "Sprint Speed", MilkMolarUpgrade.UpgradeType.TierNumber, configSprintSpeedUpgrade.Value);
-                upgrades.Add(sprintSpeed);
-
-                // Sprint endurance
-                MilkMolarUpgrade sprintEndurance = new MilkMolarUpgrade("SprintEndurance", "Sprint Endurance", MilkMolarUpgrade.UpgradeType.TierNumber, configSprintEnduranceUpgrade.Value);
-                upgrades.Add(sprintEndurance);
-
-                // Sprint regeneration // TODO: implement
-
-                // Jump height
-                MilkMolarUpgrade jumpHeight = new MilkMolarUpgrade("JumpHeight", "Jump Height", MilkMolarUpgrade.UpgradeType.TierNumber, configJumpHeightUpgrade.Value);
-                upgrades.Add(jumpHeight);
-
-                // Carry weight
-                MilkMolarUpgrade carryWeight = new MilkMolarUpgrade("CarryWeight", "Carry Weight", MilkMolarUpgrade.UpgradeType.TierPercent, configCarryWeightUpgrade.Value);
-                upgrades.Add(carryWeight);
 
                 // Increased inventory
                 MilkMolarUpgrade increasedInventory = new MilkMolarUpgrade("IncreasedInventory", "Increased Inventory", MilkMolarUpgrade.UpgradeType.TierNumber, configIncreasedInventorySizeUpgrade.Value);
@@ -83,10 +97,6 @@ namespace MilkMolars
                 // Climb speed
                 MilkMolarUpgrade climbSpeed = new MilkMolarUpgrade("ClimbSpeed", "Climb Speed", MilkMolarUpgrade.UpgradeType.TierNumber, configClimbSpeedUpgrade.Value);
                 upgrades.Add(climbSpeed);
-
-                // Fall damage reduction
-                MilkMolarUpgrade fallDamageReduction = new MilkMolarUpgrade("FallDamageReduction", "Fall Damage Reduction", MilkMolarUpgrade.UpgradeType.TierPercent, configFallDamageReductionUpgrade.Value);
-                upgrades.Add(fallDamageReduction);
 
                 // Health Regen
                 MilkMolarUpgrade healthRegen = new MilkMolarUpgrade("HealthRegen", "Health Regen", MilkMolarUpgrade.UpgradeType.TierNumber, configHealthRegenUpgrade.Value);
@@ -111,35 +121,43 @@ namespace MilkMolars
             else
             {
                 //// Mega Milk Molars
-                // Signal Transmitter Upgrade
-                MilkMolarUpgrade signalTransmitter = new MilkMolarUpgrade("SignalTransmitterUpgrade", "Signal Transmitter Upgrades", MilkMolarUpgrade.UpgradeType.OneTimeUnlock, configSignalTransmitterUpgrade.Value);
-                upgrades.Add(signalTransmitter);
+                if (!configLGUCompatible.Value || !LGUCompatibility.enabled)
+                {
+                    // Signal Transmitter Upgrade
+                    MilkMolarUpgrade signalTransmitter = new MilkMolarUpgrade("SignalTransmitterUpgrade", "Signal Transmitter Upgrades", MilkMolarUpgrade.UpgradeType.OneTimeUnlock, configSignalTransmitterUpgrade.Value);
+                    upgrades.Add(signalTransmitter);
 
-                // Increased shop deals: Increases the maximum amount of items that can be on sale in the store.
+                    // Increased shop deals: Increases the maximum amount of items that can be on sale in the store.
 
-                // Item dropship landing speed
-                MilkMolarUpgrade itemDropshipLandingSpeed = new MilkMolarUpgrade("itemDropshipLandingSpeed", "Item Dropship Landing Speed", MilkMolarUpgrade.UpgradeType.OneTimeUnlock, configItemDropshipLandingSpeedUpgrade.Value);
-                upgrades.Add(itemDropshipLandingSpeed);
+                    // Item dropship landing speed
+                    MilkMolarUpgrade itemDropshipLandingSpeed = new MilkMolarUpgrade("itemDropshipLandingSpeed", "Item Dropship Landing Speed", MilkMolarUpgrade.UpgradeType.OneTimeUnlock, configItemDropshipLandingSpeedUpgrade.Value);
+                    upgrades.Add(itemDropshipLandingSpeed);
+
+                    // Travel discount
+                    MilkMolarUpgrade travelDiscount = new MilkMolarUpgrade("travelDiscount", "Travel Discount", MilkMolarUpgrade.UpgradeType.TierPercent, configTravelDiscountUpgrade.Value);
+                    upgrades.Add(travelDiscount);
+
+                    // Company Cruiser health
+                    // Company Cruiser acceleration
+                    // Company Cruiser max speed
+                    // Company Cruiser turning
+                    // Company Cruiser damage reduction
+                }
+                else
+                {
+                    logger.LogDebug("Getting lguUpgrades. mega: " + mega);
+                    List<MilkMolarUpgrade> lguUpgrades = new List<MilkMolarUpgrade>();
+                    lguUpgrades = LGUCompatibility.GetLGUUpgrades(mega);
+                    upgrades.AddRange(lguUpgrades);
+                }
 
                 // Keep items on ship chance
                 MilkMolarUpgrade keepItemsOnShipChance = new MilkMolarUpgrade("keepItemsOnShipChance", "Keep Items On Ship", MilkMolarUpgrade.UpgradeType.TierPercent, configKeepItemsOnShipChanceUpgrade.Value);
                 upgrades.Add(keepItemsOnShipChance);
 
-                // Travel discount
-                MilkMolarUpgrade travelDiscount = new MilkMolarUpgrade("travelDiscount", "Travel Discount", MilkMolarUpgrade.UpgradeType.TierPercent, configTravelDiscountUpgrade.Value);
-                upgrades.Add(travelDiscount);
-
                 // Revive player
                 MilkMolarUpgrade revivePlayer = new MilkMolarUpgrade("revivePlayer", "Revive Player", MilkMolarUpgrade.UpgradeType.OneTimeUnlock, configRevivePlayerUpgrade.Value);
                 upgrades.Add(revivePlayer);
-
-
-
-                // Company Cruiser health
-                // Company Cruiser acceleration
-                // Company Cruiser max speed
-                // Company Cruiser turning
-                // Company Cruiser damage reduction
 
 
                 if (ExtraMegaMilkMolarUpgrades.Count > 0)
@@ -263,7 +281,7 @@ namespace MilkMolars
                     if (callRPC)
                     {
                         logger.LogDebug("Calling server RPC to buy upgrade.");
-                        NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.cost, localPlayerId);
+                        NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.cost, localPlayerId, upgrade.LGUUpgrade);
                     }
                     upgrade.ActivateRepeatableUpgrade();
                     return true;
@@ -279,7 +297,7 @@ namespace MilkMolars
                     if (callRPC)
                     {
                         logger.LogDebug("Calling server RPC to buy upgrade.");
-                        NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.cost, localPlayerId);
+                        NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.cost, localPlayerId, upgrade.LGUUpgrade);
                     }
                     upgrade.ActivateOneTimeUpgrade();
                     return true;
@@ -293,7 +311,7 @@ namespace MilkMolars
                 if (callRPC)
                 {
                     logger.LogDebug("Calling server RPC to buy upgrade.");
-                    NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.nextTierCost, localPlayerId);
+                    NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.nextTierCost, localPlayerId, upgrade.LGUUpgrade);
                 }
                 upgrade.GoToNextTier();
                 upgrade.ActivateCurrentTierUpgrade();
