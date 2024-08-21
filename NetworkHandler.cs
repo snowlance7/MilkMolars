@@ -228,7 +228,22 @@ namespace MilkMolars
                 var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
                 MilkMolarController.MilkMolars = milkMolars;
                 MilkMolarController.MilkMolarUpgrades = JsonConvert.DeserializeObject<List<MilkMolarUpgrade>>(upgrades, settings);
-                MegaMilkMolarUpgrades = JsonConvert.DeserializeObject<List<MilkMolarUpgrade>>(megaUpgrades, settings); 
+                MegaMilkMolarUpgrades = JsonConvert.DeserializeObject<List<MilkMolarUpgrade>>(megaUpgrades, settings);
+                
+                foreach (var upgrade in MilkMolarController.MilkMolarUpgrades)
+                {
+                    if (!upgrade.LGUUpgrade)
+                    {
+                        if (upgrade.type == MilkMolarUpgrade.UpgradeType.OneTimeUnlock && upgrade.unlocked)
+                        {
+                            upgrade.ActivateOneTimeUpgrade();
+                        }
+                        if (upgrade.type == MilkMolarUpgrade.UpgradeType.TierNumber || upgrade.type == MilkMolarUpgrade.UpgradeType.TierPercent && upgrade.unlocked)
+                        {
+                            upgrade.ActivateCurrentTierUpgrade();
+                        }
+                    }
+                }
             }
         }
 

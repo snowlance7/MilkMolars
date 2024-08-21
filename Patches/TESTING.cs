@@ -1,4 +1,4 @@
-﻿using BepInEx.Logging;
+﻿/*using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
 using System;
@@ -33,7 +33,7 @@ namespace MilkMolars.Patches
                 logger.LogDebug("Timer: " + dropShip.shipTimer);
             }
 
-            /*CustomTerminalNode[] filteredNodes = MoreShipUpgrades.Managers.UpgradeBus.Instance.terminalNodes.Where(x => x.Visible && (x.UnlockPrice > 0 || (x.OriginalName == NightVision.UPGRADE_NAME && (x.Prices.Length > 0 && x.Prices[0] != 0)))).ToArray();
+            CustomTerminalNode[] filteredNodes = MoreShipUpgrades.Managers.UpgradeBus.Instance.terminalNodes.Where(x => x.Visible && (x.UnlockPrice > 0 || (x.OriginalName == NightVision.UPGRADE_NAME && (x.Prices.Length > 0 && x.Prices[0] != 0)))).ToArray();
 
             foreach (var node in filteredNodes)
             {
@@ -42,10 +42,10 @@ namespace MilkMolars.Patches
                 logger.LogDebug("Unlock price: " + node.UnlockPrice);
                 logger.LogDebug("Prices: " + string.Join(", ", node.Prices));
                 logger.LogDebug("Max Upgrade: " + node.MaxUpgrade);
-            }*/
+            }
 
             logger.LogDebug(string.Join(", ", BepInEx.Bootstrap.Chainloader.PluginInfos.Keys));
-            /*List<string> anims = new List<string>();
+            List<string> anims = new List<string>();
             foreach (var item in Resources.FindObjectsOfTypeAll<GrabbableObject>())
             {
                 if (!anims.Contains(item.itemProperties.throwAnim))
@@ -53,7 +53,7 @@ namespace MilkMolars.Patches
                     anims.Add(item.itemProperties.throwAnim);
                     logger.LogDebug(item.itemProperties.throwAnim);
                 }
-            }*/
+            }
             // Grab anims: HoldShotgun, HoldLung, GrabClipboard, HoldJetpack, HoldKnife
         }
 
@@ -124,4 +124,4 @@ namespace MilkMolars.Patches
             }
         }
     }
-}
+}*/
