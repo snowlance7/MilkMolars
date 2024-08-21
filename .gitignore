@@ -361,3 +361,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/ThunderStore/icon.png
+/ThunderStore/manifest.json
+/ThunderStore/MilkMolars.zip
+/ThunderStore/README.md
+/.editorconfig
