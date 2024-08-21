@@ -9,9 +9,6 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static MilkMolars.Plugin;
-using MoreShipUpgrades;
-using MoreShipUpgrades.Misc.TerminalNodes;
-using MoreShipUpgrades.UpgradeComponents.TierUpgrades.Player;
 
 namespace MilkMolars.Patches
 {
@@ -47,7 +44,6 @@ namespace MilkMolars.Patches
                 logger.LogDebug("Max Upgrade: " + node.MaxUpgrade);
             }*/
 
-            logger.LogDebug("LGUCompatible: " + LGUCompatibility.enabled);
             logger.LogDebug(string.Join(", ", BepInEx.Bootstrap.Chainloader.PluginInfos.Keys));
             /*List<string> anims = new List<string>();
             foreach (var item in Resources.FindObjectsOfTypeAll<GrabbableObject>())

@@ -47,7 +47,7 @@ namespace MilkMolars
             {
                 //// Milk Molars // TODO: Sync these with host
 
-                if (!configLGUCompatible.Value || !LGUCompatibility.enabled)
+                if (!configLGUCompatible.Value/* || !LGUCompatibility.enabled*/)
                 {
                     // Fall damage reduction
                     MilkMolarUpgrade fallDamageReduction = new MilkMolarUpgrade("FallDamageReduction", "Fall Damage Reduction", MilkMolarUpgrade.UpgradeType.TierPercent, configFallDamageReductionUpgrade.Value);
@@ -121,7 +121,7 @@ namespace MilkMolars
             else
             {
                 //// Mega Milk Molars
-                if (!configLGUCompatible.Value || !LGUCompatibility.enabled)
+                if (!configLGUCompatible.Value/* || !LGUCompatibility.enabled*/)
                 {
                     // Signal Transmitter Upgrade
                     MilkMolarUpgrade signalTransmitter = new MilkMolarUpgrade("SignalTransmitterUpgrade", "Signal Transmitter Upgrades", MilkMolarUpgrade.UpgradeType.OneTimeUnlock, configSignalTransmitterUpgrade.Value);

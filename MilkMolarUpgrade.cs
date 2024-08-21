@@ -1,5 +1,4 @@
 ﻿using BepInEx.Logging;
-using MoreShipUpgrades.Misc.TerminalNodes;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -164,8 +163,16 @@ namespace MilkMolars
                     upgradeString = $"{cost}{tooth} {title} (Repeatable)";
                     break;
                 case MilkMolarUpgrade.UpgradeType.LGUTier:
-                    upgradeString = $"{nextTierCost}{tooth} {title}";
-                    upgradeString += $"\n{GetUpgradeSymbols()}";
+                    if (fullyUpgraded)
+                    {
+                        upgradeString = $"{title} (Fully Upgraded)\n ";
+                        upgradeString += $"\n{GetUpgradeSymbols()}";
+                    }
+                    else
+                    {
+                        upgradeString = $"{nextTierCost}{tooth} {title}";
+                        upgradeString += $"\n{GetUpgradeSymbols()}";
+                    }
                     break;
                 case MilkMolarUpgrade.UpgradeType.LGUOneTimeUnlock:
                     if (fullyUpgraded) { upgradeString = $"{title} (Fully Upgraded)\n "; }

@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using BepInEx.Logging;
+﻿using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
-using static Netcode.Transports.Facepunch.FacepunchTransport;
 using static MilkMolars.Plugin;
-using Newtonsoft.Json;
-using Steamworks.Data;
-using System.IO;
-using System.Threading;
 
 namespace MilkMolars
 {

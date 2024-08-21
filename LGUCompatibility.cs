@@ -1,26 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
-using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
-using static MilkMolars.Plugin;
-using static MilkMolars.MilkMolarController;
-using MoreShipUpgrades.Misc.TerminalNodes;
 using System.Linq;
-using MoreShipUpgrades.Misc.Upgrades;
-using MoreShipUpgrades.UpgradeComponents.TierUpgrades.Player;
-using Steamworks.Data;
-using MoreShipUpgrades.Managers;
+using System.Runtime.CompilerServices;
+using static MilkMolars.Plugin;
 
 namespace MilkMolars
 {
-    public static class LGUCompatibility
+    internal class LGUCompatibility
     {
         private static readonly BepInEx.Logging.ManualLogSource logger = LoggerInstance;
 
         private static bool? _enabled;
 
-        public static bool enabled
+        internal static bool enabled
         {
             get
             {
@@ -33,13 +25,14 @@ namespace MilkMolars
         }
 
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-        public static List<MilkMolarUpgrade> GetLGUUpgrades(bool mega = false)
+        internal static List<MilkMolarUpgrade> GetLGUUpgrades(bool mega = false)
         {
             logger.LogDebug("GetLGUUpgrades: " + enabled);
+
             List<MilkMolarUpgrade> upgrades = new List<MilkMolarUpgrade>();
             if (!mega) // MILK MOLARS
             {
-                CustomTerminalNode[] filteredNodes = MoreShipUpgrades.Managers.UpgradeBus.Instance.terminalNodes.Where(x => x.Visible && !x.SharedUpgrade && (x.UnlockPrice > 0 || (x.OriginalName == NightVision.UPGRADE_NAME && (x.Prices.Length > 0 && x.Prices[0] != 0)))).ToArray();
+                MoreShipUpgrades.Misc.TerminalNodes.CustomTerminalNode[] filteredNodes = MoreShipUpgrades.Managers.UpgradeBus.Instance.terminalNodes.Where(x => x.Visible && !x.SharedUpgrade && (x.UnlockPrice > 0 || (x.OriginalName == MoreShipUpgrades.UpgradeComponents.TierUpgrades.Player.NightVision.UPGRADE_NAME && (x.Prices.Length > 0 && x.Prices[0] != 0)))).ToArray();
                 
                 foreach (var node in filteredNodes)
                 {
@@ -52,15 +45,17 @@ namespace MilkMolars
                     if (node.Prices.Length > 0)
                     {
                         upgrade.type = MilkMolarUpgrade.UpgradeType.LGUTier;
-                        upgrade.costsPerTier = new int[node.Prices.Length + 1];
-                        upgrade.costsPerTier[0] = 0;
-                        upgrade.costsPerTier[1] = (int)Math.Ceiling(node.UnlockPrice / configLGUMilkMolarContributeAmount.Value);
-                        
-                        for (int i = 2; i < upgrade.costsPerTier.Length - 1; i++)
+
+                        List<int> costsPerTierList = new List<int>();
+                        costsPerTierList.Add(0);
+                        costsPerTierList.Add((int)Math.Ceiling(node.UnlockPrice / configLGUMilkMolarContributeAmount.Value));
+
+                        foreach (var price in node.Prices)
                         {
-                            int amount = (int)Math.Ceiling(node.Prices[i - 2] / configLGUMilkMolarContributeAmount.Value);
-                            upgrade.costsPerTier[i] = amount;
+                            costsPerTierList.Add((int)Math.Ceiling(price / configLGUMilkMolarContributeAmount.Value));
                         }
+
+                        upgrade.costsPerTier = costsPerTierList.ToArray();
                         logger.LogDebug("Upgrade costs: " + string.Join(", ", upgrade.costsPerTier));
                     }
                     else
@@ -75,7 +70,7 @@ namespace MilkMolars
             }
             else // MEGA MILK MOLARS
             {
-                CustomTerminalNode[] filteredNodes = MoreShipUpgrades.Managers.UpgradeBus.Instance.terminalNodes.Where(x => x.Visible && x.SharedUpgrade && (x.UnlockPrice > 0 || (x.OriginalName == NightVision.UPGRADE_NAME && (x.Prices.Length > 0 && x.Prices[0] != 0)))).ToArray();
+                MoreShipUpgrades.Misc.TerminalNodes.CustomTerminalNode[] filteredNodes = MoreShipUpgrades.Managers.UpgradeBus.Instance.terminalNodes.Where(x => x.Visible && x.SharedUpgrade && (x.UnlockPrice > 0 || (x.OriginalName == MoreShipUpgrades.UpgradeComponents.TierUpgrades.Player.NightVision.UPGRADE_NAME && (x.Prices.Length > 0 && x.Prices[0] != 0)))).ToArray();
                 logger.LogDebug("Got " + filteredNodes.Length + " nodes");
 
                 foreach (var node in filteredNodes)
@@ -86,18 +81,20 @@ namespace MilkMolars
                     upgrade.title = node.Name;
                     upgrade.LGUUpgrade = true;
 
-                    if (node.Prices.Length > 0)// TODO: Fix this
+                    if (node.Prices.Length > 0) // TODO: Fix this
                     {
                         upgrade.type = MilkMolarUpgrade.UpgradeType.LGUTier;
-                        upgrade.costsPerTier = new int[node.Prices.Length + 2];
-                        upgrade.costsPerTier[0] = 0;
-                        upgrade.costsPerTier[1] = (int)Math.Ceiling(node.UnlockPrice / configLGUMegaMilkMolarContributeAmount.Value);
 
-                        for (int i = 2; i < upgrade.costsPerTier.Length; i++)
+                        List<int> costsPerTierList = new List<int>();
+                        costsPerTierList.Add(0);
+                        costsPerTierList.Add((int)Math.Ceiling(node.UnlockPrice / configLGUMegaMilkMolarContributeAmount.Value));
+
+                        foreach(var price in node.Prices)
                         {
-                            int amount = (int)Math.Ceiling(node.Prices[i - 2] / configLGUMegaMilkMolarContributeAmount.Value);
-                            upgrade.costsPerTier[i] = amount;
+                            costsPerTierList.Add((int)Math.Ceiling(price / configLGUMegaMilkMolarContributeAmount.Value));
                         }
+
+                        upgrade.costsPerTier = costsPerTierList.ToArray();
                         logger.LogDebug("Upgrade costs: " + string.Join(", ", upgrade.costsPerTier));
                     }
                     else
@@ -113,34 +110,36 @@ namespace MilkMolars
         }
     }
 
-    public class LGUUpgrade : MilkMolarUpgrade
+    internal class LGUUpgrade : MilkMolarUpgrade
     {
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         public override void ActivateCurrentTierUpgrade()
         {
             base.ActivateCurrentTierUpgrade();
 
-            CustomTerminalNode node = MoreShipUpgrades.Managers.UpgradeBus.Instance.terminalNodes.Where(x => x.OriginalName == name).FirstOrDefault();
+            MoreShipUpgrades.Misc.TerminalNodes.CustomTerminalNode node = MoreShipUpgrades.Managers.UpgradeBus.Instance.terminalNodes.Where(x => x.OriginalName == name).FirstOrDefault();
             if (node != null)
             {
                 if (!node.Unlocked)
                 {
-                    LguStore.Instance.HandleUpgrade(node);
+                    MoreShipUpgrades.Managers.LguStore.Instance.HandleUpgrade(node);
                 }
                 else if (node.Unlocked && node.MaxUpgrade > node.CurrentUpgrade)
                 {
-                    LguStore.Instance.HandleUpgrade(node, increment: true);
+                    MoreShipUpgrades.Managers.LguStore.Instance.HandleUpgrade(node, increment: true);
                 }
             }
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         public override void ActivateOneTimeUpgrade()
         {
             base.ActivateOneTimeUpgrade();
 
-            CustomTerminalNode node = MoreShipUpgrades.Managers.UpgradeBus.Instance.terminalNodes.Where(x => x.OriginalName == name).FirstOrDefault();
+            MoreShipUpgrades.Misc.TerminalNodes.CustomTerminalNode node = MoreShipUpgrades.Managers.UpgradeBus.Instance.terminalNodes.Where(x => x.OriginalName == name).FirstOrDefault();
             if (node != null)
             {
-                LguStore.Instance.HandleUpgrade(node);
+                MoreShipUpgrades.Managers.LguStore.Instance.HandleUpgrade(node);
             }
         }
     }

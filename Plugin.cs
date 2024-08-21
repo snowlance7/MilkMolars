@@ -5,20 +5,13 @@ using GameNetcodeStuff;
 using HarmonyLib;
 using InteractiveTerminalAPI.UI;
 using LethalLib.Modules;
-using Mono.Collections.Generic;
-using Steamworks.Data;
-using Steamworks.Ugc;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using TMPro;
-using Unity.Netcode;
-using Unity.Networking.Transport;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.TextCore.Text;
 
 // malco-Lategame_Upgrades-3.9.14
 
@@ -26,7 +19,7 @@ namespace MilkMolars
 {
     [BepInPlugin(modGUID, modName, modVersion)]
     [BepInDependency(LethalLib.Plugin.ModGUID)]
-    [BepInDependency("malco.Lategame_Upgrades.3.9.14", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(MoreShipUpgrades.PluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
         public const string modGUID = "Snowlance.MilkMolars";
@@ -115,15 +108,18 @@ namespace MilkMolars
             }
 
             LoggerInstance = PluginInstance.Logger;
+            LoggerInstance.LogDebug("Loaded logger for MilkMolarsMod");
 
             harmony.PatchAll();
+            LoggerInstance.LogDebug("Patched MilkMolarsMod");
 
             InitializeNetworkBehaviours();
+            LoggerInstance.LogDebug("Initialized network behaviours");
 
             // Configs
-
+            
             // General Configs
-            configLGUCompatible = Config.Bind("LGU Compatibility", "LGU Compatible", false, "If true, Milk Molars will be compatible with Lategame Upgrades.");
+            configLGUCompatible = Config.Bind("LGU Compatibility", "LGU Compatible", true, "If true, Milk Molars will be compatible with Lategame Upgrades.");
             configLGUMilkMolarContributeAmount = Config.Bind("LGU Compatibility", "Milk Molar Contribute Amount", 100f, "How much credits Milk Molars will contribute towards LGU Upgrades.");
             configLGUMegaMilkMolarContributeAmount = Config.Bind("LGU Compatibility", "Mega Milk Molar Contribute Amount", 100f, "How much credits Mega Milk Molars will contribute towards LGU Upgrades.");
 
@@ -177,6 +173,7 @@ namespace MilkMolars
             // insanity drain when together
             // increased unlockables
             // add more days to quota
+            LoggerInstance.LogDebug("Got configs");
 
 
             // Loading Assets
@@ -303,12 +300,22 @@ namespace MilkMolars
 
         private static void InitializeNetworkBehaviours()
         {
-            var types = Assembly.GetExecutingAssembly().GetTypes();
+            Type[] types;
+            try
+            {
+                types = Assembly.GetExecutingAssembly().GetTypes();
+            }
+            catch (ReflectionTypeLoadException ex)
+            {
+                types = ex.Types.Where(t => t != null).ToArray();
+            }
+
             foreach (var type in types)
             {
                 var methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
                 foreach (var method in methods)
                 {
+                    LoggerInstance.LogDebug(method.Name);
                     var attributes = method.GetCustomAttributes(typeof(RuntimeInitializeOnLoadMethodAttribute), false);
                     if (attributes.Length > 0)
                     {
