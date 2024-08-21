@@ -22,7 +22,7 @@ namespace MilkMolars
 
         [HarmonyPostfix]
         [HarmonyPatch(nameof(DeleteFileButton.DeleteFile))]
-        public static void DeleteFilePostfix(DeleteFileButton __instance) // TODO: Test this
+        public static void DeleteFilePostfix(DeleteFileButton __instance)
         {
             logger.LogDebug("Deleting Milk Molar files for save: " + __instance.fileToDelete);
 

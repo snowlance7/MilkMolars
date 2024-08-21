@@ -26,7 +26,7 @@ namespace MilkMolars
 
         public static Dictionary<ulong, int> ClientsMilkMolars = new Dictionary<ulong, int>();
 
-        public static Dictionary<ulong, List<MilkMolarUpgrade>> ClientsMilkMolarUpgrades = new Dictionary<ulong, List<MilkMolarUpgrade>>(); // TODO: Get these
+        public static Dictionary<ulong, List<MilkMolarUpgrade>> ClientsMilkMolarUpgrades = new Dictionary<ulong, List<MilkMolarUpgrade>>();
 
 
         public override void OnNetworkSpawn()
@@ -73,8 +73,8 @@ namespace MilkMolars
 
             foreach(var player in StartOfRound.Instance.allPlayerScripts.Where(x => x.isPlayerControlled))
             {
-                ClientsMilkMolars.Add(player.actualClientId, 0); // TODO: Change these to steamId later
-                ClientsMilkMolarUpgrades.Add(player.actualClientId, MilkMolarController.GetUpgrades());
+                ClientsMilkMolars.Add(player.playerSteamId, 0); // TODO: Change these to steamId later
+                ClientsMilkMolarUpgrades.Add(player.playerSteamId, MilkMolarController.GetUpgrades());
             }
 
             Instance.ResetAllDataClientRpc();
@@ -294,8 +294,8 @@ namespace MilkMolars
                 {
                     foreach (var player in StartOfRound.Instance.allPlayerScripts.Where(x => x.isPlayerControlled))
                     {
-                        if (ClientsMilkMolars.ContainsKey(player.actualClientId)) { ClientsMilkMolars[player.actualClientId]++; } // TODO: Change these to steamId later
-                        else { ClientsMilkMolars.Add(player.actualClientId, 1); }
+                        if (ClientsMilkMolars.ContainsKey(player.playerSteamId)) { ClientsMilkMolars[player.playerSteamId]++; } // TODO: Change these to steamId later
+                        else { ClientsMilkMolars.Add(player.playerSteamId, 1); }
                     }
 
                     AddMilkMolarToAllClientsClientRpc();

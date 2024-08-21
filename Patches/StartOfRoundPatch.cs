@@ -18,17 +18,6 @@ namespace MilkMolars
     {
         private static ManualLogSource logger = Plugin.LoggerInstance;
 
-        /*[HarmonyPostfix]
-        [HarmonyPatch(nameof(StartOfRound.OnClientConnect))]
-        public static void OnClientConnectPostfix(StartOfRound __instance, ulong steamId) // TODO: Test this
-        {
-            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
-            {
-                logger.LogDebug("OnClientConnectPostfix called, sending data to client with id " + steamId);
-                NetworkHandler.SendDataToClient(steamId);
-            }
-        }*/
-
         [HarmonyPrefix]
         [HarmonyPatch(nameof(StartOfRound.AutoSaveShipData))]
         public static void AutoSaveShipDataPrefix(StartOfRound __instance)

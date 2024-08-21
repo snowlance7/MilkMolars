@@ -202,7 +202,7 @@ namespace MilkMolars
 
         public static void AddMilkMolar(PlayerControllerB player)
         {
-            NetworkHandler.Instance.AddMilkMolarServerRpc(player.actualClientId); // TODO: Change this to steamId later
+            NetworkHandler.Instance.AddMilkMolarServerRpc(player.playerSteamId); // TODO: Change this to steamId later
         }
 
         public static void AddMegaMilkMolar()
@@ -281,7 +281,7 @@ namespace MilkMolars
                 return false;
             }
 
-            if (upgrade.type == MilkMolarUpgrade.UpgradeType.OneTimeUnlock)
+            if (upgrade.type == MilkMolarUpgrade.UpgradeType.OneTimeUnlock || upgrade.type == MilkMolarUpgrade.UpgradeType.LGUOneTimeUnlock)
             {
                 logger.LogDebug("Upgrade type is OneTimeUnlock. Checking if upgrade is not fully upgraded and if we have enough Mega Milk Molars or RPC is not required.");
                 if ((!upgrade.fullyUpgraded && NetworkHandler.MegaMilkMolars.Value >= upgrade.cost) || callRPC == false)
@@ -316,7 +316,7 @@ namespace MilkMolars
             return false;
         }
 
-        public static void SpawnMolarsInLevel() // TODO: TEST THIS, JUST IMPLEMENTED
+        public static void SpawnMolarsInLevel()
         {
             List<RandomScrapSpawn> spawnNodes = UnityEngine.Object.FindObjectsOfType<RandomScrapSpawn>().Where(x => !x.spawnUsed).ToList();
 

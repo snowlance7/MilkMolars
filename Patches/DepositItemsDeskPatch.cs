@@ -29,7 +29,7 @@ namespace MilkMolars
                     {
                         foreach (var player in StartOfRound.Instance.allPlayerScripts.Where(x => x.isPlayerControlled))
                         {
-                            NetworkHandler.UpdateClientsMilkMolars(player.actualClientId, amount, true); // TODO: Change this to steamId later
+                            NetworkHandler.UpdateClientsMilkMolars(player.playerSteamId, amount, true); // TODO: Change this to steamId later
                         }
 
                         NetworkHandler.Instance.AddMultipleMilkMolarsAllClientsClientRpc(amount);
@@ -45,8 +45,8 @@ namespace MilkMolars
 
                         if (amount > 0)
                         {
-                            NetworkHandler.UpdateClientsMilkMolars(player.actualClientId, amount, true); // TODO: Change this to steamId later
-                            NetworkHandler.Instance.AddMultipleMilkMolarsClientRpc(player.actualClientId, amount);
+                            NetworkHandler.UpdateClientsMilkMolars(player.playerSteamId, amount, true); // TODO: Change this to steamId later
+                            NetworkHandler.Instance.AddMultipleMilkMolarsClientRpc(player.playerSteamId, amount);
                         }
                     }
                 }

@@ -24,13 +24,13 @@ namespace MilkMolars
     {
         public const string modGUID = "Snowlance.MilkMolars";
         public const string modName = "MilkMolars";
-        public const string modVersion = "0.1.0";
+        public const string modVersion = "0.1.1";
 
         public static Plugin PluginInstance;
         public static ManualLogSource LoggerInstance;
         private readonly Harmony harmony = new Harmony(modGUID);
         public static PlayerControllerB localPlayer { get { return GameNetworkManager.Instance.localPlayerController; } }
-        public static ulong localPlayerId { get { return GameNetworkManager.Instance.localPlayerController.actualClientId; } } // TODO: Change this back to steamId
+        public static ulong localPlayerId { get { return GameNetworkManager.Instance.localPlayerController.playerSteamId; } } // TODO: Change this back to steamId
 
         public static AssetBundle? ModAssets;
 
@@ -127,7 +127,6 @@ namespace MilkMolars
             configMilkMolarLevelRarities = Config.Bind("Milk Molar Rarities", "Level Rarities", "ExperimentationLevel:10, AssuranceLevel:10, VowLevel:10, OffenseLevel:30, AdamanceLevel:50, MarchLevel:50, RendLevel:50, DineLevel:50, TitanLevel:80, ArtificeLevel:80, EmbrionLevel:100, All:30, Modded:30", "Rarities for each level. See default for formatting.");
             configMilkMolarCustomLevelRarities = Config.Bind("Milk Molar Rarities", "Custom Level Rarities", "", "Rarities for modded levels. Same formatting as level rarities.");
             configMilkMolarSpawnAmount = Config.Bind("Milk Molar Rarities", "Spawn Amount Min Max", "ExperimentationLevel:1-2, AssuranceLevel:1-4, VowLevel:1-5, OffenseLevel:3-5, AdamanceLevel:4-8, MarchLevel:2-6, RendLevel:3-10, DineLevel:4-10, TitanLevel:6-15, ArtificeLevel:7-14, EmbrionLevel:10-20, All:1-5, Modded:1-10", "The minimum and maximum amount of Milk Molars to spawn after scrap spawns in round for each moon.");
-            // TODO: Set up min max spawn amount
             configMilkMolarActivateMethod = Config.Bind("Milk Molar", "Activate Method", ActivateMethod.Use, "Activation method for Milk Molars.\nGrab: Grabbing the Milk Molar will activate it.\nUse: Using the Milk Molar while its in your inventory will activate it.\nShip: Milk Molar will activate when brought inside the ship.\nSell: Milk Molar will activate when sold to the company.");
             configSharedMilkMolars = Config.Bind("Milk Molar", "Shared Milk Molars", true, "By default (true), Milk Molars will give 1 upgrade point to each player when activated. Setting this to false will only give 1 upgrade point to the player who activated it.");
             configUpgradePointsToFinder = Config.Bind("Milk Molar", "Upgrade Points to Finder", false, "This only works when configMilkMolarActivateMethod is SHIP or SELL and configSharedMilkMolars is false. Setting this to true will only give an upgrade point to the first person who held the Milk Molar when activating it.");

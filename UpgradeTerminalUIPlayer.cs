@@ -82,7 +82,7 @@ namespace MilkMolars
             return 4;
         }
 
-        public void BuyUpgrade(string upgradeName, int index) // TODO: Causing error, fix it
+        public void BuyUpgrade(string upgradeName, int index)
         {
             logger.LogDebug("Buying upgrade");
             MilkMolarUpgrade upgrade = MilkMolarController.GetUpgradeByName(upgradeName);

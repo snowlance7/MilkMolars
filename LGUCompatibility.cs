@@ -81,7 +81,7 @@ namespace MilkMolars
                     upgrade.title = node.Name;
                     upgrade.LGUUpgrade = true;
 
-                    if (node.Prices.Length > 0) // TODO: Fix this
+                    if (node.Prices.Length > 0)
                     {
                         upgrade.type = MilkMolarUpgrade.UpgradeType.LGUTier;
 
@@ -101,6 +101,7 @@ namespace MilkMolars
                     {
                         upgrade.type = MilkMolarUpgrade.UpgradeType.LGUOneTimeUnlock;
                         upgrade.cost = (int)Math.Ceiling(node.UnlockPrice / configLGUMegaMilkMolarContributeAmount.Value);
+                        logger.LogDebug("One time upgrade costs: " + upgrade.cost);
                     }
                     upgrades.Add(upgrade);
                 }

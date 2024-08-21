@@ -67,6 +67,7 @@
 
     <ItemGroup>
       <Folder Include="Assets\" />
+      <Folder Include="ThunderStore\BepInEx\plugins\MilkMolars\" />
     </ItemGroup>
 
     <ItemGroup>
@@ -85,4 +86,7 @@
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
       <Exec Command="xcopy &quot;C:\Users\snowl\source\repos\MilkMolars\Assets\milkmolar_assets&quot; &quot;C:\Users\snowl\source\repos\1Lethal Company Debugging\BepInEx\plugins&quot; /Y" />
     </Target>
+    <ItemGroup>
+      <EditorConfigFiles Remove="C:\Users\snowl\source\repos\MilkMolars\.editorconfig" />
+    </ItemGroup>
 </Project>
