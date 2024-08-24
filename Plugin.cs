@@ -13,8 +13,6 @@ using System.Reflection;
 using TMPro;
 using UnityEngine;
 
-// malco-Lategame_Upgrades-3.9.14
-
 namespace MilkMolars
 {
     [BepInPlugin(modGUID, modName, modVersion)]
@@ -24,7 +22,7 @@ namespace MilkMolars
     {
         public const string modGUID = "Snowlance.MilkMolars";
         public const string modName = "MilkMolars";
-        public const string modVersion = "0.1.1";
+        public const string modVersion = "0.2.0";
 
         public static Plugin PluginInstance;
         public static ManualLogSource LoggerInstance;

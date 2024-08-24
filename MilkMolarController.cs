@@ -41,14 +41,28 @@ namespace MilkMolars
             }
         }
 
-        public static List<MilkMolarUpgrade> GetUpgrades(bool mega = false) // TODO: Implement commented out upgrades
+        public static void RefreshLGUUpgrades(bool mega)
+        {
+            if (mega)
+            {
+                NetworkHandler.MegaMilkMolarUpgrades.RemoveAll(x => x.LGUUpgrade);
+                NetworkHandler.MegaMilkMolarUpgrades.AddRange(LGUCompatibility.GetLGUUpgrades(mega));
+            }
+            else
+            {
+                MilkMolarUpgrades.RemoveAll(x => x.LGUUpgrade);
+                MilkMolarUpgrades.AddRange(LGUCompatibility.GetLGUUpgrades(mega));
+            }
+        }
+
+        public static List<MilkMolarUpgrade> GetUpgrades(bool mega = false, bool skipLGU = false) // TODO: Implement commented out upgrades
         {
             List<MilkMolarUpgrade> upgrades = new List<MilkMolarUpgrade>();
             if (!mega)
             {
                 //// Milk Molars
 
-                if (!configLGUCompatible.Value || !LGUCompatibility.enabled)
+                if (!LGUCompatibility.enabled)
                 {
                     // Fall damage reduction
                     upgrades.Add(new MilkMolarUpgrade("FallDamageReduction", "Fall Damage Reduction", MilkMolarUpgrade.UpgradeType.TierPercent, configFallDamageReductionUpgrade.Value));
@@ -109,7 +123,7 @@ namespace MilkMolars
             else
             {
                 //// Mega Milk Molars
-                if (!configLGUCompatible.Value || !LGUCompatibility.enabled)
+                if (!LGUCompatibility.enabled)
                 {
                     // Signal Transmitter Upgrade
                     //MilkMolarUpgrade signalTransmitter = new MilkMolarUpgrade("SignalTransmitterUpgrade", "Signal Transmitter Upgrades", MilkMolarUpgrade.UpgradeType.OneTimeUnlock, configSignalTransmitterUpgrade.Value);
@@ -245,6 +259,7 @@ namespace MilkMolars
             }
 
             logger.LogDebug("Checking if upgrade is not fully upgraded and if we have enough Milk Molars for next tier.");
+            logger.LogDebug("Current Tier: " + upgrade.currentTier);
             if (!upgrade.fullyUpgraded && MilkMolars >= upgrade.nextTierCost)
             {
                 MilkMolars -= upgrade.nextTierCost;
@@ -299,6 +314,7 @@ namespace MilkMolars
             }
 
             logger.LogDebug("Checking if upgrade is not fully upgraded and if we have enough Mega Milk Molars or RPC is not required.");
+            logger.LogDebug("Current Tier: " + upgrade.currentTier);
             if ((!upgrade.fullyUpgraded && NetworkHandler.MegaMilkMolars.Value >= upgrade.nextTierCost) || callRPC == false)
             {
                 logger.LogDebug("Conditions met. Going to next tier and activating current tier upgrade.");

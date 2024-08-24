@@ -37,11 +37,12 @@ namespace MilkMolars
             }
         }
 
-        [HarmonyPostfix]
-        [HarmonyPatch(nameof(StartOfRound.EndOfGame))]
-        public static void EndOfGamePostfix(StartOfRound __instance)
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(StartOfRound.playersFiredGameOver))]
+        public static void playersFiredGameOverPrefix(StartOfRound __instance)
         {
-            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
+            logger.LogDebug("In EndPlayersFiredSequenceClientRpcPostfix");
+            if (__instance.NetworkManager.IsHost || __instance.NetworkManager.IsServer)
             {
                 NetworkHandler.ResetAllData();
             }

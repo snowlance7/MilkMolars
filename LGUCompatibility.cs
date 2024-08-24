@@ -18,7 +18,7 @@ namespace MilkMolars
             {
                 if (_enabled == null)
                 {
-                    _enabled = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.malco.lethalcompany.moreshipupgrades");
+                    _enabled = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.malco.lethalcompany.moreshipupgrades") && configLGUCompatible.Value;
                 }
                 return (bool)_enabled;
             }
@@ -30,7 +30,7 @@ namespace MilkMolars
             logger.LogDebug("GetLGUUpgrades: " + enabled);
 
             List<MilkMolarUpgrade> upgrades = new List<MilkMolarUpgrade>();
-            if (!mega) // MILK MOLARS
+            if (!mega) // MILK MOLARS // TODO: Error with getting late game upgrades that are onetimeunlock, not dividing price 
             {
                 MoreShipUpgrades.Misc.TerminalNodes.CustomTerminalNode[] filteredNodes = MoreShipUpgrades.Managers.UpgradeBus.Instance.terminalNodes.Where(x => x.Visible && !x.SharedUpgrade && (x.UnlockPrice > 0 || (x.OriginalName == MoreShipUpgrades.UpgradeComponents.TierUpgrades.Player.NightVision.UPGRADE_NAME && (x.Prices.Length > 0 && x.Prices[0] != 0)))).ToArray();
                 
@@ -55,13 +55,20 @@ namespace MilkMolars
                             costsPerTierList.Add((int)Math.Ceiling(price / configLGUMilkMolarContributeAmount.Value));
                         }
 
+                        if (node.CurrentUpgrade == 0)
+                        {
+                            if (node.Unlocked) { upgrade.currentTier = 1; }
+                            else { upgrade.currentTier = 0; }
+                        }
+                        else { upgrade.currentTier = node.CurrentUpgrade + 1; }
+
                         upgrade.costsPerTier = costsPerTierList.ToArray();
                         logger.LogDebug("Upgrade costs: " + string.Join(", ", upgrade.costsPerTier));
                     }
                     else
                     {
                         upgrade.type = MilkMolarUpgrade.UpgradeType.LGUOneTimeUnlock;
-                        upgrade.cost = node.UnlockPrice;
+                        upgrade.cost = (int)Math.Ceiling(node.UnlockPrice / configLGUMilkMolarContributeAmount.Value);
                     }
                     upgrades.Add(upgrade);
                 }
@@ -93,6 +100,13 @@ namespace MilkMolars
                         {
                             costsPerTierList.Add((int)Math.Ceiling(price / configLGUMegaMilkMolarContributeAmount.Value));
                         }
+
+                        if (node.CurrentUpgrade == 0)
+                        {
+                            if (node.Unlocked) { upgrade.currentTier = 1; }
+                            else { upgrade.currentTier = 0; }
+                        }
+                        else { upgrade.currentTier = node.CurrentUpgrade + 1; }
 
                         upgrade.costsPerTier = costsPerTierList.ToArray();
                         logger.LogDebug("Upgrade costs: " + string.Join(", ", upgrade.costsPerTier));
