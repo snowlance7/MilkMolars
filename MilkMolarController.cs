@@ -21,27 +21,24 @@ namespace MilkMolars
     {
         private static ManualLogSource logger = Plugin.LoggerInstance;
 
-        public static int MilkMolars = 0;
+        internal static int MilkMolars = 0;
 
-        public static bool InUpgradeUI = false;
-        public static bool InMegaUpgradeUI = false;
+        internal static bool InUpgradeUI = false;
+        internal static bool InMegaUpgradeUI = false;
 
-        public static List<MilkMolarUpgrade> MilkMolarUpgrades = new List<MilkMolarUpgrade>();
+        internal static List<MilkMolarUpgrade> MilkMolarUpgrades = new List<MilkMolarUpgrade>();
 
         public static List<MilkMolarUpgrade> ExtraMilkMolarUpgrades = new List<MilkMolarUpgrade>();
         public static List<MilkMolarUpgrade> ExtraMegaMilkMolarUpgrades = new List<MilkMolarUpgrade>();
 
-        public static void Init()
+        internal static void Init()
         {
-            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
-            {
-                LoggerInstance.LogDebug("Initing milk molar controller");
+            LoggerInstance.LogDebug("Initing milk molar controller");
 
-                NetworkHandler.LoadDataFromFile();
-            }
+            NetworkHandler.LoadDataFromFile();
         }
 
-        public static void RefreshLGUUpgrades(bool mega)
+        internal static void RefreshLGUUpgrades(bool mega)
         {
             if (mega)
             {
@@ -55,7 +52,7 @@ namespace MilkMolars
             }
         }
 
-        public static List<MilkMolarUpgrade> GetUpgrades(bool mega = false, bool skipLGU = false) // TODO: Implement commented out upgrades
+        internal static List<MilkMolarUpgrade> GetUpgrades(bool mega = false, bool skipLGU = false) // TODO: Implement commented out upgrades
         {
             List<MilkMolarUpgrade> upgrades = new List<MilkMolarUpgrade>();
             if (!mega)
@@ -214,17 +211,17 @@ namespace MilkMolars
             }
         }
 
-        public static void AddMilkMolar(PlayerControllerB player)
+        internal static void AddMilkMolar(PlayerControllerB player)
         {
             NetworkHandler.Instance.AddMilkMolarServerRpc(player.playerSteamId); // TODO: Change this to steamId later
         }
 
-        public static void AddMegaMilkMolar()
+        internal static void AddMegaMilkMolar()
         {
             NetworkHandler.Instance.AddMegaMilkMolarServerRpc();
         }
 
-        public static bool BuyMilkMolarUpgrade(MilkMolarUpgrade upgrade)
+        internal static bool BuyMilkMolarUpgrade(MilkMolarUpgrade upgrade)
         {
             logger.LogDebug("Attempting to buy Milk Molar upgrade: " + upgrade.name);
 
@@ -236,7 +233,6 @@ namespace MilkMolars
                     MilkMolars -= upgrade.cost;
                     logger.LogDebug("Conditions met. Activating Repeatable upgrade and updating server.");
                     upgrade.ActivateRepeatableUpgrade();
-                    NetworkHandler.Instance.UpdateMilkMolarsServerRpc(MilkMolars, localPlayerId);
                     return true;
                 }
                 logger.LogDebug("Not enough Milk Molars for Repeatable upgrade.");
@@ -251,7 +247,6 @@ namespace MilkMolars
                     MilkMolars -= upgrade.cost;
                     logger.LogDebug("Conditions met. Activating OneTimeUnlock upgrade and updating server.");
                     upgrade.ActivateOneTimeUpgrade();
-                    NetworkHandler.Instance.UpdateMilkMolarsServerRpc(MilkMolars, localPlayerId);
                     return true;
                 }
                 logger.LogDebug("Not enough Milk Molars or upgrade is fully upgraded.");
@@ -266,7 +261,6 @@ namespace MilkMolars
                 logger.LogDebug("Conditions met. Going to next tier, activating current tier upgrade, and updating server.");
                 upgrade.GoToNextTier();
                 upgrade.ActivateCurrentTierUpgrade();
-                NetworkHandler.Instance.UpdateMilkMolarsServerRpc(MilkMolars, localPlayerId);
                 return true;
             }
 
@@ -275,7 +269,7 @@ namespace MilkMolars
         }
 
 
-        public static bool BuyMegaMilkMolarUpgrade(MilkMolarUpgrade upgrade, bool callRPC = false) // THIS IS GOOD DONT TOUCH IT
+        internal static bool BuyMegaMilkMolarUpgrade(MilkMolarUpgrade upgrade, bool callRPC = false) // THIS IS GOOD DONT TOUCH IT
         {
             logger.LogDebug("Attempting to buy Mega Milk Molar upgrade: " + upgrade.name);
 
@@ -332,7 +326,7 @@ namespace MilkMolars
             return false;
         }
 
-        public static void SpawnMolarsInLevel()
+        internal static void SpawnMolarsInLevel()
         {
             List<RandomScrapSpawn> spawnNodes = UnityEngine.Object.FindObjectsOfType<RandomScrapSpawn>().Where(x => !x.spawnUsed).ToList();
 

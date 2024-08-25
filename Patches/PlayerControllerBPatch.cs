@@ -24,20 +24,12 @@ namespace MilkMolars
         public static void ConnectClientToPlayerObjectPostfix(PlayerControllerB __instance) // TODO: Test this
         {
             logger.LogDebug("In ConnectClientToPlayerObjectPostfix");
-            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
-            {
-                logger.LogDebug("Initiating MilkMolarController");
-                MilkMolarController.Init();
-            }
-            else
-            {
-                NetworkHandler.Instance.GetDataFromServerServerRpc(localPlayerId);
-            }
+            MilkMolarController.Init();
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(PlayerControllerB.DamagePlayer))]
-        public static void DamagePlayerPostfix(PlayerControllerB __instance, ref int damageNumber, bool fallDamage) // TODO: Test this
+        public static void DamagePlayerPrefix(PlayerControllerB __instance, ref int damageNumber, bool fallDamage) // TODO: Test this
         {
             if (localPlayer.actualClientId == __instance.actualClientId)
             {

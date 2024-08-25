@@ -18,11 +18,11 @@ namespace MilkMolars
     [BepInPlugin(modGUID, modName, modVersion)]
     [BepInDependency(LethalLib.Plugin.ModGUID)]
     [BepInDependency("MoreShipUpgrades", BepInDependency.DependencyFlags.SoftDependency)]
-    public class Plugin : BaseUnityPlugin
+    internal class Plugin : BaseUnityPlugin
     {
         public const string modGUID = "Snowlance.MilkMolars";
         public const string modName = "MilkMolars";
-        public const string modVersion = "0.2.0";
+        public const string modVersion = "0.3.0";
 
         public static Plugin PluginInstance;
         public static ManualLogSource LoggerInstance;

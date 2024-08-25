@@ -78,7 +78,6 @@ namespace MilkMolars.Patches
             }
             if (args[0] == "/save")
             {
-                NetworkHandler.SendAllDataToServer();
                 NetworkHandler.SaveDataToFile();
                 HUDManager.Instance.DisplayTip("Testing", "Saved Data");
             }
@@ -111,6 +110,12 @@ namespace MilkMolars.Patches
                 {
                     dropShip.shipTimer = float.Parse(args[1]);
                 }
+            }
+            if (args[0] == "/clip")
+            {
+                Terminal terminal = UnityEngine.Object.FindObjectOfType<Terminal>();
+                int index = int.Parse(args[1]);
+                localPlayer.statusEffectAudio.PlayOneShot(terminal.syncedAudios[index], 1f);
             }
         }
     }

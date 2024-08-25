@@ -21,7 +21,7 @@ namespace MilkMolars
         public override void Initialization()
         {
             logger.LogDebug("Initializing Upgrade Terminal UI Group");
-            //MilkMolarController.Init();
+
             MilkMolarController.InUpgradeUI = false;
             MilkMolarController.InMegaUpgradeUI = true;
 
@@ -98,7 +98,7 @@ namespace MilkMolars
             }
             else
             {
-                // TODO: Play error sound
+                UnityEngine.Object.FindObjectOfType<Terminal>().PlayTerminalAudioServerRpc(1);
             }
         }
     }
