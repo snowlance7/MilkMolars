@@ -33,12 +33,9 @@ namespace MilkMolars
 
         public static void Init()
         {
-            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
-            {
-                LoggerInstance.LogDebug("Initing milk molar controller");
+            LoggerInstance.LogDebug("Initing milk molar controller");
 
-                NetworkHandler.LoadDataFromFile();
-            }
+            NetworkHandler.LoadDataFromFile();
         }
 
         public static void RefreshLGUUpgrades(bool mega)
@@ -236,7 +233,6 @@ namespace MilkMolars
                     MilkMolars -= upgrade.cost;
                     logger.LogDebug("Conditions met. Activating Repeatable upgrade and updating server.");
                     upgrade.ActivateRepeatableUpgrade();
-                    NetworkHandler.Instance.UpdateMilkMolarsServerRpc(MilkMolars, localPlayerId);
                     return true;
                 }
                 logger.LogDebug("Not enough Milk Molars for Repeatable upgrade.");
@@ -251,7 +247,6 @@ namespace MilkMolars
                     MilkMolars -= upgrade.cost;
                     logger.LogDebug("Conditions met. Activating OneTimeUnlock upgrade and updating server.");
                     upgrade.ActivateOneTimeUpgrade();
-                    NetworkHandler.Instance.UpdateMilkMolarsServerRpc(MilkMolars, localPlayerId);
                     return true;
                 }
                 logger.LogDebug("Not enough Milk Molars or upgrade is fully upgraded.");
@@ -266,7 +261,6 @@ namespace MilkMolars
                 logger.LogDebug("Conditions met. Going to next tier, activating current tier upgrade, and updating server.");
                 upgrade.GoToNextTier();
                 upgrade.ActivateCurrentTierUpgrade();
-                NetworkHandler.Instance.UpdateMilkMolarsServerRpc(MilkMolars, localPlayerId);
                 return true;
             }
 

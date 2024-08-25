@@ -30,7 +30,7 @@ namespace MilkMolars
             logger.LogDebug("GetLGUUpgrades: " + enabled);
 
             List<MilkMolarUpgrade> upgrades = new List<MilkMolarUpgrade>();
-            if (!mega) // MILK MOLARS // TODO: Error with getting late game upgrades that are onetimeunlock, not dividing price 
+            if (!mega) // MILK MOLARS
             {
                 MoreShipUpgrades.Misc.TerminalNodes.CustomTerminalNode[] filteredNodes = MoreShipUpgrades.Managers.UpgradeBus.Instance.terminalNodes.Where(x => x.Visible && !x.SharedUpgrade && (x.UnlockPrice > 0 || (x.OriginalName == MoreShipUpgrades.UpgradeComponents.TierUpgrades.Player.NightVision.UPGRADE_NAME && (x.Prices.Length > 0 && x.Prices[0] != 0)))).ToArray();
                 

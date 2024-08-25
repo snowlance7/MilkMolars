@@ -18,14 +18,6 @@ namespace MilkMolars
     {
         private static ManualLogSource logger = Plugin.LoggerInstance;
 
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(StartOfRound.AutoSaveShipData))]
-        public static void AutoSaveShipDataPrefix(StartOfRound __instance)
-        {
-            logger.LogDebug("AutoSaveShipDataPrefix called");
-            NetworkHandler.SendAllDataToServer();
-        }
-
         [HarmonyPostfix]
         [HarmonyPatch(nameof(StartOfRound.AutoSaveShipData))]
         public static void AutoSaveShipDataPostfix(StartOfRound __instance)
@@ -42,10 +34,8 @@ namespace MilkMolars
         public static void playersFiredGameOverPrefix(StartOfRound __instance)
         {
             logger.LogDebug("In EndPlayersFiredSequenceClientRpcPostfix");
-            if (__instance.NetworkManager.IsHost || __instance.NetworkManager.IsServer)
-            {
-                NetworkHandler.ResetAllData();
-            }
+
+            NetworkHandler.ResetAllData();
         }
     }
 }

@@ -21,7 +21,7 @@ namespace MilkMolars
 
         [HarmonyPostfix]
         [HarmonyPatch(nameof(RoundManager.SpawnScrapInLevel))]
-        public static void SpawnScrapInLevelPostfix(RoundManager __instance) // TODO: Test this
+        public static void SpawnScrapInLevelPostfix(RoundManager __instance)
         {
             MilkMolarController.SpawnMolarsInLevel();
         }
@@ -30,12 +30,23 @@ namespace MilkMolars
         [HarmonyPatch(nameof(RoundManager.DespawnPropsAtEndOfRound))]
         public static void DespawnPropsAtEndOfRoundPrefix() // TODO: Test this
         {
-            MilkMolarUpgrade keepScrapUpgrade = NetworkHandler.MegaMilkMolarUpgrades.FirstOrDefault(x => x.name == "keepItemsOnShipChance");
-            if (keepScrapUpgrade != null && keepScrapUpgrade.unlocked)
+            try
             {
-                int randomNum = UnityEngine.Random.Range(0, 101);
-                allPlayersDead = keepScrapUpgrade.currentTierAmount >= randomNum;
-                StartOfRound.Instance.allPlayersDead = allPlayersDead;
+                if (NetworkHandler.MegaMilkMolarUpgrades != null)
+                {
+                    MilkMolarUpgrade keepScrapUpgrade = NetworkHandler.MegaMilkMolarUpgrades.FirstOrDefault(x => x.name == "keepItemsOnShipChance");
+                    if (keepScrapUpgrade != null && keepScrapUpgrade.unlocked)
+                    {
+                        int randomNum = UnityEngine.Random.Range(0, 101);
+                        allPlayersDead = keepScrapUpgrade.currentTierAmount >= randomNum;
+                        StartOfRound.Instance.allPlayersDead = allPlayersDead;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e);
+                return;
             }
         }
 
@@ -43,10 +54,21 @@ namespace MilkMolars
         [HarmonyPatch(nameof(RoundManager.DespawnPropsAtEndOfRound))]
         public static void DespawnPropsAtEndOfRoundPostfix() // TODO: Test this
         {
-            MilkMolarUpgrade keepScrapUpgrade = NetworkHandler.MegaMilkMolarUpgrades.FirstOrDefault(x => x.name == "keepItemsOnShipChance");
-            if (keepScrapUpgrade != null && keepScrapUpgrade.unlocked)
+            try
             {
-                StartOfRound.Instance.allPlayersDead = allPlayersDead;
+                if (NetworkHandler.MegaMilkMolarUpgrades != null)
+                {
+                    MilkMolarUpgrade keepScrapUpgrade = NetworkHandler.MegaMilkMolarUpgrades.FirstOrDefault(x => x.name == "keepItemsOnShipChance");
+                    if (keepScrapUpgrade != null && keepScrapUpgrade.unlocked)
+                    {
+                        StartOfRound.Instance.allPlayersDead = allPlayersDead;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e);
+                return;
             }
         }
     }
