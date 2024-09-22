@@ -75,7 +75,7 @@
         <HintPath>..\1Resources\1Assemblies\InteractiveTerminalAPI\InteractiveTerminalAPI.dll</HintPath>
       </Reference>
       <Reference Include="MoreShipUpgrades">
-        <HintPath>..\1Resources\1Assemblies\MoreShipUpgrades\MoreShipUpgrades-publicized.dll</HintPath>
+        <HintPath>..\1Resources\1Assemblies\MoreShipUpgrades\MoreShipUpgrades.dll</HintPath>
       </Reference>
     </ItemGroup>
 

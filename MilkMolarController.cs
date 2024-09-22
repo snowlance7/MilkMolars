@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Steamworks.Data;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -13,6 +14,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 using static MilkMolars.Plugin;
+using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace MilkMolars
@@ -35,7 +37,7 @@ namespace MilkMolars
         {
             LoggerInstance.LogDebug("Initing milk molar controller");
 
-            NetworkHandler.LoadDataFromFile();
+            //NetworkHandler.LoadDataFromFile();
         }
 
         internal static void RefreshLGUUpgrades(bool mega)
@@ -43,81 +45,85 @@ namespace MilkMolars
             if (mega)
             {
                 NetworkHandler.MegaMilkMolarUpgrades.RemoveAll(x => x.LGUUpgrade);
-                NetworkHandler.MegaMilkMolarUpgrades.AddRange(LGUCompatibility.GetLGUUpgrades(mega));
+                NetworkHandler.MegaMilkMolarUpgrades.AddRange(LGUCompatibility.GetLGUUpgrades(true));
             }
             else
             {
                 MilkMolarUpgrades.RemoveAll(x => x.LGUUpgrade);
-                MilkMolarUpgrades.AddRange(LGUCompatibility.GetLGUUpgrades(mega));
+                MilkMolarUpgrades.AddRange(LGUCompatibility.GetLGUUpgrades(false));
             }
         }
 
-        internal static List<MilkMolarUpgrade> GetUpgrades(bool mega = false, bool skipLGU = false) // TODO: Implement commented out upgrades
+        internal static List<MilkMolarUpgrade> GetMilkMolarUpgrades() // TODO: Implement commented out upgrades
         {
             List<MilkMolarUpgrade> upgrades = new List<MilkMolarUpgrade>();
-            if (!mega)
+
+            if (!LGUCompatibility.enabled)
             {
-                //// Milk Molars
+                // Fall damage reduction
+                upgrades.Add(new DaredevilUpgrade());
 
-                if (!LGUCompatibility.enabled)
-                {
-                    // Fall damage reduction
-                    upgrades.Add(new MilkMolarUpgrade("FallDamageReduction", "Fall Damage Reduction", MilkMolarUpgrade.UpgradeType.TierPercent, configFallDamageReductionUpgrade.Value));
+                // Sprint speed
+                //upgrades.Add(new MilkMolarUpgrade("SprintSpeed", "Sprint Speed", MilkMolarUpgrade.UpgradeType.TierNumber, configSprintSpeedUpgrade.Value));
 
-                    // Sprint speed
-                    //upgrades.Add(new MilkMolarUpgrade("SprintSpeed", "Sprint Speed", MilkMolarUpgrade.UpgradeType.TierNumber, configSprintSpeedUpgrade.Value));
+                // Sprint endurance
+                //upgrades.Add(new MilkMolarUpgrade("SprintEndurance", "Sprint Endurance", MilkMolarUpgrade.UpgradeType.TierNumber, configSprintEnduranceUpgrade.Value));
 
-                    // Sprint endurance
-                    //upgrades.Add(new MilkMolarUpgrade("SprintEndurance", "Sprint Endurance", MilkMolarUpgrade.UpgradeType.TierNumber, configSprintEnduranceUpgrade.Value));
+                // Sprint regeneration // TODO: implement
 
-                    // Sprint regeneration // TODO: implement
+                // Jump height
+                //upgrades.Add(new MilkMolarUpgrade("JumpHeight", "Jump Height", MilkMolarUpgrade.UpgradeType.TierNumber, configJumpHeightUpgrade.Value));
 
-                    // Jump height
-                    //upgrades.Add(new MilkMolarUpgrade("JumpHeight", "Jump Height", MilkMolarUpgrade.UpgradeType.TierNumber, configJumpHeightUpgrade.Value));
-
-                    // Carry weight
-                    //upgrades.Add(new MilkMolarUpgrade("CarryWeight", "Carry Weight", MilkMolarUpgrade.UpgradeType.TierPercent, configCarryWeightUpgrade.Value));
-                }
-                else
-                {
-                    List<MilkMolarUpgrade> lguUpgrades = new List<MilkMolarUpgrade>();
-                    lguUpgrades = LGUCompatibility.GetLGUUpgrades(mega);
-                    upgrades.AddRange(lguUpgrades);
-                }
-
-                // Shovel damage
-                //upgrades.Add(new MilkMolarUpgrade("ShovelDamage", "Shovel Damage", MilkMolarUpgrade.UpgradeType.TierNumber, configShovelDamageUpgrade.Value));
-
-                // Damage resistance
-                upgrades.Add(new MilkMolarUpgrade("DamageResistance", "Damage Resistance", MilkMolarUpgrade.UpgradeType.TierPercent, configDamageResistanceUpgrade.Value));
-
-                // Increased inventory
-                //upgrades.Add(new MilkMolarUpgrade("IncreasedInventory", "Increased Inventory", MilkMolarUpgrade.UpgradeType.TierNumber, configIncreasedInventorySizeUpgrade.Value));
-
-                // Crit chance
-                //upgrades.Add(new MilkMolarUpgrade("CritChance", "Crit Chance", MilkMolarUpgrade.UpgradeType.TierPercent, configCritChanceUpgrade.Value));
-
-                // Climb speed
-                //upgrades.Add(new MilkMolarUpgrade("ClimbSpeed", "Climb Speed", MilkMolarUpgrade.UpgradeType.TierNumber, configClimbSpeedUpgrade.Value));
-
-                // Health Regen
-                //upgrades.Add(new MilkMolarUpgrade("HealthRegen", "Health Regen", MilkMolarUpgrade.UpgradeType.TierNumber, configHealthRegenUpgrade.Value));
-
-                // Bail Out
-                //upgrades.Add(new MilkMolarUpgrade("BailOut", "Bail Out", MilkMolarUpgrade.UpgradeType.TierPercent, configBailOutUpgrade.Value));
-
-                // Corporate Kickback
-                //upgrades.Add(new MilkMolarUpgrade("CorporateKickback", "Corporate Kickback", MilkMolarUpgrade.UpgradeType.TierPercent, configCorporateKickbackUpgrade.Value));
-
-
-                if (ExtraMilkMolarUpgrades.Count > 0)
-                {
-                    upgrades.AddRange(ExtraMilkMolarUpgrades);
-                }
-
-                LoggerInstance.LogDebug(upgrades.Count);
+                // Carry weight
+                //upgrades.Add(new MilkMolarUpgrade("CarryWeight", "Carry Weight", MilkMolarUpgrade.UpgradeType.TierPercent, configCarryWeightUpgrade.Value));
             }
             else
+            {
+                List<MilkMolarUpgrade> lguUpgrades = new List<MilkMolarUpgrade>();
+                lguUpgrades = LGUCompatibility.GetLGUUpgrades();
+                upgrades.AddRange(lguUpgrades);
+            }
+
+            // Shovel damage
+            //upgrades.Add(new MilkMolarUpgrade("ShovelDamage", "Shovel Damage", MilkMolarUpgrade.UpgradeType.TierNumber, configShovelDamageUpgrade.Value));
+
+            // Damage resistance
+            upgrades.Add(new DamageResistanceUpgrade());
+
+            // Increased inventory
+            //upgrades.Add(new MilkMolarUpgrade("IncreasedInventory", "Increased Inventory", MilkMolarUpgrade.UpgradeType.TierNumber, configIncreasedInventorySizeUpgrade.Value));
+
+            // Crit chance
+            //upgrades.Add(new MilkMolarUpgrade("CritChance", "Crit Chance", MilkMolarUpgrade.UpgradeType.TierPercent, configCritChanceUpgrade.Value));
+
+            // Climb speed
+            //upgrades.Add(new MilkMolarUpgrade("ClimbSpeed", "Climb Speed", MilkMolarUpgrade.UpgradeType.TierNumber, configClimbSpeedUpgrade.Value));
+
+            // Health Regen
+            //upgrades.Add(new MilkMolarUpgrade("HealthRegen", "Health Regen", MilkMolarUpgrade.UpgradeType.TierNumber, configHealthRegenUpgrade.Value));
+
+            // Bail Out
+            //upgrades.Add(new MilkMolarUpgrade("BailOut", "Bail Out", MilkMolarUpgrade.UpgradeType.TierPercent, configBailOutUpgrade.Value));
+
+            // Corporate Kickback
+            //upgrades.Add(new MilkMolarUpgrade("CorporateKickback", "Corporate Kickback", MilkMolarUpgrade.UpgradeType.TierPercent, configCorporateKickbackUpgrade.Value));
+
+
+            if (ExtraMilkMolarUpgrades.Count > 0)
+            {
+                upgrades.AddRange(ExtraMilkMolarUpgrades);
+            }
+
+            LoggerInstance.LogDebug(upgrades.Count);
+
+            return upgrades;
+        }
+
+        internal static void GetMegaMilkMolarUpgrades() // TODO: Implement commented out upgrades
+        {
+            List<MilkMolarUpgrade> upgrades = new List<MilkMolarUpgrade>();
+            
+            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
                 //// Mega Milk Molars
                 if (!LGUCompatibility.enabled)
@@ -128,9 +134,7 @@ namespace MilkMolars
 
                     // Increased shop deals: Increases the maximum amount of items that can be on sale in the store.
 
-                    // Item dropship landing speed
-                    //MilkMolarUpgrade itemDropshipLandingSpeed = new MilkMolarUpgrade("itemDropshipLandingSpeed", "Item Dropship Landing Speed", MilkMolarUpgrade.UpgradeType.OneTimeUnlock, configItemDropshipLandingSpeedUpgrade.Value);
-                    //upgrades.Add(itemDropshipLandingSpeed);
+                    //upgrades.Add(new ItemDropshipLandingSpeedUpgrade());
 
                     // Travel discount
                     //MilkMolarUpgrade travelDiscount = new MilkMolarUpgrade("travelDiscount", "Travel Discount", MilkMolarUpgrade.UpgradeType.TierPercent, configTravelDiscountUpgrade.Value);
@@ -144,34 +148,33 @@ namespace MilkMolars
                 }
                 else
                 {
-                    logger.LogDebug("Getting lguUpgrades. mega: " + mega);
+                    logger.LogDebug("Getting lguUpgrades. mega: " + true);
                     List<MilkMolarUpgrade> lguUpgrades = new List<MilkMolarUpgrade>();
-                    lguUpgrades = LGUCompatibility.GetLGUUpgrades(mega);
+                    lguUpgrades = LGUCompatibility.GetLGUUpgrades(true);
                     upgrades.AddRange(lguUpgrades);
                 }
 
                 // Keep items on ship chance
-                MilkMolarUpgrade keepItemsOnShipChance = new MilkMolarUpgrade("keepItemsOnShipChance", "Keep Items On Ship", MilkMolarUpgrade.UpgradeType.TierPercent, configKeepItemsOnShipChanceUpgrade.Value);
-                upgrades.Add(keepItemsOnShipChance);
+                upgrades.Add(new KeepItemsOnShipChanceUpgrade());
 
-                // Revive player
-                RevivePlayerUpgrade revivePlayer = new RevivePlayerUpgrade();
-                revivePlayer.name = "revivePlayer";
-                revivePlayer.title = "Revive Player";
-                revivePlayer.type = MilkMolarUpgrade.UpgradeType.Repeatable;
-                revivePlayer.cost = configRevivePlayerUpgrade.Value;
-                upgrades.Add(revivePlayer);
+                upgrades.Add(new RevivePlayerUpgrade());
 
 
                 if (ExtraMegaMilkMolarUpgrades.Count > 0)
                 {
                     upgrades.AddRange(ExtraMegaMilkMolarUpgrades);
                 }
-            }
 
-            return upgrades;
+                var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
+                string megaUpgrades = JsonConvert.SerializeObject(upgrades, settings);
+                NetworkHandler.Instance.SendMegaMilkMolarUpgradesToAllClientRpc(megaUpgrades);
+            }
+            else
+            {
+                NetworkHandler.Instance.GetMegaMilkMolarUpgradesServerRpc(localPlayerId);
+            }
         }
-        
+
         public static void RegisterMilkMolarUpgrade(MilkMolarUpgrade upgrade)
         {
             if (MilkMolarUpgrades.Where(x => x.name == upgrade.name).FirstOrDefault() == null)
@@ -239,7 +242,7 @@ namespace MilkMolars
                 return false;
             }
 
-            if (upgrade.type == MilkMolarUpgrade.UpgradeType.OneTimeUnlock)
+            if (upgrade.type == MilkMolarUpgrade.UpgradeType.OneTimeUnlock || upgrade.type == MilkMolarUpgrade.UpgradeType.LGUOneTimeUnlock)
             {
                 logger.LogDebug("Upgrade type is OneTimeUnlock. Checking if upgrade is not fully upgraded and if we have enough Milk Molars.");
                 if (!upgrade.fullyUpgraded && MilkMolars >= upgrade.cost)
@@ -269,22 +272,18 @@ namespace MilkMolars
         }
 
 
-        internal static bool BuyMegaMilkMolarUpgrade(MilkMolarUpgrade upgrade, bool callRPC = false) // THIS IS GOOD DONT TOUCH IT
+        internal static bool BuyMegaMilkMolarUpgrade(MilkMolarUpgrade upgrade) // THIS IS GOOD DONT TOUCH IT
         {
             logger.LogDebug("Attempting to buy Mega Milk Molar upgrade: " + upgrade.name);
+            int megaMilkMolars = NetworkHandler.MegaMilkMolars.Value;
 
             if (upgrade.type == MilkMolarUpgrade.UpgradeType.Repeatable)
             {
-                logger.LogDebug("Upgrade type is Repeatable. Checking if we have enough Mega Milk Molars or RPC is not required.");
-                if (NetworkHandler.MegaMilkMolars.Value >= upgrade.cost || callRPC == false)
+                logger.LogDebug("Upgrade type is Repeatable. Checking if we have enough Mega Milk Molars");
+                if (megaMilkMolars >= upgrade.cost)
                 {
                     logger.LogDebug("Conditions met. Activating Repeatable upgrade.");
-                    if (callRPC)
-                    {
-                        logger.LogDebug("Calling server RPC to buy upgrade.");
-                        NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.cost, localPlayerId, upgrade.LGUUpgrade);
-                    }
-                    upgrade.ActivateRepeatableUpgrade();
+                    NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.cost);
                     return true;
                 }
                 return false;
@@ -293,15 +292,10 @@ namespace MilkMolars
             if (upgrade.type == MilkMolarUpgrade.UpgradeType.OneTimeUnlock || upgrade.type == MilkMolarUpgrade.UpgradeType.LGUOneTimeUnlock)
             {
                 logger.LogDebug("Upgrade type is OneTimeUnlock. Checking if upgrade is not fully upgraded and if we have enough Mega Milk Molars or RPC is not required.");
-                if ((!upgrade.fullyUpgraded && NetworkHandler.MegaMilkMolars.Value >= upgrade.cost) || callRPC == false)
+                if (!upgrade.fullyUpgraded && megaMilkMolars >= upgrade.cost)
                 {
                     logger.LogDebug("Conditions met. Activating OneTimeUnlock upgrade.");
-                    if (callRPC)
-                    {
-                        logger.LogDebug("Calling server RPC to buy upgrade.");
-                        NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.cost, localPlayerId, upgrade.LGUUpgrade);
-                    }
-                    upgrade.ActivateOneTimeUpgrade();
+                    NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.cost);
                     return true;
                 }
                 return false;
@@ -309,20 +303,14 @@ namespace MilkMolars
 
             logger.LogDebug("Checking if upgrade is not fully upgraded and if we have enough Mega Milk Molars or RPC is not required.");
             logger.LogDebug("Current Tier: " + upgrade.currentTier);
-            if ((!upgrade.fullyUpgraded && NetworkHandler.MegaMilkMolars.Value >= upgrade.nextTierCost) || callRPC == false)
+            if ((!upgrade.fullyUpgraded && megaMilkMolars >= upgrade.nextTierCost))
             {
                 logger.LogDebug("Conditions met. Going to next tier and activating current tier upgrade.");
-                if (callRPC)
-                {
-                    logger.LogDebug("Calling server RPC to buy upgrade.");
-                    NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.nextTierCost, localPlayerId, upgrade.LGUUpgrade);
-                }
-                upgrade.GoToNextTier();
-                upgrade.ActivateCurrentTierUpgrade();
+
+                NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.nextTierCost);
                 return true;
             }
 
-            logger.LogDebug("Upgrade purchase failed. Conditions not met.");
             return false;
         }
 

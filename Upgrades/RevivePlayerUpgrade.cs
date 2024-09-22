@@ -3,11 +3,21 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using static MilkMolars.Plugin;
 
 namespace MilkMolars.Upgrades
 {
     internal class RevivePlayerUpgrade : MilkMolarUpgrade
     {
+        public RevivePlayerUpgrade()
+        {
+            name = "revivePlayer";
+            title = "Revive Player";
+            description = "Revive player on monitor";
+            type = UpgradeType.Repeatable;
+            cost = configRevivePlayerUpgrade.Value;
+        }
+
         public override void ActivateRepeatableUpgrade()
         {
             base.ActivateRepeatableUpgrade();

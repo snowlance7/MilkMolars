@@ -43,24 +43,5 @@ namespace MilkMolars
                 }
             }
         }
-
-        [HarmonyPostfix]
-        [HarmonyPatch(nameof(Terminal.BuyItemsServerRpc))]
-        public static void BuyItemsServerRpcPostfix(Terminal __instance)
-        {
-            // TODO: Itemdropship upgrade here
-            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
-            {
-                MilkMolarUpgrade dropShipUpgrade = NetworkHandler.MegaMilkMolarUpgrades.Where(x => x.name == "itemDropshipLandingSpeed").FirstOrDefault();
-                if (dropShipUpgrade != null && dropShipUpgrade.unlocked)
-                {
-                    ItemDropship dropShip = UnityEngine.Object.FindObjectsOfType<ItemDropship>().FirstOrDefault();
-                    if (dropShip != null && !dropShip.playersFirstOrder)
-                    {
-                        dropShip.shipTimer = 39f;
-                    }
-                }
-            }
-        }
     }
 }

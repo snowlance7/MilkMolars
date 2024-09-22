@@ -71,7 +71,7 @@ namespace MilkMolars
         //public static ConfigEntry<string> configIncreasedInventorySizeUpgrade;
         //public static ConfigEntry<string> configCritChanceUpgrade;
         //public static ConfigEntry<string> configClimbSpeedUpgrade;
-        public static ConfigEntry<string> configFallDamageReductionUpgrade;
+        public static ConfigEntry<string> configDaredevilUpgrade;
         //public static ConfigEntry<string> configHealthRegenUpgrade;
         //public static ConfigEntry<string> configBailOutUpgrade;
         //public static ConfigEntry<string> configCorporateKickbackUpgrade;
@@ -150,7 +150,7 @@ namespace MilkMolars
             //configIncreasedInventorySizeUpgrade = Config.Bind("Milk Molar Upgrades", "Increased Inventory Upgrade", "0:4, 10:5, 15:6, 20:7, 25:8", "How many item slots the player has. Default is 4.");
             //configCritChanceUpgrade = Config.Bind("Milk Molar Upgrades", "Crit Chance Upgrade", "0:0, 5:1, 6:3, 7:5, 10:7, 15:10, 20:15, 30:25", "Percent chance of critical hits. Critical hits will deal double damage. Default is 0");
             //configClimbSpeedUpgrade = Config.Bind("Milk Molar Upgrades", "Climb Speed Upgrade", "0:4, 5:5, 6:6, 7:7, 8:8, 9:9, 10:10", "Climb speed when climbing ladders. Default is 4.");
-            configFallDamageReductionUpgrade = Config.Bind("Milk Molar Upgrades", "Fall Damage Reduction Upgrade", "0:0, 1:5, 2:10, 4:15, 5:20", "Percent damage reduction from falling. Default is 0");
+            configDaredevilUpgrade = Config.Bind("Milk Molar Upgrades", "Daredevil Upgrade", "0:0, 1:5, 2:10, 4:15, 5:20", "Percent damage reduction from falling. Default is 0");
             //configHealthRegenUpgrade = Config.Bind("Milk Molar Upgrades", "Health Regen Upgrade", "0:0, 10:1, 20:2, 30:3, 35:4, 40:5", "Health given per second");
             //configBailOutUpgrade = Config.Bind("Milk Molar Upgrades", "Bail Out Upgrade", "0:0, 5:1, 10:5, 15:10, 20:20, 25:30", "Chance to activate upgrade when player takes damage. When activated, the players damage will be negated. Default is 0.");
             //configCorporateKickbackUpgrade = Config.Bind("Milk Molar Upgrades", "Corporate Kickback Upgrade", "0:0, 5:2.5, 10:5, 15:6, 20:7, 25:8, 30:9, 35:10, 40:25", "Chance to activate upgrade when player takes damage. When activated, the player will heal");

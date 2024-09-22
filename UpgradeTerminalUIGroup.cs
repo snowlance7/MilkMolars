@@ -25,7 +25,7 @@ namespace MilkMolars
             MilkMolarController.InUpgradeUI = false;
             MilkMolarController.InMegaUpgradeUI = true;
 
-            MilkMolarController.RefreshLGUUpgrades(mega: true);
+            //MilkMolarController.RefreshLGUUpgrades(mega: true);
 
             (MilkMolarUpgrade[][], CursorMenu[], IScreen[]) entries = GetPageEntries(NetworkHandler.MegaMilkMolarUpgrades.ToArray());
 
@@ -91,7 +91,7 @@ namespace MilkMolars
             if (upgrade == null) return;
             logger.LogDebug("BuyUpgrade: " + upgrade.name);
 
-            if (MilkMolarController.BuyMegaMilkMolarUpgrade(upgrade, callRPC: true))
+            if (MilkMolarController.BuyMegaMilkMolarUpgrade(upgrade))
             {
                 currentCursorMenu.elements[currentCursorMenu.cursorIndex].Name = upgrade.GetUpgradeString();
                 logger.LogDebug("Bought upgrade " + upgrade.name);

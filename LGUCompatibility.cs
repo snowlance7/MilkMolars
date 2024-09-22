@@ -32,7 +32,7 @@ namespace MilkMolars
             List<MilkMolarUpgrade> upgrades = new List<MilkMolarUpgrade>();
             if (!mega) // MILK MOLARS
             {
-                MoreShipUpgrades.Misc.TerminalNodes.CustomTerminalNode[] filteredNodes = MoreShipUpgrades.Managers.UpgradeBus.Instance.terminalNodes.Where(x => x.Visible && !x.SharedUpgrade && (x.UnlockPrice > 0 || (x.OriginalName == MoreShipUpgrades.UpgradeComponents.TierUpgrades.Player.NightVision.UPGRADE_NAME && (x.Prices.Length > 0 && x.Prices[0] != 0)))).ToArray();
+                MoreShipUpgrades.UI.TerminalNodes.CustomTerminalNode[] filteredNodes = MoreShipUpgrades.Managers.UpgradeBus.Instance.terminalNodes.Where(x => x.Visible && !x.SharedUpgrade && (x.UnlockPrice > 0 || (x.OriginalName == MoreShipUpgrades.UpgradeComponents.TierUpgrades.Player.NightVision.UPGRADE_NAME && (x.Prices.Length > 0 && x.Prices[0] != 0)))).ToArray();
                 
                 foreach (var node in filteredNodes)
                 {
@@ -60,7 +60,11 @@ namespace MilkMolars
                             if (node.Unlocked) { upgrade.currentTier = 1; }
                             else { upgrade.currentTier = 0; }
                         }
-                        else { upgrade.currentTier = node.CurrentUpgrade + 1; }
+                        else
+                        {
+                            upgrade.currentTier = node.CurrentUpgrade + 1;
+                            upgrade.unlocked = true;
+                        }
 
                         upgrade.costsPerTier = costsPerTierList.ToArray();
                         logger.LogDebug("Upgrade costs: " + string.Join(", ", upgrade.costsPerTier));
@@ -77,7 +81,7 @@ namespace MilkMolars
             }
             else // MEGA MILK MOLARS
             {
-                MoreShipUpgrades.Misc.TerminalNodes.CustomTerminalNode[] filteredNodes = MoreShipUpgrades.Managers.UpgradeBus.Instance.terminalNodes.Where(x => x.Visible && x.SharedUpgrade && (x.UnlockPrice > 0 || (x.OriginalName == MoreShipUpgrades.UpgradeComponents.TierUpgrades.Player.NightVision.UPGRADE_NAME && (x.Prices.Length > 0 && x.Prices[0] != 0)))).ToArray();
+                MoreShipUpgrades.UI.TerminalNodes.CustomTerminalNode[] filteredNodes = MoreShipUpgrades.Managers.UpgradeBus.Instance.terminalNodes.Where(x => x.Visible && x.SharedUpgrade && (x.UnlockPrice > 0 || (x.OriginalName == MoreShipUpgrades.UpgradeComponents.TierUpgrades.Player.NightVision.UPGRADE_NAME && (x.Prices.Length > 0 && x.Prices[0] != 0)))).ToArray();
                 logger.LogDebug("Got " + filteredNodes.Length + " nodes");
 
                 foreach (var node in filteredNodes)
@@ -132,15 +136,16 @@ namespace MilkMolars
         {
             base.ActivateCurrentTierUpgrade();
 
-            MoreShipUpgrades.Misc.TerminalNodes.CustomTerminalNode node = MoreShipUpgrades.Managers.UpgradeBus.Instance.terminalNodes.Where(x => x.OriginalName == name).FirstOrDefault();
+            MoreShipUpgrades.UI.TerminalNodes.CustomTerminalNode node = MoreShipUpgrades.Managers.UpgradeBus.Instance.terminalNodes.Where(x => x.OriginalName == name).FirstOrDefault();
             if (node != null)
             {
                 if (!node.Unlocked)
                 {
                     MoreShipUpgrades.Managers.LguStore.Instance.HandleUpgrade(node);
                 }
-                else if (node.Unlocked && node.MaxUpgrade > node.CurrentUpgrade)
+                else if (node.Unlocked && node.MaxUpgrade > node.CurrentUpgrade) // TODO: Test this
                 {
+                    LoggerInstance.LogDebug($"{node.MaxUpgrade} > {node.CurrentUpgrade}");
                     MoreShipUpgrades.Managers.LguStore.Instance.HandleUpgrade(node, increment: true);
                 }
             }
@@ -151,8 +156,8 @@ namespace MilkMolars
         {
             base.ActivateOneTimeUpgrade();
 
-            MoreShipUpgrades.Misc.TerminalNodes.CustomTerminalNode node = MoreShipUpgrades.Managers.UpgradeBus.Instance.terminalNodes.Where(x => x.OriginalName == name).FirstOrDefault();
-            if (node != null)
+            MoreShipUpgrades.UI.TerminalNodes.CustomTerminalNode node = MoreShipUpgrades.Managers.UpgradeBus.Instance.terminalNodes.Where(x => x.OriginalName == name).FirstOrDefault();
+            if (node != null && !node.Unlocked)
             {
                 MoreShipUpgrades.Managers.LguStore.Instance.HandleUpgrade(node);
             }

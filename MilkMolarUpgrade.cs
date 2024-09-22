@@ -7,6 +7,9 @@ using System.Threading;
 
 namespace MilkMolars
 {
+    
+
+
     public class MilkMolarUpgrade
     {
         private static ManualLogSource logger = Plugin.LoggerInstance;
@@ -27,6 +30,7 @@ namespace MilkMolars
 
         public string name;
         public string title;
+        public string description;
         public UpgradeType type;
 
         public int cost;

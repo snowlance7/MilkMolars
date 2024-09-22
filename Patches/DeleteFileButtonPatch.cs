@@ -24,7 +24,7 @@ namespace MilkMolars
         [HarmonyPatch(nameof(DeleteFileButton.DeleteFile))]
         public static void DeleteFilePostfix(DeleteFileButton __instance)
         {
-            NetworkHandler.DeleteSaveData(__instance.fileToDelete);
+            //NetworkHandler.DeleteSaveData(__instance.fileToDelete);
         }
     }
 }
