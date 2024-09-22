@@ -37,7 +37,7 @@ namespace MilkMolars
         {
             LoggerInstance.LogDebug("Initing milk molar controller");
 
-            //NetworkHandler.LoadDataFromFile();
+            NetworkHandler.LoadDataFromFile();
         }
 
         internal static void RefreshLGUUpgrades(bool mega)

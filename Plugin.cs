@@ -15,18 +15,14 @@ using UnityEngine;
 
 namespace MilkMolars
 {
-    [BepInPlugin(modGUID, modName, modVersion)]
+    [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
     [BepInDependency(LethalLib.Plugin.ModGUID)]
     [BepInDependency("MoreShipUpgrades", BepInDependency.DependencyFlags.SoftDependency)]
     internal class Plugin : BaseUnityPlugin
     {
-        public const string modGUID = "Snowlance.MilkMolars";
-        public const string modName = "MilkMolars";
-        public const string modVersion = "0.3.0";
-
         public static Plugin PluginInstance;
         public static ManualLogSource LoggerInstance;
-        private readonly Harmony harmony = new Harmony(modGUID);
+        private readonly Harmony harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
         public static PlayerControllerB localPlayer { get { return GameNetworkManager.Instance.localPlayerController; } }
         public static ulong localPlayerId { get { return GameNetworkManager.Instance.localPlayerController.playerSteamId; } } // TODO: Change this back to steamId
 
@@ -59,6 +55,7 @@ namespace MilkMolars
 
         // Client Configs
         public static ConfigEntry<bool> configPlaySound;
+        public static ConfigEntry<bool> configShowChatMessages;
 
         // Milk Molar Upgrades
         //public static ConfigEntry<string> configShovelDamageUpgrade;
@@ -138,6 +135,7 @@ namespace MilkMolars
 
             // Client Configs
             configPlaySound = Config.Bind("Client Settings", "Play Sound", true, "Play sound when milk molar is activated");
+            configShowChatMessages = Config.Bind("Client Settings", "Show Chat Messages", true, "Show chat messages when milk molar is activated");
 
             // Milk Molar Upgrades Configs
             //configShovelDamageUpgrade = Config.Bind("Milk Molar Upgrades", "Shovel Damage Upgrade", "0:1, 5:2, 10:3, 18:4", "Increases the damage of the shovel. Default is 1");
@@ -214,7 +212,7 @@ namespace MilkMolars
             InteractiveTerminalManager.RegisterApplication<UpgradeTerminalUIGroup>(["mmmu", "mega milk molar upgrades", "mega molar", "mega", "mm group"], caseSensitive: false);
 
             // Finished
-            Logger.LogInfo($"{modGUID} v{modVersion} has loaded!");
+            Logger.LogInfo($"{MyPluginInfo.PLUGIN_NAME} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
         }
 
         public Dictionary<Levels.LevelTypes, int> GetLevelRarities(string levelsString)

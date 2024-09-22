@@ -29,7 +29,7 @@ namespace MilkMolars
             get
             {
                 string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                string path = Path.Combine(appDataPath + "Low", "ZeekerssRBLX", "Lethal Company", modName);
+                string path = Path.Combine(appDataPath + "Low", "ZeekerssRBLX", "Lethal Company", MyPluginInfo.PLUGIN_NAME);
                 return Path.Combine(path, $"MilkMolars{GameNetworkManager.Instance.saveFileNum}.json");
             }
         }
@@ -38,7 +38,7 @@ namespace MilkMolars
             get
             {
                 string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                string path = Path.Combine(appDataPath + "Low", "ZeekerssRBLX", "Lethal Company", modName);
+                string path = Path.Combine(appDataPath + "Low", "ZeekerssRBLX", "Lethal Company", MyPluginInfo.PLUGIN_NAME);
                 return Path.Combine(path, $"MilkMolarUpgrades{GameNetworkManager.Instance.saveFileNum}.json");
             }
         }
@@ -47,7 +47,7 @@ namespace MilkMolars
             get
             {
                 string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                string path = Path.Combine(appDataPath + "Low", "ZeekerssRBLX", "Lethal Company", modName);
+                string path = Path.Combine(appDataPath + "Low", "ZeekerssRBLX", "Lethal Company", MyPluginInfo.PLUGIN_NAME);
                 return Path.Combine(path, $"MegaMilkMolars{GameNetworkManager.Instance.saveFileNum}.json");
             }
         }
@@ -56,7 +56,7 @@ namespace MilkMolars
             get
             {
                 string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                string path = Path.Combine(appDataPath + "Low", "ZeekerssRBLX", "Lethal Company", modName);
+                string path = Path.Combine(appDataPath + "Low", "ZeekerssRBLX", "Lethal Company", MyPluginInfo.PLUGIN_NAME);
                 return Path.Combine(path, $"MegaMilkMolarUpgrades{GameNetworkManager.Instance.saveFileNum}.json");
             }
         }
@@ -65,7 +65,7 @@ namespace MilkMolars
             get
             {
                 string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                return Path.Combine(appDataPath + "Low", "ZeekerssRBLX", "Lethal Company", modName);
+                return Path.Combine(appDataPath + "Low", "ZeekerssRBLX", "Lethal Company", MyPluginInfo.PLUGIN_NAME);
             }
         }
 
@@ -288,7 +288,7 @@ namespace MilkMolars
             {
                 MilkMolarController.MilkMolars++;
                 if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 1f); }
-                HUDManager.Instance.AddChatMessage($"Milk Molar activated! You now have {MilkMolarController.MilkMolars} unspent Milk Molars.", "Server");
+                if (configShowChatMessages.Value) { HUDManager.Instance.AddChatMessage($"Milk Molar activated! You now have {MilkMolarController.MilkMolars} unspent Milk Molars.", "Server"); } // TODO: Use original hud display notification from Grounded game
             }
         }
 
@@ -297,7 +297,7 @@ namespace MilkMolars
         {
             MilkMolarController.MilkMolars++;
             if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 1f); }
-            HUDManager.Instance.AddChatMessage($"Milk Molar activated! You now have {MilkMolarController.MilkMolars} unspent Milk Molars.", "Server");
+            if (configShowChatMessages.Value) { HUDManager.Instance.AddChatMessage($"Milk Molar activated! You now have {MilkMolarController.MilkMolars} unspent Milk Molars.", "Server"); } // TODO: Use original hud display notification from Grounded game
         }
 
         [ClientRpc]
@@ -307,7 +307,7 @@ namespace MilkMolars
             {
                 MilkMolarController.MilkMolars += amount;
                 if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 0.5f); }
-                HUDManager.Instance.AddChatMessage($"{amount} Milk Molars activated! Your now have {MilkMolarController.MilkMolars} unspent Milk Molars.", "Server");
+                if (configShowChatMessages.Value) { HUDManager.Instance.AddChatMessage($"{amount} Milk Molars activated! Your now have {MilkMolarController.MilkMolars} unspent Milk Molars.", "Server"); } // TODO: Use original hud display notification from Grounded game
             }
         }
 
@@ -316,7 +316,7 @@ namespace MilkMolars
         {
             MilkMolarController.MilkMolars += amount;
             if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 0.5f); }
-            HUDManager.Instance.AddChatMessage($"{MegaMilkMolars.Value} Mega Milk Molars activated! Your crew now has {MegaMilkMolars.Value} unspent Mega Milk Molars.", "Server");
+            if (configShowChatMessages.Value) { HUDManager.Instance.AddChatMessage($"{MegaMilkMolars.Value} Mega Milk Molars activated! Your crew now has {MegaMilkMolars.Value} unspent Mega Milk Molars.", "Server"); } // TODO: Use original hud display notification from Grounded game
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -334,14 +334,14 @@ namespace MilkMolars
         {
             logger.LogDebug("Added mega milk molar");
             if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 1f); }
-            HUDManager.Instance.AddChatMessage($"Mega Milk Molar activated! Your group now has {MegaMilkMolars.Value} unspent Mega Milk Molars.", "Server");
+            if (configShowChatMessages.Value) { HUDManager.Instance.AddChatMessage($"Mega Milk Molar activated! Your group now has {MegaMilkMolars.Value} unspent Mega Milk Molars.", "Server"); }
         }
 
         [ClientRpc]
         public void AddMultipleMegaMilkMolarsClientRpc(int amount)
         {
             if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 0.5f); }
-            HUDManager.Instance.AddChatMessage($"{MegaMilkMolars.Value} Mega Milk Molars activated! Your crew now has {MegaMilkMolars.Value} unspent Mega Milk Molars.", "Server");
+            if (configShowChatMessages.Value) { HUDManager.Instance.AddChatMessage($"{MegaMilkMolars.Value} Mega Milk Molars activated! Your crew now has {MegaMilkMolars.Value} unspent Mega Milk Molars.", "Server"); }
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -386,6 +386,8 @@ namespace MilkMolars
                     {
                         upgrade.GoToNextTier();
                     }
+
+                    MilkMolarController.RefreshLGUUpgrades(true);
                 }
                 else
                 {

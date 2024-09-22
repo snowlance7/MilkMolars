@@ -28,7 +28,7 @@ namespace MilkMolars.Upgrades
         private static bool allPlayersDead = false;
 
         [HarmonyPrefix]
-        [HarmonyPatch(nameof(RoundManager.DespawnPropsAtEndOfRound))]
+        [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.DespawnPropsAtEndOfRound))]
         public static void DespawnPropsAtEndOfRoundPrefix() // TODO: Test this
         {
             try
@@ -52,7 +52,7 @@ namespace MilkMolars.Upgrades
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch(nameof(RoundManager.DespawnPropsAtEndOfRound))]
+        [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.DespawnPropsAtEndOfRound))]
         public static void DespawnPropsAtEndOfRoundPostfix() // TODO: Test this
         {
             try

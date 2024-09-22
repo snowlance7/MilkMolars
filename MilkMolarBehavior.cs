@@ -28,8 +28,13 @@ namespace MilkMolars
          * 4 - Sell
          */
 
-        public override void Start()
+        public override void Start() // 90 0 0
         {
+            if (UnityEngine.Random.Range(0, 2) == 0)
+            {
+                itemProperties.restingRotation = new Vector3(90, 0, 0);
+            }
+
             base.Start();
 
             ItemSFX.enabled = true;

@@ -32,7 +32,7 @@ namespace MilkMolars.Upgrades
         private static ManualLogSource logger = Plugin.LoggerInstance;
 
         [HarmonyPrefix]
-        [HarmonyPatch(nameof(PlayerControllerB.DamagePlayer))]
+        [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.DamagePlayer))]
         public static void DamagePlayerPrefix(PlayerControllerB __instance, ref int damageNumber, bool fallDamage) // TODO: Test this
         {
             if (localPlayer.actualClientId == __instance.actualClientId)
