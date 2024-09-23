@@ -16,6 +16,7 @@ namespace MilkMolars.Patches
     internal class TESTING : MonoBehaviour
     {
         private static ManualLogSource logger = Plugin.LoggerInstance;
+        private static bool active = false;
 
         [HarmonyPostfix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.PingScan_performed))]
         public static void PingScan_performedPostFix()
@@ -47,6 +48,8 @@ namespace MilkMolars.Patches
 
             logger.LogDebug(StartOfRound.Instance.randomMapSeed);
             // Grab anims: HoldShotgun, HoldLung, GrabClipboard, HoldJetpack, HoldKnife
+
+            MilkMolarNotificationHandler.Instance.ShowNotification(mega: false);
         }
 
         [HarmonyPrefix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.SubmitChat_performed))]

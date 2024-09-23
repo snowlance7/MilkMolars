@@ -5,7 +5,7 @@
         <AssemblyName>Snowlance.MilkMolars</AssemblyName>
         <Product>MilkMolars</Product>
         <!-- Change to whatever version you're currently on. -->
-        <Version>0.4.0</Version>
+        <Version>0.5.0</Version>
     </PropertyGroup>
 
     <!-- Project Properties -->
@@ -67,7 +67,7 @@
 
     <ItemGroup>
       <Folder Include="Assets\" />
-      <Folder Include="ThunderStore\BepInEx\plugins\MilkMolars\" />
+      <Folder Include="ThunderStore\MilkMolars\" />
     </ItemGroup>
 
     <ItemGroup>
@@ -75,7 +75,7 @@
         <HintPath>..\1Resources\1Assemblies\InteractiveTerminalAPI\InteractiveTerminalAPI.dll</HintPath>
       </Reference>
       <Reference Include="MoreShipUpgrades">
-        <HintPath>..\1Resources\1Assemblies\MoreShipUpgrades\MoreShipUpgrades.dll</HintPath>
+        <HintPath>..\1Resources\1Assemblies\MoreShipUpgrades\MoreShipUpgrades-publicized.dll</HintPath>
       </Reference>
     </ItemGroup>
 

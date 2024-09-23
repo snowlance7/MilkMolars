@@ -21,9 +21,9 @@ namespace MilkMolars
 
         [HarmonyPostfix]
         [HarmonyPatch(nameof(PlayerControllerB.ConnectClientToPlayerObject))]
-        public static void ConnectClientToPlayerObjectPostfix(PlayerControllerB __instance) // TODO: runs on client only
+        public static void ConnectClientToPlayerObjectPostfix(PlayerControllerB __instance) // runs on client only
         {
-            logger.LogDebug("In ConnectClientToPlayerObjectPostfix"); // TODO: Check if this runs on all clients
+            logger.LogDebug("In ConnectClientToPlayerObjectPostfix");
             MilkMolarController.Init();
         }
     }

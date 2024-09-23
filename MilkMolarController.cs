@@ -38,6 +38,7 @@ namespace MilkMolars
             LoggerInstance.LogDebug("Initing milk molar controller");
 
             NetworkHandler.LoadDataFromFile();
+            MilkMolarNotificationHandler.GetUIIcons();
         }
 
         internal static void RefreshLGUUpgrades(bool mega)
@@ -271,6 +272,10 @@ namespace MilkMolars
             return false;
         }
 
+        public static void ShowMilkMolarNotification()
+        {
+            //HUDManager.Instance.
+        }
 
         internal static bool BuyMegaMilkMolarUpgrade(MilkMolarUpgrade upgrade) // THIS IS GOOD DONT TOUCH IT
         {
@@ -321,7 +326,11 @@ namespace MilkMolars
             // Spawning Milk Molars
             List<string> levelAmount = configMilkMolarSpawnAmount.Value.Split(",").ToList();
             string? amount = levelAmount.Where(x => x.Trim().Split(":")[0] == RoundManager.Instance.currentLevel.name).FirstOrDefault();
-            if (amount == null) { logger.LogError("Unable to spawn molars, couldnt find level in MilkMolarSpawnAmount config"); return; }
+            if (amount == null)
+            {
+                amount = levelAmount.Where(x => x.Trim().Split(":")[0] == "All").FirstOrDefault();
+                if (amount == null) { logger.LogDebug("Couldnt find amount in amount config. Not spawning."); return; }
+            }
 
             string[] minmax = amount.Trim().Split(":")[1].Split("-");
             int min = int.Parse(minmax[0]);

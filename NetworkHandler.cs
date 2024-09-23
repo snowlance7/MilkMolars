@@ -3,11 +3,13 @@ using GameNetcodeStuff;
 using HarmonyLib;
 using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static MilkMolars.Plugin;
 
 namespace MilkMolars
@@ -23,6 +25,9 @@ namespace MilkMolars
         public static NetworkVariable<int> MegaMilkMolars = new NetworkVariable<int>(0);
 
         public static List<MilkMolarUpgrade> MegaMilkMolarUpgrades = null!;
+
+        public Sprite MilkMolarUIIcon = null!;
+        public Sprite MegaMilkMolarUIIcon = null!;
 
         public static string MilkMolarsPath
         {
@@ -287,8 +292,7 @@ namespace MilkMolars
             if (localPlayerId == steamId)
             {
                 MilkMolarController.MilkMolars++;
-                if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 1f); }
-                if (configShowChatMessages.Value) { HUDManager.Instance.AddChatMessage($"Milk Molar activated! You now have {MilkMolarController.MilkMolars} unspent Milk Molars.", "Server"); } // TODO: Use original hud display notification from Grounded game
+                MilkMolarNotificationHandler.Instance.ShowNotification(mega: false);
             }
         }
 
@@ -296,8 +300,7 @@ namespace MilkMolars
         private void AddMilkMolarToAllClientsClientRpc()
         {
             MilkMolarController.MilkMolars++;
-            if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 1f); }
-            if (configShowChatMessages.Value) { HUDManager.Instance.AddChatMessage($"Milk Molar activated! You now have {MilkMolarController.MilkMolars} unspent Milk Molars.", "Server"); } // TODO: Use original hud display notification from Grounded game
+            MilkMolarNotificationHandler.Instance.ShowNotification(mega: false);
         }
 
         [ClientRpc]
@@ -306,8 +309,7 @@ namespace MilkMolars
             if (localPlayerId == steamId)
             {
                 MilkMolarController.MilkMolars += amount;
-                if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 0.5f); }
-                if (configShowChatMessages.Value) { HUDManager.Instance.AddChatMessage($"{amount} Milk Molars activated! Your now have {MilkMolarController.MilkMolars} unspent Milk Molars.", "Server"); } // TODO: Use original hud display notification from Grounded game
+                MilkMolarNotificationHandler.Instance.ShowNotification(mega: false);
             }
         }
 
@@ -315,8 +317,7 @@ namespace MilkMolars
         public void AddMultipleMilkMolarsAllClientsClientRpc(int amount)
         {
             MilkMolarController.MilkMolars += amount;
-            if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 0.5f); }
-            if (configShowChatMessages.Value) { HUDManager.Instance.AddChatMessage($"{MegaMilkMolars.Value} Mega Milk Molars activated! Your crew now has {MegaMilkMolars.Value} unspent Mega Milk Molars.", "Server"); } // TODO: Use original hud display notification from Grounded game
+            MilkMolarNotificationHandler.Instance.ShowNotification(mega: false);
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -333,15 +334,13 @@ namespace MilkMolars
         private void AddMegaMilkMolarClientRpc()
         {
             logger.LogDebug("Added mega milk molar");
-            if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 1f); }
-            if (configShowChatMessages.Value) { HUDManager.Instance.AddChatMessage($"Mega Milk Molar activated! Your group now has {MegaMilkMolars.Value} unspent Mega Milk Molars.", "Server"); }
+            MilkMolarNotificationHandler.Instance.ShowNotification(mega: true);
         }
 
         [ClientRpc]
         public void AddMultipleMegaMilkMolarsClientRpc(int amount)
         {
-            if (configPlaySound.Value) { localPlayer.statusEffectAudio.PlayOneShot(ActivateSFX, 0.5f); }
-            if (configShowChatMessages.Value) { HUDManager.Instance.AddChatMessage($"{MegaMilkMolars.Value} Mega Milk Molars activated! Your crew now has {MegaMilkMolars.Value} unspent Mega Milk Molars.", "Server"); }
+            MilkMolarNotificationHandler.Instance.ShowNotification(mega: true);
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -410,10 +409,8 @@ namespace MilkMolars
             if (networkPrefab != null)
                 return;
 
-            networkPrefab = (GameObject)Plugin.ModAssets.LoadAsset("Assets/ModAssets/MilkMolars/NetworkHandlerMilkMolars.prefab");
+            networkPrefab = (GameObject)ModAssets.LoadAsset("Assets/ModAssets/MilkMolars/NetworkHandlerMilkMolars.prefab");
             logger.LogDebug("Got networkPrefab");
-            networkPrefab.AddComponent<NetworkHandler>();
-            logger.LogDebug("Added component");
 
             NetworkManager.Singleton.AddNetworkPrefab(networkPrefab);
             logger.LogDebug("Added networkPrefab");
