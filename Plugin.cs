@@ -109,7 +109,13 @@ namespace MilkMolars
             LoggerInstance = PluginInstance.Logger;
             LoggerInstance.LogDebug("Loaded logger for MilkMolarsMod");
 
-            harmony.PatchAll();
+            harmony.PatchAll(typeof(DeleteFileButtonPatch));
+            harmony.PatchAll(typeof(DepositItemsDeskPatch));
+            harmony.PatchAll(typeof(PlayerControllerBPatch));
+            harmony.PatchAll(typeof(RoundManagerPatch));
+            harmony.PatchAll(typeof(StartOfRoundPatch));
+            harmony.PatchAll(typeof(TerminalPatch));
+            harmony.PatchAll(typeof(NetworkObjectManager));
             LoggerInstance.LogDebug("Patched MilkMolarsMod");
 
             InitializeNetworkBehaviours();
@@ -177,6 +183,7 @@ namespace MilkMolars
             // add more days to quota
             LoggerInstance.LogDebug("Got configs");
 
+            if (LGUCompatibility.enabled) harmony.PatchAll(typeof(LguStorePatcher));
 
             // Loading Assets
             string sAssemblyLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
