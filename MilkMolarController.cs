@@ -78,12 +78,6 @@ namespace MilkMolars
                 // Carry weight
                 //upgrades.Add(new MilkMolarUpgrade("CarryWeight", "Carry Weight", MilkMolarUpgrade.UpgradeType.TierPercent, configCarryWeightUpgrade.Value));
             }
-            else
-            {
-                List<MilkMolarUpgrade> lguUpgrades = new List<MilkMolarUpgrade>();
-                lguUpgrades = LGUCompatibility.GetLGUUpgrades();
-                upgrades.AddRange(lguUpgrades);
-            }
 
             // Shovel damage
             //upgrades.Add(new MilkMolarUpgrade("ShovelDamage", "Shovel Damage", MilkMolarUpgrade.UpgradeType.TierNumber, configShovelDamageUpgrade.Value));
@@ -146,13 +140,6 @@ namespace MilkMolars
                     // Company Cruiser max speed
                     // Company Cruiser turning
                     // Company Cruiser damage reduction
-                }
-                else
-                {
-                    logger.LogDebug("Getting lguUpgrades. mega: " + true);
-                    List<MilkMolarUpgrade> lguUpgrades = new List<MilkMolarUpgrade>();
-                    lguUpgrades = LGUCompatibility.GetLGUUpgrades(true);
-                    upgrades.AddRange(lguUpgrades);
                 }
 
                 // Keep items on ship chance

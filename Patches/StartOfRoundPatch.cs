@@ -1,15 +1,5 @@
 ﻿using BepInEx.Logging;
 using HarmonyLib;
-using InteractiveTerminalAPI.UI;
-using LethalLib.Extras;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Unity.Netcode;
-using UnityEngine;
-using static MilkMolars.Plugin;
-using Newtonsoft.Json;
 
 namespace MilkMolars
 {
