@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using InteractiveTerminalAPI.UI;
-using InteractiveTerminalAPI;
+﻿using InteractiveTerminalAPI.UI;
 using InteractiveTerminalAPI.UI.Application;
 using BepInEx.Logging;
 using InteractiveTerminalAPI.UI.Cursor;
 using InteractiveTerminalAPI.UI.Screen;
-using static MilkMolars.Plugin;
-using UnityEngine.Animations.Rigging;
 
 // https://github.com/WhiteSpike/InteractiveTerminalAPI/wiki/Examples#simple-example-with-code-snippets
 
@@ -21,9 +15,6 @@ namespace MilkMolars
         public override void Initialization()
         {
             logger.LogDebug("Initializing Upgrade Terminal UI Group");
-
-            MilkMolarController.InUpgradeUI = false;
-            MilkMolarController.InMegaUpgradeUI = true;
 
             //MilkMolarController.RefreshLGUUpgrades(mega: true);
 
@@ -100,6 +91,17 @@ namespace MilkMolars
             {
                 UnityEngine.Object.FindObjectOfType<Terminal>().PlayTerminalAudioServerRpc(1);
             }
+        }
+        protected override void RemoveInputBindings()
+        {
+            base.RemoveInputBindings();
+            MilkMolarController.InMegaUpgradeUI = false;
+        }
+
+        protected override void AddInputBindings()
+        {
+            base.AddInputBindings();
+            MilkMolarController.InMegaUpgradeUI = true;
         }
     }
 }
