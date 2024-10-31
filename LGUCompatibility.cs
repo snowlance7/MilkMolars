@@ -24,7 +24,7 @@ namespace MilkMolars
             }
         }
 
-        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        /*[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         internal static List<MilkMolarUpgrade> GetLGUUpgrades(bool mega = false)
         {
             logger.LogDebug("GetLGUUpgrades: " + enabled);
@@ -126,7 +126,7 @@ namespace MilkMolars
             }
 
             return upgrades;
-        }
+        }*/
     }
 
     internal class LGUUpgrade : MilkMolarUpgrade
@@ -141,12 +141,15 @@ namespace MilkMolars
             {
                 if (!node.Unlocked)
                 {
+                    LoggerInstance.LogDebug("Unlocking lgu upgrade for first time");
                     MoreShipUpgrades.Managers.LguStore.Instance.HandleUpgrade(node);
+                    LoggerInstance.LogDebug("Done unlocking lgu upgrade for first time");
                 }
                 else if (node.Unlocked && node.MaxUpgrade > node.CurrentUpgrade) // TODO: Test this
                 {
                     LoggerInstance.LogDebug($"{node.MaxUpgrade} > {node.CurrentUpgrade}");
                     MoreShipUpgrades.Managers.LguStore.Instance.HandleUpgrade(node, increment: true);
+                    LoggerInstance.LogDebug("Done incrementing lgu upgrade");
                 }
             }
         }

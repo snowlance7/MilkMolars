@@ -338,7 +338,7 @@ namespace MilkMolars
         }
 
         [ClientRpc]
-        public void AddMultipleMegaMilkMolarsClientRpc(int amount)
+        public void AddMultipleMegaMilkMolarsClientRpc()
         {
             MilkMolarNotificationHandler.Instance.ShowNotification(mega: true);
         }

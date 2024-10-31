@@ -49,7 +49,7 @@ namespace MilkMolars
                 if (megaAmount > 0)
                 {
                     NetworkHandler.MegaMilkMolars.Value += megaAmount;
-                    NetworkHandler.Instance.AddMultipleMegaMilkMolarsClientRpc(megaAmount);
+                    NetworkHandler.Instance.AddMultipleMegaMilkMolarsClientRpc();
                 }
             }
         }

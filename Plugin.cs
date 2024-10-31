@@ -217,6 +217,8 @@ namespace MilkMolars
 
             InteractiveTerminalManager.RegisterApplication<UpgradeTerminalUIPlayer>(["mmu", "milk molar upgrades", "milk molar", "mm player"], caseSensitive: false);
             InteractiveTerminalManager.RegisterApplication<UpgradeTerminalUIGroup>(["mmmu", "mega milk molar upgrades", "mega molar", "mega", "mm group"], caseSensitive: false);
+            InteractiveTerminalManager.RegisterApplication<LGUUpgradeTerminalUIPlayer>(["mmlgu", "lgu milk molar upgrades", "lgu milk molar", "mmlgu player"], caseSensitive: false);
+            InteractiveTerminalManager.RegisterApplication<LGUUpgradeTerminalUIGroup>(["mmmlgu", "lgu mega milk molar upgrades", "lgu mega molar", "lgumega", "mmlgu group"], caseSensitive: false);
 
             // Finished
             Logger.LogInfo($"{MyPluginInfo.PLUGIN_NAME} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");

@@ -84,18 +84,19 @@ namespace MilkMolars
 
         public virtual void ActivateRepeatableUpgrade()
         {
-
+            logger.LogDebug("Activating Repeatable Upgrade " + name);
         }
 
         public virtual void ActivateOneTimeUpgrade()
         {
+            logger.LogDebug("Activating One Time Upgrade for " + name);
             fullyUpgraded = true;
             unlocked = true;
         }
 
         public virtual void ActivateCurrentTierUpgrade()
         {
-
+            logger.LogDebug("Activating Current Tier Upgrade for " + name);
         }
 
         public void GetTiersFromString(string configString)

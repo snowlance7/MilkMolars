@@ -1,4 +1,4 @@
-﻿/*using BepInEx.Logging;
+﻿using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
 using System;
@@ -79,7 +79,6 @@ namespace MilkMolars.Patches
             if (args[0] == "/mega")
             {
                 NetworkHandler.MegaMilkMolars.Value = int.Parse(args[1]);
-                HUDManager.Instance.DisplayTip("Testing", $"Mega Milk Molars: {NetworkHandler.MegaMilkMolars.Value}");
             }
             if (args[0] == "/save")
             {
@@ -124,4 +123,4 @@ namespace MilkMolars.Patches
             }
         }
     }
-}*/
+}
