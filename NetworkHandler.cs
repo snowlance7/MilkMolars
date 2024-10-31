@@ -191,8 +191,6 @@ namespace MilkMolars
                         }
                     }
                 }
-
-                if (LGUCompatibility.enabled) { NetworkHandler.MegaMilkMolarUpgrades.AddRange(LGUCompatibility.GetLGUUpgrades(mega: true)); }
             }
 
             if (File.Exists(MilkMolarsPath))
@@ -231,8 +229,6 @@ namespace MilkMolars
                     }
                 }
             }
-
-            if (LGUCompatibility.enabled) { MilkMolarController.MilkMolarUpgrades.AddRange(LGUCompatibility.GetLGUUpgrades()); }
 
             if (!(NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer))
             {
