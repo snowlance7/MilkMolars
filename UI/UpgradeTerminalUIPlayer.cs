@@ -9,27 +9,27 @@ using InteractiveTerminalAPI.UI.Cursor;
 using InteractiveTerminalAPI.UI.Screen;
 using static MilkMolars.Plugin;
 using UnityEngine.Animations.Rigging;
-using System.Linq;
-using MoreShipUpgrades.UI.TerminalNodes;
-using MoreShipUpgrades.Managers;
 
 // https://github.com/WhiteSpike/InteractiveTerminalAPI/wiki/Examples#simple-example-with-code-snippets
 
-namespace MilkMolars
+namespace MilkMolars.UI
 {
-    internal class LGUUpgradeTerminalUIPlayer : PageApplication
+    internal class UpgradeTerminalUIPlayer : PageApplication
     {
-        private static ManualLogSource logger = Plugin.LoggerInstance;
+        private static ManualLogSource logger = LoggerInstance;
 
         public override void Initialization()
         {
-            logger.LogDebug("Initializing LGU Upgrade Terminal UI Player");
+            logger.LogDebug("Initializing UpgradeTerminalUIPlayer");
 
-            MoreShipUpgrades.UI.TerminalNodes.CustomTerminalNode[] filteredNodes = MoreShipUpgrades.Managers.UpgradeBus.Instance.terminalNodes.Where(x => x.Visible && !x.SharedUpgrade && (x.UnlockPrice > 0 || (x.OriginalName == MoreShipUpgrades.UpgradeComponents.TierUpgrades.Player.NightVision.UPGRADE_NAME && (x.Prices.Length > 0 && x.Prices[0] != 0)))).ToArray();
+            MilkMolarController.InMegaUpgradeUI = false;
+            MilkMolarController.InUpgradeUI = true;
 
-            (CustomTerminalNode[][], CursorMenu[], IScreen[]) entries = GetPageEntries(filteredNodes);
+            //MilkMolarController.RefreshLGUUpgrades(mega: false);
 
-            CustomTerminalNode[][] pagesUpgrades = entries.Item1;
+            (MilkMolarUpgrade[][], CursorMenu[], IScreen[]) entries = GetPageEntries(MilkMolarController.MilkMolarUpgrades.ToArray());
+
+            MilkMolarUpgrade[][] pagesUpgrades = entries.Item1;
             CursorMenu[] cursorMenus = entries.Item2;
             IScreen[] screens = entries.Item3;
 
@@ -41,12 +41,12 @@ namespace MilkMolars
                 {
                     if (pagesUpgrades[i][j] == null) continue;
 
-                    CustomTerminalNode upgrade = pagesUpgrades[i][j];
+                    MilkMolarUpgrade upgrade = pagesUpgrades[i][j];
 
                     elements[j] = new CursorElement()
                     {
-                        Name = GetUpgradeString(upgrade),
-                        Action = () => BuyUpgrade(upgrade)
+                        Name = upgrade.GetUpgradeString(),
+                        Action = () => BuyUpgrade(upgrade.name, j)
                     };
                 }
 
@@ -58,7 +58,7 @@ namespace MilkMolars
                 CursorMenu cursorMenu = cursorMenus[i];
                 screens[i] = new BoxedScreen()
                 {
-                    Title = "LGU Milk Molar Upgrades", // Title is the text that is displayed in the box on top of the screen
+                    Title = "Milk Molar Upgrades", // Title is the text that is displayed in the box on top of the screen
                     elements =
                              [
                                   new TextElement()
@@ -79,42 +79,27 @@ namespace MilkMolars
             currentScreen = initialPage.GetCurrentScreen();
         }
 
-        private string GetUpgradeString(CustomTerminalNode node)
-        {
-            throw new NotImplementedException(); // TODO
-        }
-
         protected override int GetEntriesPerPage<T>(T[] entries)
         {
             return 4;
         }
 
-        public void BuyUpgrade(CustomTerminalNode node)
+        public void BuyUpgrade(string upgradeName, int index)
         {
-            int molarPrice = GetMolarPrice(node.GetCurrentPrice());
+            logger.LogDebug("Buying upgrade");
+            MilkMolarUpgrade upgrade = MilkMolarController.GetUpgradeByName(upgradeName);
+            if (upgrade == null) return;
+            logger.LogDebug("BuyUpgrade: " + upgrade.name);
 
-            if (MilkMolarController.MilkMolars <= molarPrice)
+            if (MilkMolarController.BuyMilkMolarUpgrade(upgrade))
             {
-                if (!node.Unlocked)
-                {
-                    LguStore.Instance.HandleUpgrade(node);
-                }
-                else if (node.Unlocked && node.MaxUpgrade > node.CurrentUpgrade)
-                {
-                    LguStore.Instance.HandleUpgrade(node, increment: true);
-                }
-
-                currentCursorMenu.elements[currentCursorMenu.cursorIndex].Name = upgrade.GetUpgradeString(); // TODO
+                currentCursorMenu.elements[currentCursorMenu.cursorIndex].Name = upgrade.GetUpgradeString();
+                logger.LogDebug("Bought upgrade " + upgrade.name);
             }
             else
             {
                 UnityEngine.Object.FindObjectOfType<Terminal>().PlayTerminalAudioServerRpc(1);
             }
-        }
-
-        public int GetMolarPrice(int price)
-        {
-            return (int)(price / configLGUMilkMolarContributeAmount.Value);
         }
     }
 }

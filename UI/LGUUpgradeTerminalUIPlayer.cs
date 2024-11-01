@@ -15,17 +15,17 @@ using MoreShipUpgrades.Managers;
 
 // https://github.com/WhiteSpike/InteractiveTerminalAPI/wiki/Examples#simple-example-with-code-snippets
 
-namespace MilkMolars
+namespace MilkMolars.UI
 {
-    internal class LGUUpgradeTerminalUIGroup : PageApplication
+    internal class LGUUpgradeTerminalUIPlayer : PageApplication
     {
-        private static ManualLogSource logger = Plugin.LoggerInstance;
-        
+        private static ManualLogSource logger = LoggerInstance;
+
         public override void Initialization()
         {
-            logger.LogDebug("Initializing LGU Upgrade Terminal UI Group");
+            logger.LogDebug("Initializing LGU Upgrade Terminal UI Player");
 
-            MoreShipUpgrades.UI.TerminalNodes.CustomTerminalNode[] filteredNodes = MoreShipUpgrades.Managers.UpgradeBus.Instance.terminalNodes.Where(x => x.Visible && x.SharedUpgrade && (x.UnlockPrice > 0 || (x.OriginalName == MoreShipUpgrades.UpgradeComponents.TierUpgrades.Player.NightVision.UPGRADE_NAME && (x.Prices.Length > 0 && x.Prices[0] != 0)))).ToArray();
+            CustomTerminalNode[] filteredNodes = UpgradeBus.Instance.terminalNodes.Where(x => x.Visible && !x.SharedUpgrade && (x.UnlockPrice > 0 || x.OriginalName == MoreShipUpgrades.UpgradeComponents.TierUpgrades.Player.NightVision.UPGRADE_NAME && x.Prices.Length > 0 && x.Prices[0] != 0)).ToArray();
 
             (CustomTerminalNode[][], CursorMenu[], IScreen[]) entries = GetPageEntries(filteredNodes);
 
@@ -58,12 +58,12 @@ namespace MilkMolars
                 CursorMenu cursorMenu = cursorMenus[i];
                 screens[i] = new BoxedScreen()
                 {
-                    Title = "LGU Mega Milk Molar Upgrades", // Title is the text that is displayed in the box on top of the screen
+                    Title = "LGU Milk Molar Upgrades", // Title is the text that is displayed in the box on top of the screen
                     elements =
                              [
                                   new TextElement()
                                   {
-                                     Text = "These upgrades will affect the entire crew"
+                                     Text = "These upgrades will affect the player"
                                   },
                                   new TextElement() // This text element is here to give space between the text and the user prompt
                                   {
@@ -81,7 +81,7 @@ namespace MilkMolars
 
         private string GetUpgradeString(CustomTerminalNode node)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException(); // TODO
         }
 
         protected override int GetEntriesPerPage<T>(T[] entries)
@@ -104,7 +104,7 @@ namespace MilkMolars
                     LguStore.Instance.HandleUpgrade(node, increment: true);
                 }
 
-                currentCursorMenu.elements[currentCursorMenu.cursorIndex].Name = upgrade.GetUpgradeString(); // TODO
+                currentCursorMenu.elements[currentCursorMenu.cursorIndex].Name = LGUCompatibility.GetLGUUpgradeString(node);
             }
             else
             {
@@ -114,7 +114,7 @@ namespace MilkMolars
 
         public int GetMolarPrice(int price)
         {
-            return (int)(price / configLGUMegaMilkMolarContributeAmount.Value);
+            return (int)(price / configLGUMilkMolarContributeAmount.Value);
         }
     }
 }

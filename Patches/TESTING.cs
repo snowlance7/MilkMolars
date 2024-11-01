@@ -21,7 +21,7 @@ namespace MilkMolars.Patches
         [HarmonyPostfix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.PingScan_performed))]
         public static void PingScan_performedPostFix()
         {
-            logger.LogDebug("Milk Molars: " + MilkMolarController.MilkMolars);
+            /*logger.LogDebug("Milk Molars: " + MilkMolarController.MilkMolars);
             logger.LogDebug("Mega Milk Molars: " + NetworkHandler.MegaMilkMolars.Value);
             logger.LogDebug($"Milk molar upgrades: {MilkMolarController.MilkMolarUpgrades.Count}");
             logger.LogDebug($"Mega Milk molar upgrades: {NetworkHandler.MegaMilkMolarUpgrades.Count}");
@@ -32,7 +32,7 @@ namespace MilkMolars.Patches
             if (dropShip != null )
             {
                 logger.LogDebug("Timer: " + dropShip.shipTimer);
-            }
+            }*/
 
             MoreShipUpgrades.UI.TerminalNodes.CustomTerminalNode[] filteredNodes = MoreShipUpgrades.Managers.UpgradeBus.Instance.terminalNodes.Where(x => x.Visible && (x.UnlockPrice > 0 || (x.OriginalName == MoreShipUpgrades.UpgradeComponents.TierUpgrades.Player.NightVision.UPGRADE_NAME && (x.Prices.Length > 0 && x.Prices[0] != 0)))).ToArray();
 
@@ -44,12 +44,13 @@ namespace MilkMolars.Patches
                 logger.LogDebug("Prices: " + string.Join(", ", node.Prices));
                 logger.LogDebug("Max Upgrade: " + node.MaxUpgrade);
                 logger.LogDebug("Current Tier: " + node.CurrentUpgrade);
+                logger.LogDebug("Description: " + node.Description);
             }
 
-            logger.LogDebug(StartOfRound.Instance.randomMapSeed);
+            //logger.LogDebug(StartOfRound.Instance.randomMapSeed);
             // Grab anims: HoldShotgun, HoldLung, GrabClipboard, HoldJetpack, HoldKnife
 
-            MilkMolarNotificationHandler.Instance.ShowNotification(mega: false);
+            //MilkMolarNotificationHandler.Instance.ShowNotification(mega: false);
         }
 
         [HarmonyPrefix, HarmonyPatch(typeof(HUDManager), nameof(HUDManager.SubmitChat_performed))]
@@ -65,7 +66,8 @@ namespace MilkMolars.Patches
             if (args[0] == "/refresh")
             {
                 RoundManager.Instance.RefreshEnemiesList();
-                logger.LogDebug("Refreshed enemies list");
+                HoarderBugAI.RefreshGrabbableObjectsInMapList();
+                HUDManager.Instance.DisplayTip("Testing", "Refreshed");
             }
             if (args[0] == "/height")
             {
@@ -114,12 +116,6 @@ namespace MilkMolars.Patches
                 {
                     dropShip.shipTimer = float.Parse(args[1]);
                 }
-            }
-            if (args[0] == "/clip")
-            {
-                Terminal terminal = UnityEngine.Object.FindObjectOfType<Terminal>();
-                int index = int.Parse(args[1]);
-                localPlayer.statusEffectAudio.PlayOneShot(terminal.syncedAudios[index], 1f);
             }
         }
     }

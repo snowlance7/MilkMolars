@@ -24,7 +24,7 @@ namespace MilkMolars
         public static void ConnectClientToPlayerObjectPostfix(PlayerControllerB __instance) // runs on client only
         {
             logger.LogDebug("In ConnectClientToPlayerObjectPostfix");
-            MilkMolarController.Init();
+            //MilkMolarController.Init();
         }
     }
 }

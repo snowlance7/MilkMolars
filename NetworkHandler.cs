@@ -118,13 +118,13 @@ namespace MilkMolars
             if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
                 string megaMilkMolarsData = MegaMilkMolars.Value.ToString();
-                string megaMilkMolarUpgradesData = JsonConvert.SerializeObject(MegaMilkMolarUpgrades.Where(x => !x.LGUUpgrade), settings);
+                string megaMilkMolarUpgradesData = JsonConvert.SerializeObject(MegaMilkMolarUpgrades, settings);
                 File.WriteAllText(MegaMilkMolarsPath, megaMilkMolarsData);
                 File.WriteAllText(MegaMilkMolarUpgradesPath, megaMilkMolarUpgradesData);
             }
 
             string milkMolarsData = JsonConvert.SerializeObject(MilkMolarController.MilkMolars, settings);
-            string milkMolarUpgradesData = JsonConvert.SerializeObject(MilkMolarController.MilkMolarUpgrades.Where(x => !x.LGUUpgrade), settings);
+            string milkMolarUpgradesData = JsonConvert.SerializeObject(MilkMolarController.MilkMolarUpgrades, settings);
 
             File.WriteAllText(MilkMolarsPath, milkMolarsData);
             File.WriteAllText(MilkMolarUpgradesPath, milkMolarUpgradesData);
@@ -178,21 +178,16 @@ namespace MilkMolars
                 {
                     foreach (var upgrade in MegaMilkMolarUpgrades)
                     {
-                        if (!upgrade.LGUUpgrade)
+                        if (upgrade.type == MilkMolarUpgrade.UpgradeType.OneTimeUnlock && upgrade.unlocked)
                         {
-                            if (upgrade.type == MilkMolarUpgrade.UpgradeType.OneTimeUnlock && upgrade.unlocked)
-                            {
-                                upgrade.ActivateOneTimeUpgrade();
-                            }
-                            if ((upgrade.type == MilkMolarUpgrade.UpgradeType.TierNumber || upgrade.type == MilkMolarUpgrade.UpgradeType.TierPercent) && upgrade.unlocked)
-                            {
-                                upgrade.ActivateCurrentTierUpgrade();
-                            }
+                            upgrade.ActivateOneTimeUpgrade();
+                        }
+                        if ((upgrade.type == MilkMolarUpgrade.UpgradeType.TierNumber || upgrade.type == MilkMolarUpgrade.UpgradeType.TierPercent) && upgrade.unlocked)
+                        {
+                            upgrade.ActivateCurrentTierUpgrade();
                         }
                     }
                 }
-
-                if (LGUCompatibility.enabled) { NetworkHandler.MegaMilkMolarUpgrades.AddRange(LGUCompatibility.GetLGUUpgrades(mega: true)); }
             }
 
             if (File.Exists(MilkMolarsPath))
@@ -218,21 +213,16 @@ namespace MilkMolars
             {
                 foreach (var upgrade in MilkMolarController.MilkMolarUpgrades)
                 {
-                    if (!upgrade.LGUUpgrade)
+                    if (upgrade.type == MilkMolarUpgrade.UpgradeType.OneTimeUnlock && upgrade.unlocked)
                     {
-                        if (upgrade.type == MilkMolarUpgrade.UpgradeType.OneTimeUnlock && upgrade.unlocked)
-                        {
-                            upgrade.ActivateOneTimeUpgrade();
-                        }
-                        if ((upgrade.type == MilkMolarUpgrade.UpgradeType.TierNumber || upgrade.type == MilkMolarUpgrade.UpgradeType.TierPercent) && upgrade.unlocked)
-                        {
-                            upgrade.ActivateCurrentTierUpgrade();
-                        }
+                        upgrade.ActivateOneTimeUpgrade();
+                    }
+                    if ((upgrade.type == MilkMolarUpgrade.UpgradeType.TierNumber || upgrade.type == MilkMolarUpgrade.UpgradeType.TierPercent) && upgrade.unlocked)
+                    {
+                        upgrade.ActivateCurrentTierUpgrade();
                     }
                 }
             }
-
-            if (LGUCompatibility.enabled) { MilkMolarController.MilkMolarUpgrades.AddRange(LGUCompatibility.GetLGUUpgrades()); }
 
             if (!(NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer))
             {
@@ -354,7 +344,7 @@ namespace MilkMolars
                 if (upgrade != null)
                 {
                     if (upgrade.type == MilkMolarUpgrade.UpgradeType.Repeatable) { upgrade.ActivateRepeatableUpgrade(); }
-                    else if (upgrade.type == MilkMolarUpgrade.UpgradeType.OneTimeUnlock || upgrade.type == MilkMolarUpgrade.UpgradeType.LGUOneTimeUnlock) { upgrade.ActivateOneTimeUpgrade(); }
+                    else if (upgrade.type == MilkMolarUpgrade.UpgradeType.OneTimeUnlock) { upgrade.ActivateOneTimeUpgrade(); }
                     else
                     {
                         upgrade.GoToNextTier();
@@ -380,13 +370,11 @@ namespace MilkMolars
                 if (upgrade != null)
                 {
                     if (upgrade.type == MilkMolarUpgrade.UpgradeType.Repeatable) { return; }
-                    else if (upgrade.type == MilkMolarUpgrade.UpgradeType.OneTimeUnlock || upgrade.type == MilkMolarUpgrade.UpgradeType.LGUOneTimeUnlock) { upgrade.unlocked = true; }
+                    else if (upgrade.type == MilkMolarUpgrade.UpgradeType.OneTimeUnlock) { upgrade.unlocked = true; }
                     else
                     {
                         upgrade.GoToNextTier();
                     }
-
-                    MilkMolarController.RefreshLGUUpgrades(true);
                 }
                 else
                 {

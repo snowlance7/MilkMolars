@@ -12,12 +12,12 @@ using UnityEngine.Animations.Rigging;
 
 // https://github.com/WhiteSpike/InteractiveTerminalAPI/wiki/Examples#simple-example-with-code-snippets
 
-namespace MilkMolars
+namespace MilkMolars.UI
 {
     internal class UpgradeTerminalUIGroup : PageApplication
     {
-        private static ManualLogSource logger = Plugin.LoggerInstance;
-        
+        private static ManualLogSource logger = LoggerInstance;
+
         public override void Initialization()
         {
             logger.LogDebug("Initializing Upgrade Terminal UI Group");
