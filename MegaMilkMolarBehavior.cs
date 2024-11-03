@@ -40,10 +40,11 @@ namespace MilkMolars
 
             if (ActivationMethod == ActivateMethod.Use)
             {
-                itemProperties.toolTips[0] = "Activate [LMB]";
+                itemProperties.toolTips = ["Activate [LMB]"];
             }
             if (ActivationMethod == ActivateMethod.Grab)
             {
+                grabbable = false;
                 customGrabTooltip = "Activate [E]";
             }
         }
@@ -60,11 +61,13 @@ namespace MilkMolars
 
         public override void InteractItem()
         {
-            base.InteractItem();
-            
             if (ActivationMethod == ActivateMethod.Grab)
             {
                 ActivateMolar();
+            }
+            else
+            {
+                base.InteractItem();
             }
         }
 
@@ -82,10 +85,16 @@ namespace MilkMolars
 
         public void ActivateMolar()
         {
-            if (configPlaySound.Value) { ItemSFX.Play(); }
-            playerHeldBy.DespawnHeldObject();
-
             MilkMolarController.AddMegaMilkMolar();
+
+            if (playerHeldBy != null && !isPocketed)
+            {
+                playerHeldBy.DespawnHeldObject();
+            }
+            else
+            {
+                NetworkObject.Despawn(true);
+            }
         }
     }
 }

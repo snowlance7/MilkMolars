@@ -14,11 +14,11 @@ namespace MilkMolars.Upgrades
     {
         public ItemDropshipLandingSpeedUpgrade()
         {
-            name = "itemDropshipLandingSpeed";
-            title = "Item Dropship Landing Speed";
-            description = "";
-            type = UpgradeType.OneTimeUnlock;
-            //cost = configitemDrop
+            Name = "itemDropshipLandingSpeed";
+            Title = "Item Dropship Landing Speed";
+            Description = "";
+            Type = UpgradeType.OneTimeUnlock;
+            // TODO
         }
     }
 

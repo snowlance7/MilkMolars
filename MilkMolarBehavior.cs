@@ -45,10 +45,11 @@ namespace MilkMolars
 
             if (ActivationMethod == ActivateMethod.Use)
             {
-                itemProperties.toolTips[0] = "Activate [LMB]";
+                itemProperties.toolTips = ["Activate [LMB]"];
             }
             if (ActivationMethod == ActivateMethod.Grab)
             {
+                grabbable = false;
                 customGrabTooltip = "Activate [E]";
             }
         }
@@ -68,10 +69,17 @@ namespace MilkMolars
             {
                 ActivateMolar();
             }
+        }
 
-            if (ActivationMethod == ActivateMethod.Grab && playerHeldBy != null && isHeld && !isPocketed)
+        public override void InteractItem()
+        {
+            if (ActivationMethod == ActivateMethod.Grab)
             {
                 ActivateMolar();
+            }
+            else
+            {
+                base.InteractItem();
             }
         }
 
@@ -89,16 +97,29 @@ namespace MilkMolars
 
         public void ActivateMolar()
         {
-            ItemSFX.Play();
-            playerHeldBy.DespawnHeldObject();
-
-            if (configUpgradePointsToFinder.Value)
+            if (ActivationMethod != ActivateMethod.Grab)
             {
-                MilkMolarController.AddMilkMolar(playerFoundBy);
+                if (configUpgradePointsToFinder.Value)
+                {
+                    MilkMolarController.AddMilkMolar(playerFoundBy);
+                }
+                else
+                {
+                    MilkMolarController.AddMilkMolar(playerHeldBy);
+                }
             }
             else
             {
-                MilkMolarController.AddMilkMolar(playerHeldBy);
+                MilkMolarController.AddMilkMolar(localPlayer);
+            }
+
+            if (playerHeldBy != null && !isPocketed)
+            {
+                playerHeldBy.DespawnHeldObject();
+            }
+            else
+            {
+                NetworkObject.Despawn(true);
             }
         }
     }

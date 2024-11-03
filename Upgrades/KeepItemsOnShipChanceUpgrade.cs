@@ -1,5 +1,6 @@
 ﻿using BepInEx.Logging;
 using HarmonyLib;
+using MilkMolars.LGU;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,11 +13,13 @@ namespace MilkMolars.Upgrades
     {
         public KeepItemsOnShipChanceUpgrade()
         {
-            name = "keepItemsOnShipChance";
-            title = "Keep Items On Ship";
-            description = "Chance to keep items on ship when all players die, chance increases with tier";
-            type = UpgradeType.TierPercent;
+            Name = "keepItemsOnShipChance";
+            Title = "Keep Items On Ship";
+            Description = "Chance to keep items on ship when all players die, chance increases with tier";
+            Type = UpgradeType.TierPercent;
             GetTiersFromString(configKeepItemsOnShipChanceUpgrade.Value);
+            Shared = true;
+            Visible = !LGUCompatibility.enabled;
         }
     }
 
@@ -35,12 +38,12 @@ namespace MilkMolars.Upgrades
             {
                 if (MilkMolarController.MegaMilkMolarUpgrades != null)
                 {
-                    MilkMolarUpgrade keepScrapUpgrade = MilkMolarController.MegaMilkMolarUpgrades.FirstOrDefault(x => x.name == "keepItemsOnShipChance");
-                    if (keepScrapUpgrade != null && keepScrapUpgrade.unlocked)
+                    MilkMolarUpgrade keepScrapUpgrade = MilkMolarController.MegaMilkMolarUpgrades.FirstOrDefault(x => x.Name == "keepItemsOnShipChance");
+                    if (keepScrapUpgrade != null && keepScrapUpgrade.Unlocked)
                     {
                         int randomNum = UnityEngine.Random.Range(0, 101);
-                        allPlayersDead = keepScrapUpgrade.currentTierAmount >= randomNum;
-                        StartOfRound.Instance.allPlayersDead = allPlayersDead;
+                        allPlayersDead = StartOfRound.Instance.allPlayersDead;
+                        StartOfRound.Instance.allPlayersDead = keepScrapUpgrade.CurrentTierAmount >= randomNum;
                     }
                 }
             }
@@ -59,8 +62,8 @@ namespace MilkMolars.Upgrades
             {
                 if (MilkMolarController.MegaMilkMolarUpgrades != null)
                 {
-                    MilkMolarUpgrade keepScrapUpgrade = MilkMolarController.MegaMilkMolarUpgrades.FirstOrDefault(x => x.name == "keepItemsOnShipChance");
-                    if (keepScrapUpgrade != null && keepScrapUpgrade.unlocked)
+                    MilkMolarUpgrade keepScrapUpgrade = MilkMolarController.MegaMilkMolarUpgrades.FirstOrDefault(x => x.Name == "keepItemsOnShipChance");
+                    if (keepScrapUpgrade != null && keepScrapUpgrade.Unlocked)
                     {
                         StartOfRound.Instance.allPlayersDead = allPlayersDead;
                     }

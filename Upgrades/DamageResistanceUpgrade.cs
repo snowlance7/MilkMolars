@@ -14,11 +14,13 @@ namespace MilkMolars.Upgrades
     {
         public DamageResistanceUpgrade()
         {
-            name = "DamageResistance";
-            title = "Damage Resistance";
-            description = "Reduces damage taken per upgrade";
-            type = UpgradeType.TierPercent;
+            Name = "DamageResistance";
+            Title = "Damage Resistance";
+            Description = "Reduces damage taken per upgrade";
+            Type = UpgradeType.TierPercent;
             GetTiersFromString(configDamageResistanceUpgrade.Value);
+            Shared = false;
+            Visible = true;
         }
     }
 
@@ -35,9 +37,9 @@ namespace MilkMolars.Upgrades
             {
                 // DAMAGE REDUCTION UPGRADE
                 MilkMolarUpgrade damageResist = MilkMolarController.GetUpgradeByName("DamageResistance");
-                if (damageResist != null && damageResist.unlocked)
+                if (damageResist != null && damageResist.Unlocked)
                 {
-                    damageNumber -= (int)(damageNumber * (damageResist.currentTierAmount / 100));
+                    damageNumber -= (int)(damageNumber * damageResist.CurrentTierPercent);
                 }
             }
         }

@@ -87,8 +87,8 @@ namespace MilkMolars.LGU
             }
 
             List<CursorElement> cursorElements = [];
-            PageCursorElement sharedPage = GetFilteredUpgradeNodes(ref filteredNodes, ref cursorElements, (x) => x.SharedUpgrade, LguConstants.MAIN_SCREEN_TITLE, "Mega Milk Molar Upgrades");
-            PageCursorElement individualPage = GetFilteredUpgradeNodes(ref filteredNodes, ref cursorElements, (x) => !x.SharedUpgrade, LguConstants.MAIN_SCREEN_TITLE, "Milk Molar Upgrades");
+            PageCursorElement sharedPage = GetFilteredUpgradeNodes(ref filteredNodes, ref cursorElements, (x) => x.SharedUpgrade, LguConstants.MAIN_SCREEN_TITLE, "Mega Milk Molar Upgrades", true);
+            PageCursorElement individualPage = GetFilteredUpgradeNodes(ref filteredNodes, ref cursorElements, (x) => !x.SharedUpgrade, LguConstants.MAIN_SCREEN_TITLE, "Milk Molar Upgrades", false);
 
             if (cursorElements.Count > 1)
             {
@@ -120,20 +120,23 @@ namespace MilkMolars.LGU
             currentScreen = currentPage.GetCurrentScreen();
         }
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-        PageCursorElement GetFilteredUpgradeNodes(ref CustomTerminalNode[] nodes, ref List<CursorElement> list, Func<CustomTerminalNode, bool> predicate, string pageTitle, string cursorName)
+        PageCursorElement GetFilteredUpgradeNodes(ref CustomTerminalNode[] nodes, ref List<CursorElement> list, Func<CustomTerminalNode, bool> predicate, string pageTitle, string cursorName, bool shared)
         {
             PageCursorElement page = null;
             CustomTerminalNode[] filteredNodes = nodes.Where(predicate).ToArray();
             if (filteredNodes.Length > 0)
             {
                 page = BuildUpgradePage(filteredNodes, pageTitle);
-                list.Add(CursorElement.Create(name: cursorName, action: () => SwitchToUpgradeScreen(page, previous: true)));
+                list.Add(CursorElement.Create(name: cursorName, action: () => SwitchToUpgradeScreen(page, previous: true, shared)));
             }
             return page;
         }
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-        void SwitchToUpgradeScreen(PageCursorElement page, bool previous)
+        void SwitchToUpgradeScreen(PageCursorElement page, bool previous, bool shared)
         {
+            MilkMolarController.InUpgradeUI = !shared;
+            MilkMolarController.InMegaUpgradeUI = shared;
+
             InteractiveTerminalAPI.Compat.InputUtils_Compat.CursorExitKey.performed -= OnScreenExit;
             InteractiveTerminalAPI.Compat.InputUtils_Compat.CursorExitKey.performed += OnUpgradeStoreExit;
             SwitchScreen(page, previous);
@@ -145,6 +148,8 @@ namespace MilkMolars.LGU
             ResetScreen();
             InteractiveTerminalAPI.Compat.InputUtils_Compat.CursorExitKey.performed += OnScreenExit;
             InteractiveTerminalAPI.Compat.InputUtils_Compat.CursorExitKey.performed -= OnUpgradeStoreExit;
+            MilkMolarController.InMegaUpgradeUI = false;
+            MilkMolarController.InUpgradeUI = false;
         }
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         PageCursorElement BuildUpgradePage(CustomTerminalNode[] nodes, string title)

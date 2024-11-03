@@ -6,6 +6,7 @@ using HarmonyLib;
 using InteractiveTerminalAPI.UI;
 using LethalLib.Modules;
 using MilkMolars.LGU;
+using MilkMolars.UI;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,7 +20,6 @@ namespace MilkMolars
 {
     [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
     [BepInDependency(LethalLib.Plugin.ModGUID)]
-    [BepInDependency(InteractiveTerminalAPI.PluginInfo.PLUGIN_GUID)]
     [BepInDependency("MoreShipUpgrades", BepInDependency.DependencyFlags.SoftDependency)]
     internal class Plugin : BaseUnityPlugin
     {
@@ -130,7 +130,7 @@ namespace MilkMolars
             configMilkMolarLevelRarities = Config.Bind("Milk Molar Rarities", "Level Rarities", "ExperimentationLevel:10, AssuranceLevel:10, VowLevel:10, OffenseLevel:30, AdamanceLevel:50, MarchLevel:50, RendLevel:50, DineLevel:50, TitanLevel:80, ArtificeLevel:80, EmbrionLevel:100, All:30, Modded:30", "Rarities for each level. See default for formatting.");
             configMilkMolarCustomLevelRarities = Config.Bind("Milk Molar Rarities", "Custom Level Rarities", "", "Rarities for modded levels. Same formatting as level rarities.");
             configMilkMolarSpawnAmount = Config.Bind("Milk Molar Rarities", "Spawn Amount Min Max", "ExperimentationLevel:1-2, AssuranceLevel:1-4, VowLevel:1-5, OffenseLevel:3-5, AdamanceLevel:4-8, MarchLevel:2-6, RendLevel:3-10, DineLevel:4-10, TitanLevel:6-15, ArtificeLevel:7-14, EmbrionLevel:10-20, All:1-5", "The minimum and maximum amount of Milk Molars to spawn after scrap spawns in round for each moon.");
-            configMilkMolarActivateMethod = Config.Bind("Milk Molar", "Activate Method", ActivateMethod.Use, "Activation method for Milk Molars.\nGrab: Grabbing the Milk Molar will activate it.\nUse: Using the Milk Molar while its in your inventory will activate it.\nShip: Milk Molar will activate when brought inside the ship.\nSell: Milk Molar will activate when sold to the company.");
+            configMilkMolarActivateMethod = Config.Bind("Milk Molar", "Activate Method", ActivateMethod.Grab, "Activation method for Milk Molars.\nGrab: Grabbing the Milk Molar will activate it.\nUse: Using the Milk Molar while its in your inventory will activate it.\nShip: Milk Molar will activate when brought inside the ship.\nSell: Milk Molar will activate when sold to the company.");
             configSharedMilkMolars = Config.Bind("Milk Molar", "Shared Milk Molars", true, "By default (true), Milk Molars will give 1 upgrade point to each player when activated. Setting this to false will only give 1 upgrade point to the player who activated it.");
             configUpgradePointsToFinder = Config.Bind("Milk Molar", "Upgrade Points to Finder", false, "This only works when configMilkMolarActivateMethod is SHIP or SELL and configSharedMilkMolars is false. Setting this to true will only give an upgrade point to the first person who held the Milk Molar when activating it.");
 
@@ -138,7 +138,7 @@ namespace MilkMolars
             configMegaMilkMolarLevelRarities = Config.Bind("Mega Milk Molar Rarities", "Mega Milk Molar Level Rarities", "ExperimentationLevel:10, AssuranceLevel:10, VowLevel:10, OffenseLevel:30, AdamanceLevel:50, MarchLevel:50, RendLevel:50, DineLevel:50, TitanLevel:80, ArtificeLevel:80, EmbrionLevel:100, All:30, Modded:30", "Rarities for each level. See default for formatting.");
             configMegaMilkMolarCustomLevelRarities = Config.Bind("Mega Milk Molar Rarities", "Mega Milk Molar Custom Level Rarities", "", "Rarities for modded levels. Same formatting as level rarities.");
             configMegaMilkMolarSpawnAmount = Config.Bind("Mega Milk Molar Rarities", "Spawn Amount Min Max", "ExperimentationLevel:1-2, AssuranceLevel:1-3, VowLevel:1-3, OffenseLevel:2-3, AdamanceLevel:3-5, MarchLevel:2-3, RendLevel:3-5, DineLevel:3-6, TitanLevel:5-10, ArtificeLevel:5-12, EmbrionLevel:7-15, All:1-3", "The minimum and maximum amount of Mega Milk Molars to spawn after scrap spawns in round for each moon.");
-            configMegaMilkMolarActivateMethod = Config.Bind("Mega Milk Molar", "Activate Method", ActivateMethod.Use, "Activation method for Mega Milk Molars.\nGrab: Grabbing the Mega Milk Molar will activate it.\nUse: Using the Mega Milk Molar while its in your inventory will activate it.\nShip: Mega Milk Molar will activate when brought inside the ship.\nSell: Mega Milk Molar will activate when sold to the company.");
+            configMegaMilkMolarActivateMethod = Config.Bind("Mega Milk Molar", "Activate Method", ActivateMethod.Grab, "Activation method for Mega Milk Molars.\nGrab: Grabbing the Mega Milk Molar will activate it.\nUse: Using the Mega Milk Molar while its in your inventory will activate it.\nShip: Mega Milk Molar will activate when brought inside the ship.\nSell: Mega Milk Molar will activate when sold to the company.");
 
             // Client Configs
             configPlaySound = Config.Bind("Client Settings", "Play Sound", true, "Play sound when milk molar is activated");
@@ -150,7 +150,7 @@ namespace MilkMolars
 
             // Milk Molar Upgrades Configs
             //configShovelDamageUpgrade = Config.Bind("Milk Molar Upgrades", "Shovel Damage Upgrade", "0:1, 5:2, 10:3, 18:4", "Increases the damage of the shovel. Default is 1");
-            configDamageResistanceUpgrade = Config.Bind("Milk Molar Upgrades", "Damage Resistance Upgrade", "0:0, 1:5, 2:10, 3:15, 4:20, 5:25, 6:30, 7:35, 8:40, 9:45, 10:50", "Percentage damage reduction. Default is 0");
+            configDamageResistanceUpgrade = Config.Bind("Milk Molar Upgrades", "Damage Resistance Upgrade", "0:0, 3:5, 4:10, 5:15, 6:20, 7:25, 8:30, 9:35, 10:40, 15:45, 20:50", "Percentage damage reduction. Default is 0");
             //configSprintSpeedUpgrade = Config.Bind("Milk Molar Upgrades", "Sprint Speed Upgrade", "0:0.5, 1:0.51, 2:0.52, 3:0.54, 5:0.56, 7:0.57, 10:0.6, 15:0.63, 20:0.66, 30:0.7", "Default is 0.5");
             //configSprintEnduranceUpgrade = Config.Bind("Milk Molar Upgrades", "Sprint Endurance Upgrade", "0:5, 1:6, 2:8, 3:10, 4:12, 5:14, 6:16, 10:20, 15:25, 20:30", "Increases sprint time. Default is 5");
             //configSprintRegenerationUpgrade = Config.Bind("Milk Molar Upgrades", "Sprint Regeneration Upgrade", "", "");
@@ -219,12 +219,10 @@ namespace MilkMolars
             Utilities.FixMixerGroups(MegaMilkMolar.spawnPrefab);
             Items.RegisterScrap(MegaMilkMolar, GetLevelRarities(configMegaMilkMolarLevelRarities.Value), GetCustomLevelRarities(configMegaMilkMolarCustomLevelRarities.Value));
 
-            //InteractiveTerminalManager.RegisterApplication<UpgradeTerminalUIPlayer>(["mmu", "milk molar upgrades", "milk molar", "mm player"], caseSensitive: false);
-            //InteractiveTerminalManager.RegisterApplication<UpgradeTerminalUIGroup>(["mmmu", "mega milk molar upgrades", "mega molar", "mega", "mm group"], caseSensitive: false);
-            //InteractiveTerminalManager.RegisterApplication<LGUUpgradeTerminalUIPlayer>(["mmlgu", "lgu milk molar upgrades", "lgu milk molar", "mmlgu player"], caseSensitive: false);
+            InteractiveTerminalManager.RegisterApplication<UpgradeTerminalUI>(["mmu", "mm", "milk molar upgrades", "milk molar"], caseSensitive: false);
             if (LGUCompatibility.enabled)
             {
-                InteractiveTerminalManager.RegisterApplication<LGUUpgradeTerminalUI>(["mmlgu", "lgu mega milk molar upgrades", "lgu mega molar", "lgumega", "mmlgu group"], caseSensitive: false);
+                InteractiveTerminalManager.RegisterApplication<LGUUpgradeTerminalUI>(["mmlgu", "mmulgu", "lgu milk molar upgrades", "milk molar lgu", "mmu lgu", "mm lgu"], caseSensitive: false);
             }
 
             // Finished

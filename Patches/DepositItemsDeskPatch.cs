@@ -27,7 +27,7 @@ namespace MilkMolars
                     int amount = objectsOnDesk.OfType<MilkMolarBehavior>().Count();
                     if (amount > 0)
                     {
-                        NetworkHandler.Instance.AddMultipleMilkMolarsAllClientsClientRpc(amount);
+                        NetworkHandler.Instance.AddMultipleMilkMolarsClientRpc(amount);
                     }
                 }
                 else

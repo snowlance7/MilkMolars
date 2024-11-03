@@ -12,7 +12,7 @@ using static MilkMolars.Plugin;
 
 namespace MilkMolars.Patches
 {
-    [HarmonyPatch]
+    //[HarmonyPatch]
     internal class TESTING : MonoBehaviour
     {
         private static ManualLogSource logger = Plugin.LoggerInstance;

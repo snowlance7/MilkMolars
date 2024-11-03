@@ -28,12 +28,13 @@ namespace MilkMolars
         internal static bool InUpgradeUI = false;
         internal static bool InMegaUpgradeUI = false;
 
-        internal static List<MilkMolarUpgrade> MilkMolarUpgrades;
+        public static List<MilkMolarUpgrade> MilkMolarUpgrades;
         public static List<MilkMolarUpgrade> MegaMilkMolarUpgrades;
 
         public static List<MilkMolarUpgrade> ExtraMilkMolarUpgrades;
         public static List<MilkMolarUpgrade> ExtraMegaMilkMolarUpgrades;
 
+        public static List<MilkMolarUpgrade> AllMilkMolarUpgrades { get { return MilkMolarUpgrades.Concat(MegaMilkMolarUpgrades).ToList(); } }
 
         public static int GetMolarPrice(int price, bool shared)
         {
@@ -63,7 +64,7 @@ namespace MilkMolars
         {
             LoggerInstance.LogDebug("Initing milk molar controller");
 
-            //NetworkHandler.LoadDataFromFile();
+            NetworkHandler.LoadDataFromFile();
             MilkMolarNotificationHandler.GetUIIcons();
         }
 
@@ -195,11 +196,11 @@ namespace MilkMolars
         {
             if (megaUpgrade)
             {
-                return MegaMilkMolarUpgrades.Find(x => x.name == name);
+                return MegaMilkMolarUpgrades.Find(x => x.Name == name);
             }
             else
             {
-                return MilkMolarUpgrades.Find(x => x.name == name);
+                return MilkMolarUpgrades.Find(x => x.Name == name);
             }
         }
 
@@ -215,14 +216,14 @@ namespace MilkMolars
 
         internal static bool BuyMilkMolarUpgrade(MilkMolarUpgrade upgrade)
         {
-            logger.LogDebug("Attempting to buy Milk Molar upgrade: " + upgrade.name);
+            logger.LogDebug("Attempting to buy Milk Molar upgrade: " + upgrade.Name);
 
-            if (upgrade.type == MilkMolarUpgrade.UpgradeType.Repeatable)
+            if (upgrade.Type == MilkMolarUpgrade.UpgradeType.Repeatable)
             {
                 logger.LogDebug("Upgrade type is Repeatable. Checking if we have enough Milk Molars.");
-                if (MilkMolars >= upgrade.cost)
+                if (MilkMolars >= upgrade.UnlockCost)
                 {
-                    MilkMolars -= upgrade.cost;
+                    MilkMolars -= upgrade.UnlockCost;
                     logger.LogDebug("Conditions met. Activating Repeatable upgrade and updating server.");
                     upgrade.ActivateRepeatableUpgrade();
                     return true;
@@ -231,12 +232,12 @@ namespace MilkMolars
                 return false;
             }
 
-            if (upgrade.type == MilkMolarUpgrade.UpgradeType.OneTimeUnlock)
+            if (upgrade.Type == MilkMolarUpgrade.UpgradeType.OneTimeUnlock)
             {
                 logger.LogDebug("Upgrade type is OneTimeUnlock. Checking if upgrade is not fully upgraded and if we have enough Milk Molars.");
-                if (!upgrade.fullyUpgraded && MilkMolars >= upgrade.cost)
+                if (!upgrade.FullyUpgraded && MilkMolars >= upgrade.UnlockCost)
                 {
-                    MilkMolars -= upgrade.cost;
+                    MilkMolars -= upgrade.UnlockCost;
                     logger.LogDebug("Conditions met. Activating OneTimeUnlock upgrade and updating server.");
                     upgrade.ActivateOneTimeUpgrade();
                     return true;
@@ -246,10 +247,10 @@ namespace MilkMolars
             }
 
             logger.LogDebug("Checking if upgrade is not fully upgraded and if we have enough Milk Molars for next tier.");
-            logger.LogDebug("Current Tier: " + upgrade.currentTier);
-            if (!upgrade.fullyUpgraded && MilkMolars >= upgrade.nextTierCost)
+            logger.LogDebug("Current Tier: " + upgrade.CurrentTier);
+            if (!upgrade.FullyUpgraded && MilkMolars >= upgrade.NextTierCost)
             {
-                MilkMolars -= upgrade.nextTierCost;
+                MilkMolars -= upgrade.NextTierCost;
                 logger.LogDebug("Conditions met. Going to next tier, activating current tier upgrade, and updating server.");
                 upgrade.GoToNextTier();
                 upgrade.ActivateCurrentTierUpgrade();
@@ -262,40 +263,40 @@ namespace MilkMolars
 
         internal static bool BuyMegaMilkMolarUpgrade(MilkMolarUpgrade upgrade) // THIS IS GOOD DONT TOUCH IT
         {
-            logger.LogDebug("Attempting to buy Mega Milk Molar upgrade: " + upgrade.name);
+            logger.LogDebug("Attempting to buy Mega Milk Molar upgrade: " + upgrade.Name);
             int megaMilkMolars = NetworkHandler.MegaMilkMolars.Value;
 
-            if (upgrade.type == MilkMolarUpgrade.UpgradeType.Repeatable)
+            if (upgrade.Type == MilkMolarUpgrade.UpgradeType.Repeatable)
             {
                 logger.LogDebug("Upgrade type is Repeatable. Checking if we have enough Mega Milk Molars");
-                if (megaMilkMolars >= upgrade.cost)
+                if (megaMilkMolars >= upgrade.UnlockCost)
                 {
                     logger.LogDebug("Conditions met. Activating Repeatable upgrade.");
-                    NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.cost);
+                    NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.Name, upgrade.UnlockCost);
                     return true;
                 }
                 return false;
             }
 
-            if (upgrade.type == MilkMolarUpgrade.UpgradeType.OneTimeUnlock)
+            if (upgrade.Type == MilkMolarUpgrade.UpgradeType.OneTimeUnlock)
             {
                 logger.LogDebug("Upgrade type is OneTimeUnlock. Checking if upgrade is not fully upgraded and if we have enough Mega Milk Molars or RPC is not required.");
-                if (!upgrade.fullyUpgraded && megaMilkMolars >= upgrade.cost)
+                if (!upgrade.FullyUpgraded && megaMilkMolars >= upgrade.UnlockCost)
                 {
                     logger.LogDebug("Conditions met. Activating OneTimeUnlock upgrade.");
-                    NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.cost);
+                    NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.Name, upgrade.UnlockCost);
                     return true;
                 }
                 return false;
             }
 
             logger.LogDebug("Checking if upgrade is not fully upgraded and if we have enough Mega Milk Molars or RPC is not required.");
-            logger.LogDebug("Current Tier: " + upgrade.currentTier);
-            if ((!upgrade.fullyUpgraded && megaMilkMolars >= upgrade.nextTierCost))
+            logger.LogDebug("Current Tier: " + upgrade.CurrentTier);
+            if ((!upgrade.FullyUpgraded && megaMilkMolars >= upgrade.NextTierCost))
             {
                 logger.LogDebug("Conditions met. Going to next tier and activating current tier upgrade.");
 
-                NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.name, upgrade.nextTierCost);
+                NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(upgrade.Name, upgrade.NextTierCost);
                 return true;
             }
 

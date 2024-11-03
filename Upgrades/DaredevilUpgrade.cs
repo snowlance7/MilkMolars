@@ -13,16 +13,17 @@ using System.ComponentModel;
 
 namespace MilkMolars.Upgrades
 {
-    [HarmonyPatch]
     internal class DaredevilUpgrade : MilkMolarUpgrade
     {
         public DaredevilUpgrade()
         {
-            name = "Daredevil";
-            title = "Daredevil";
-            description = "Reduces fall damage per upgrade";
-            type = UpgradeType.TierPercent;
+            Name = "Daredevil";
+            Title = "Daredevil";
+            Description = "Reduces fall damage per upgrade";
+            Type = UpgradeType.TierPercent;
             GetTiersFromString(configDaredevilUpgrade.Value);
+            Shared = false;
+            Visible = true;
         }
     }
 
@@ -41,9 +42,9 @@ namespace MilkMolars.Upgrades
                 if (fallDamage)
                 {
                     MilkMolarUpgrade fallDamageResist = MilkMolarController.GetUpgradeByName("Daredevil");
-                    if (fallDamageResist != null && fallDamageResist.unlocked)
+                    if (fallDamageResist != null && fallDamageResist.Unlocked)
                     {
-                        damageNumber -= (int)(damageNumber * (fallDamageResist.currentTierAmount / 100));
+                        damageNumber -= (int)(damageNumber * (fallDamageResist.CurrentTierPercent));
                     }
                 }
             }

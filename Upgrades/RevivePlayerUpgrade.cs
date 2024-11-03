@@ -11,11 +11,19 @@ namespace MilkMolars.Upgrades
     {
         public RevivePlayerUpgrade()
         {
-            name = "revivePlayer";
-            title = "Revive Player";
-            description = "Revive player on monitor";
-            type = UpgradeType.Repeatable;
-            cost = configRevivePlayerUpgrade.Value;
+            Name = "revivePlayer";
+            Title = "Revive Player";
+            Description = "Revive player on monitor";
+            Type = UpgradeType.Repeatable;
+            UnlockCost = configRevivePlayerUpgrade.Value;
+            Shared = true;
+            Visible = true;
+        }
+
+        public override bool CanBuyUpgrade()
+        {
+            PlayerControllerB player = StartOfRound.Instance.mapScreen.targetedPlayer;
+            return player != null && player.isPlayerDead;
         }
 
         public override void ActivateRepeatableUpgrade()
