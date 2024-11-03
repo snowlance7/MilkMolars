@@ -93,6 +93,15 @@ namespace MilkMolars
             }
             else
             {
+                DespawnMolarServerRpc();
+            }
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void DespawnMolarServerRpc()
+        {
+            if (IsServerOrHost)
+            {
                 NetworkObject.Despawn(true);
             }
         }
