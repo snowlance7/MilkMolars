@@ -34,7 +34,7 @@ namespace MilkMolars.Patches
                 logger.LogDebug("Timer: " + dropShip.shipTimer);
             }*/
 
-            MoreShipUpgrades.UI.TerminalNodes.CustomTerminalNode[] filteredNodes = MoreShipUpgrades.Managers.UpgradeBus.Instance.terminalNodes.Where(x => x.Visible && (x.UnlockPrice > 0 || (x.OriginalName == MoreShipUpgrades.UpgradeComponents.TierUpgrades.Player.NightVision.UPGRADE_NAME && (x.Prices.Length > 0 && x.Prices[0] != 0)))).ToArray();
+            /*MoreShipUpgrades.UI.TerminalNodes.CustomTerminalNode[] filteredNodes = MoreShipUpgrades.Managers.UpgradeBus.Instance.terminalNodes.Where(x => x.Visible && (x.UnlockPrice > 0 || (x.OriginalName == MoreShipUpgrades.UpgradeComponents.TierUpgrades.Player.NightVision.UPGRADE_NAME && (x.Prices.Length > 0 && x.Prices[0] != 0)))).ToArray();
 
             foreach (var node in filteredNodes)
             {
@@ -45,7 +45,7 @@ namespace MilkMolars.Patches
                 logger.LogDebug("Max Upgrade: " + node.MaxUpgrade);
                 logger.LogDebug("Current Tier: " + node.CurrentUpgrade);
                 logger.LogDebug("Description: " + node.Description);
-            }
+            }*/
 
             //logger.LogDebug(StartOfRound.Instance.randomMapSeed);
             // Grab anims: HoldShotgun, HoldLung, GrabClipboard, HoldJetpack, HoldKnife

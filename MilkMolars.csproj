@@ -44,6 +44,12 @@
         -->
         <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=./</PathMap>
     </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+      <DefineConstants>$(DefineConstants);LGU_LIBRARY_AVAILABLE</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+      <DefineConstants>$(DefineConstants);LGU_LIBRARY_AVAILABLE</DefineConstants>
+    </PropertyGroup>
     <ItemGroup>
       <None Remove=".editorconfig" />
       <None Remove=".gitattributes" />

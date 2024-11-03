@@ -7,10 +7,7 @@ using System.Threading;
 
 namespace MilkMolars
 {
-    
-
-
-    public class MilkMolarUpgrade
+    public abstract class MilkMolarUpgrade
     {
         private static ManualLogSource logger = Plugin.LoggerInstance;
 
@@ -34,9 +31,9 @@ namespace MilkMolars
         public int cost;
         public bool unlocked;
 
-        public int currentTier = 0;
-        public float[] amountPerTier;
-        public int[] costsPerTier;
+        public int currentTier = -1;
+        public float[] amountPerTier = [];
+        public int[] costsPerTier = [];
 
         public bool fullyUpgraded;
 
@@ -51,7 +48,7 @@ namespace MilkMolars
         [JsonIgnore]
         public int nextTierCost { get { return costsPerTier[currentTier + 1]; } }
 
-        public MilkMolarUpgrade()
+        /*public MilkMolarUpgrade()
         {
 
         }
@@ -76,7 +73,7 @@ namespace MilkMolars
             this.title = title;
             this.type = type;
             this.cost = cost;
-        }
+        }*/
 
         public virtual void ActivateRepeatableUpgrade()
         {

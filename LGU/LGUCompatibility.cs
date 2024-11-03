@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using static MilkMolars.Plugin;
 
-namespace MilkMolars
+namespace MilkMolars.LGU
 {
     internal class LGUCompatibility
     {
@@ -26,12 +26,6 @@ namespace MilkMolars
                 }
                 return (bool)_enabled;
             }
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-        public static string GetLGUUpgradeString(CustomTerminalNode node)
-        {
-            throw new NotImplementedException();
         }
     }
 }

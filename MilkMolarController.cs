@@ -28,16 +28,42 @@ namespace MilkMolars
         internal static bool InUpgradeUI = false;
         internal static bool InMegaUpgradeUI = false;
 
-        internal static List<MilkMolarUpgrade> MilkMolarUpgrades = new List<MilkMolarUpgrade>();
+        internal static List<MilkMolarUpgrade> MilkMolarUpgrades;
+        public static List<MilkMolarUpgrade> MegaMilkMolarUpgrades;
 
-        public static List<MilkMolarUpgrade> ExtraMilkMolarUpgrades = new List<MilkMolarUpgrade>();
-        public static List<MilkMolarUpgrade> ExtraMegaMilkMolarUpgrades = new List<MilkMolarUpgrade>();
+        public static List<MilkMolarUpgrade> ExtraMilkMolarUpgrades;
+        public static List<MilkMolarUpgrade> ExtraMegaMilkMolarUpgrades;
+
+
+        public static int GetMolarPrice(int price, bool shared)
+        {
+            if (shared)
+            {
+                return (int)Math.Ceiling(price / configLGUMegaMilkMolarContributeAmount.Value);
+            }
+            else
+            {
+                return (int)Math.Ceiling(price / configLGUMilkMolarContributeAmount.Value);
+            }
+        }
+
+        public static int GetCurrentMolarCount(bool shared)
+        {
+            if (shared)
+            {
+                return NetworkHandler.MegaMilkMolars.Value;
+            }
+            else
+            {
+                return MilkMolars;
+            }
+        }
 
         internal static void Init()
         {
             LoggerInstance.LogDebug("Initing milk molar controller");
 
-            NetworkHandler.LoadDataFromFile();
+            //NetworkHandler.LoadDataFromFile();
             MilkMolarNotificationHandler.GetUIIcons();
         }
 
@@ -88,64 +114,57 @@ namespace MilkMolars
             //upgrades.Add(new MilkMolarUpgrade("CorporateKickback", "Corporate Kickback", MilkMolarUpgrade.UpgradeType.TierPercent, configCorporateKickbackUpgrade.Value));
 
 
-            if (ExtraMilkMolarUpgrades.Count > 0)
+            /*if (ExtraMilkMolarUpgrades.Count > 0)
             {
                 upgrades.AddRange(ExtraMilkMolarUpgrades);
-            }
+            }*/
 
-            LoggerInstance.LogDebug(upgrades.Count);
+            LoggerInstance.LogDebug("Got milk molar upgrades: " + upgrades.Count);
 
             return upgrades;
         }
 
-        internal static void GetMegaMilkMolarUpgrades() // TODO: Implement commented out upgrades
+        internal static List<MilkMolarUpgrade> GetMegaMilkMolarUpgrades() // TODO: Implement commented out upgrades
         {
             List<MilkMolarUpgrade> upgrades = new List<MilkMolarUpgrade>();
-            
-            if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
+
+            //// Mega Milk Molars
+
+            // Signal Transmitter Upgrade
+            //MilkMolarUpgrade signalTransmitter = new MilkMolarUpgrade("SignalTransmitterUpgrade", "Signal Transmitter Upgrades", MilkMolarUpgrade.UpgradeType.OneTimeUnlock, configSignalTransmitterUpgrade.Value);
+            //upgrades.Add(signalTransmitter);
+
+            // Increased shop deals: Increases the maximum amount of items that can be on sale in the store.
+
+            //upgrades.Add(new ItemDropshipLandingSpeedUpgrade());
+
+            // Travel discount
+            //MilkMolarUpgrade travelDiscount = new MilkMolarUpgrade("travelDiscount", "Travel Discount", MilkMolarUpgrade.UpgradeType.TierPercent, configTravelDiscountUpgrade.Value);
+            //upgrades.Add(travelDiscount);
+
+            // Company Cruiser health
+            // Company Cruiser acceleration
+            // Company Cruiser max speed
+            // Company Cruiser turning
+            // Company Cruiser damage reduction
+
+            // Keep items on ship chance
+            upgrades.Add(new KeepItemsOnShipChanceUpgrade());
+
+            upgrades.Add(new RevivePlayerUpgrade());
+
+
+            /*if (ExtraMegaMilkMolarUpgrades.Count > 0)
             {
-                //// Mega Milk Molars
-                
-                // Signal Transmitter Upgrade
-                //MilkMolarUpgrade signalTransmitter = new MilkMolarUpgrade("SignalTransmitterUpgrade", "Signal Transmitter Upgrades", MilkMolarUpgrade.UpgradeType.OneTimeUnlock, configSignalTransmitterUpgrade.Value);
-                //upgrades.Add(signalTransmitter);
+                upgrades.AddRange(ExtraMegaMilkMolarUpgrades);
+            }*/
 
-                // Increased shop deals: Increases the maximum amount of items that can be on sale in the store.
+            logger.LogDebug("Got mega milk molar upgrades: " + upgrades.Count);
 
-                //upgrades.Add(new ItemDropshipLandingSpeedUpgrade());
-
-                // Travel discount
-                //MilkMolarUpgrade travelDiscount = new MilkMolarUpgrade("travelDiscount", "Travel Discount", MilkMolarUpgrade.UpgradeType.TierPercent, configTravelDiscountUpgrade.Value);
-                //upgrades.Add(travelDiscount);
-
-                // Company Cruiser health
-                // Company Cruiser acceleration
-                // Company Cruiser max speed
-                // Company Cruiser turning
-                // Company Cruiser damage reduction
-
-                // Keep items on ship chance
-                upgrades.Add(new KeepItemsOnShipChanceUpgrade());
-
-                upgrades.Add(new RevivePlayerUpgrade());
-
-
-                if (ExtraMegaMilkMolarUpgrades.Count > 0)
-                {
-                    upgrades.AddRange(ExtraMegaMilkMolarUpgrades);
-                }
-
-                var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
-                string megaUpgrades = JsonConvert.SerializeObject(upgrades, settings);
-                NetworkHandler.Instance.SendMegaMilkMolarUpgradesToAllClientRpc(megaUpgrades);
-            }
-            else
-            {
-                NetworkHandler.Instance.GetMegaMilkMolarUpgradesServerRpc(localPlayerId);
-            }
+            return upgrades;
         }
 
-        public static void RegisterMilkMolarUpgrade(MilkMolarUpgrade upgrade)
+        /*public static void RegisterMilkMolarUpgrade(MilkMolarUpgrade upgrade)
         {
             if (MilkMolarUpgrades.Where(x => x.name == upgrade.name).FirstOrDefault() == null)
             {
@@ -161,22 +180,22 @@ namespace MilkMolars
         {
             if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
-                if (NetworkHandler.MegaMilkMolarUpgrades.Where(x => x.name == upgrade.name).FirstOrDefault() == null)
+                if (MegaMilkMolarUpgrades.Where(x => x.name == upgrade.name).FirstOrDefault() == null)
                 {
-                    NetworkHandler.MegaMilkMolarUpgrades.Add(upgrade);
+                    MegaMilkMolarUpgrades.Add(upgrade);
                 }
                 else
                 {
                     LoggerInstance.LogError($"Error: Theres already a Mega Milk Molar upgrade with the name: {upgrade.name}");
                 }
             }
-        }
+        }*/
 
         public static MilkMolarUpgrade GetUpgradeByName(string name, bool megaUpgrade = false)
         {
             if (megaUpgrade)
             {
-                return NetworkHandler.MegaMilkMolarUpgrades.Find(x => x.name == name);
+                return MegaMilkMolarUpgrades.Find(x => x.name == name);
             }
             else
             {
@@ -186,7 +205,7 @@ namespace MilkMolars
 
         internal static void AddMilkMolar(PlayerControllerB player)
         {
-            NetworkHandler.Instance.AddMilkMolarServerRpc(player.playerSteamId); // TODO: Change this to steamId later
+            NetworkHandler.Instance.AddMilkMolarServerRpc(player.actualClientId); // TODO: Change this to steamId later
         }
 
         internal static void AddMegaMilkMolar()
@@ -239,11 +258,6 @@ namespace MilkMolars
 
             logger.LogDebug("Upgrade purchase failed. Conditions not met.");
             return false;
-        }
-
-        public static void ShowMilkMolarNotification()
-        {
-            //HUDManager.Instance.
         }
 
         internal static bool BuyMegaMilkMolarUpgrade(MilkMolarUpgrade upgrade) // THIS IS GOOD DONT TOUCH IT

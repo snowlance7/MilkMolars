@@ -5,19 +5,21 @@ using GameNetcodeStuff;
 using HarmonyLib;
 using InteractiveTerminalAPI.UI;
 using LethalLib.Modules;
-using MilkMolars.UI;
+using MilkMolars.LGU;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace MilkMolars
 {
     [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
     [BepInDependency(LethalLib.Plugin.ModGUID)]
+    [BepInDependency(InteractiveTerminalAPI.PluginInfo.PLUGIN_GUID)]
     [BepInDependency("MoreShipUpgrades", BepInDependency.DependencyFlags.SoftDependency)]
     internal class Plugin : BaseUnityPlugin
     {
@@ -26,6 +28,7 @@ namespace MilkMolars
         private readonly Harmony harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
         public static PlayerControllerB localPlayer { get { return GameNetworkManager.Instance.localPlayerController; } }
         public static ulong localPlayerId { get { return GameNetworkManager.Instance.localPlayerController.playerSteamId; } } // TODO: Change this back to steamId
+        public static bool IsServerOrHost { get { return NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost; } }
 
         public static AssetBundle? ModAssets;
 
@@ -216,10 +219,13 @@ namespace MilkMolars
             Utilities.FixMixerGroups(MegaMilkMolar.spawnPrefab);
             Items.RegisterScrap(MegaMilkMolar, GetLevelRarities(configMegaMilkMolarLevelRarities.Value), GetCustomLevelRarities(configMegaMilkMolarCustomLevelRarities.Value));
 
-            InteractiveTerminalManager.RegisterApplication<UpgradeTerminalUIPlayer>(["mmu", "milk molar upgrades", "milk molar", "mm player"], caseSensitive: false);
-            InteractiveTerminalManager.RegisterApplication<UpgradeTerminalUIGroup>(["mmmu", "mega milk molar upgrades", "mega molar", "mega", "mm group"], caseSensitive: false);
-            InteractiveTerminalManager.RegisterApplication<LGUUpgradeTerminalUIPlayer>(["mmlgu", "lgu milk molar upgrades", "lgu milk molar", "mmlgu player"], caseSensitive: false);
-            InteractiveTerminalManager.RegisterApplication<LGUUpgradeTerminalUIGroup>(["mmmlgu", "lgu mega milk molar upgrades", "lgu mega molar", "lgumega", "mmlgu group"], caseSensitive: false);
+            //InteractiveTerminalManager.RegisterApplication<UpgradeTerminalUIPlayer>(["mmu", "milk molar upgrades", "milk molar", "mm player"], caseSensitive: false);
+            //InteractiveTerminalManager.RegisterApplication<UpgradeTerminalUIGroup>(["mmmu", "mega milk molar upgrades", "mega molar", "mega", "mm group"], caseSensitive: false);
+            //InteractiveTerminalManager.RegisterApplication<LGUUpgradeTerminalUIPlayer>(["mmlgu", "lgu milk molar upgrades", "lgu milk molar", "mmlgu player"], caseSensitive: false);
+            if (LGUCompatibility.enabled)
+            {
+                InteractiveTerminalManager.RegisterApplication<LGUUpgradeTerminalUI>(["mmlgu", "lgu mega milk molar upgrades", "lgu mega molar", "lgumega", "mmlgu group"], caseSensitive: false);
+            }
 
             // Finished
             Logger.LogInfo($"{MyPluginInfo.PLUGIN_NAME} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");

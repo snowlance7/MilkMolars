@@ -33,9 +33,9 @@ namespace MilkMolars.Upgrades
         {
             try
             {
-                if (NetworkHandler.MegaMilkMolarUpgrades != null)
+                if (MilkMolarController.MegaMilkMolarUpgrades != null)
                 {
-                    MilkMolarUpgrade keepScrapUpgrade = NetworkHandler.MegaMilkMolarUpgrades.FirstOrDefault(x => x.name == "keepItemsOnShipChance");
+                    MilkMolarUpgrade keepScrapUpgrade = MilkMolarController.MegaMilkMolarUpgrades.FirstOrDefault(x => x.name == "keepItemsOnShipChance");
                     if (keepScrapUpgrade != null && keepScrapUpgrade.unlocked)
                     {
                         int randomNum = UnityEngine.Random.Range(0, 101);
@@ -57,9 +57,9 @@ namespace MilkMolars.Upgrades
         {
             try
             {
-                if (NetworkHandler.MegaMilkMolarUpgrades != null)
+                if (MilkMolarController.MegaMilkMolarUpgrades != null)
                 {
-                    MilkMolarUpgrade keepScrapUpgrade = NetworkHandler.MegaMilkMolarUpgrades.FirstOrDefault(x => x.name == "keepItemsOnShipChance");
+                    MilkMolarUpgrade keepScrapUpgrade = MilkMolarController.MegaMilkMolarUpgrades.FirstOrDefault(x => x.name == "keepItemsOnShipChance");
                     if (keepScrapUpgrade != null && keepScrapUpgrade.unlocked)
                     {
                         StartOfRound.Instance.allPlayersDead = allPlayersDead;

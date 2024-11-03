@@ -24,8 +24,6 @@ namespace MilkMolars
 
         public static NetworkVariable<int> MegaMilkMolars = new NetworkVariable<int>(0);
 
-        public static List<MilkMolarUpgrade> MegaMilkMolarUpgrades = null!;
-
         public Sprite MilkMolarUIIcon = null!;
         public Sprite MegaMilkMolarUIIcon = null!;
 
@@ -94,7 +92,6 @@ namespace MilkMolars
             if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
                 MegaMilkMolars.Value = 0;
-                MilkMolarController.GetMegaMilkMolarUpgrades();
                 ResetAllDataClientRpc();
             }
         }
@@ -105,6 +102,7 @@ namespace MilkMolars
             DeleteSaveData(GameNetworkManager.Instance.saveFileNum);
             MilkMolarController.MilkMolars = 0;
             MilkMolarController.MilkMolarUpgrades = MilkMolarController.GetMilkMolarUpgrades();
+            MilkMolarController.MegaMilkMolarUpgrades = MilkMolarController.GetMegaMilkMolarUpgrades();
         }
 
         internal static void SaveDataToFile()
@@ -118,7 +116,7 @@ namespace MilkMolars
             if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
                 string megaMilkMolarsData = MegaMilkMolars.Value.ToString();
-                string megaMilkMolarUpgradesData = JsonConvert.SerializeObject(MegaMilkMolarUpgrades, settings);
+                string megaMilkMolarUpgradesData = JsonConvert.SerializeObject(MilkMolarController.MegaMilkMolarUpgrades, settings);
                 File.WriteAllText(MegaMilkMolarsPath, megaMilkMolarsData);
                 File.WriteAllText(MegaMilkMolarUpgradesPath, megaMilkMolarUpgradesData);
             }
@@ -165,10 +163,10 @@ namespace MilkMolars
                 {
                     logger.LogDebug("Found save data for Mega Milk Molar Upgrades");
                     string megaMilkMolarUpgradesData = File.ReadAllText(MegaMilkMolarUpgradesPath);
-                    NetworkHandler.MegaMilkMolarUpgrades = JsonConvert.DeserializeObject<List<MilkMolarUpgrade>>(megaMilkMolarUpgradesData, settings);
+                    MilkMolarController.MegaMilkMolarUpgrades = JsonConvert.DeserializeObject<List<MilkMolarUpgrade>>(megaMilkMolarUpgradesData, settings);
                 }
 
-                if (NetworkHandler.MegaMilkMolarUpgrades == null || NetworkHandler.MegaMilkMolarUpgrades.Count == 0)
+                if (MilkMolarController.MegaMilkMolarUpgrades == null || MilkMolarController.MegaMilkMolarUpgrades.Count == 0)
                 {
                     logger.LogDebug("MegaMilkMolarUpgrades is null");
                     MilkMolarController.GetMegaMilkMolarUpgrades();
@@ -176,7 +174,7 @@ namespace MilkMolars
                 }
                 else
                 {
-                    foreach (var upgrade in MegaMilkMolarUpgrades)
+                    foreach (var upgrade in MilkMolarController.MegaMilkMolarUpgrades)
                     {
                         if (upgrade.type == MilkMolarUpgrade.UpgradeType.OneTimeUnlock && upgrade.unlocked)
                         {
@@ -238,7 +236,7 @@ namespace MilkMolars
             if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
             {
                 var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
-                string megaUpgrades = JsonConvert.SerializeObject(MegaMilkMolarUpgrades, settings);
+                string megaUpgrades = JsonConvert.SerializeObject(MilkMolarController.MegaMilkMolarUpgrades, settings);
                 Instance.SendMegaMilkMolarUpgradesClientRpc(steamId, megaUpgrades);
             }
         }
@@ -249,7 +247,7 @@ namespace MilkMolars
             if (localPlayerId == steamId)
             {
                 var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
-                MegaMilkMolarUpgrades = JsonConvert.DeserializeObject<List<MilkMolarUpgrade>>(megaUpgrades, settings);
+                MilkMolarController.MegaMilkMolarUpgrades = JsonConvert.DeserializeObject<List<MilkMolarUpgrade>>(megaUpgrades, settings);
             }
         }
 
@@ -257,7 +255,7 @@ namespace MilkMolars
         public void SendMegaMilkMolarUpgradesToAllClientRpc(string megaUpgrades)
         {
             var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
-            MegaMilkMolarUpgrades = JsonConvert.DeserializeObject<List<MilkMolarUpgrade>>(megaUpgrades, settings);
+            MilkMolarController.MegaMilkMolarUpgrades = JsonConvert.DeserializeObject<List<MilkMolarUpgrade>>(megaUpgrades, settings);
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -359,6 +357,16 @@ namespace MilkMolars
                 BuyMegaMilkMolarUpgradeClientRpc(upgradeName);
             }
         }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void BuyMegaMilkMolarUpgradeServerRpc(int cost)
+        {
+            if (IsServerOrHost)
+            {
+                MegaMilkMolars.Value -= cost;
+            }
+        }
+        
 
         [ClientRpc]
         private void BuyMegaMilkMolarUpgradeClientRpc(string upgradeName)
