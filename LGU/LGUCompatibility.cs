@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using static MilkMolars.Plugin;
 
 namespace MilkMolars.LGU
@@ -26,6 +27,16 @@ namespace MilkMolars.LGU
                 }
                 return (bool)_enabled;
             }
+        }
+
+        public static string GetDescription(string description, bool shared)
+        {
+            return Regex.Replace(description, @"\$(\d+)", match =>
+            {
+                int price = int.Parse(match.Groups[1].Value);
+                int molarPrice = MilkMolarController.GetMolarPrice(price, shared);
+                return tooth + molarPrice.ToString();
+            });
         }
     }
 }

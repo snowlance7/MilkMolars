@@ -3,6 +3,8 @@ using InteractiveTerminalAPI.UI.Application;
 using InteractiveTerminalAPI.UI.Cursor;
 using InteractiveTerminalAPI.UI.Page;
 using InteractiveTerminalAPI.UI.Screen;
+using MilkMolars;
+using MilkMolars.LGU;
 using MoreShipUpgrades.Input;
 using MoreShipUpgrades.Managers;
 using MoreShipUpgrades.Misc.Util;
@@ -13,7 +15,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
-using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
@@ -23,15 +24,15 @@ namespace MilkMolars.LGU
     internal class LGUUpgradeTerminalUI : PageApplication
     {
         const int UPGRADES_PER_PAGE = 12;
-        private const string tooth = "🦷";
         protected override int GetEntriesPerPage<T>(T[] entries)
         {
             return UPGRADES_PER_PAGE;
         }
-        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         public override void Initialization()
         {
             CustomTerminalNode[] filteredNodes = UpgradeBus.Instance.terminalNodes.Where(x => x.Visible && (x.UnlockPrice > 0 || x.Prices.Length > 0)).ToArray();
+
+
 
             if (filteredNodes.Length == 0)
             {
@@ -62,33 +63,9 @@ namespace MilkMolars.LGU
                 return;
             }
 
-            foreach (CustomTerminalNode node in filteredNodes)
-            {
-                if (node.UnlockPrice > 0)
-                {
-                    node.UnlockPrice = MilkMolarController.GetMolarPrice(node.UnlockPrice, node.SharedUpgrade);
-                }
-                if (node.Prices.Length > 0)
-                {
-                    for (int i = 0; i < node.Prices.Length; i++)
-                    {
-                        node.Prices[i] = MilkMolarController.GetMolarPrice(node.Prices[i], node.SharedUpgrade);
-                    }
-                }
-                if (node.Description != null)
-                {
-                    node.Description = Regex.Replace(node.Description, @"\$(\d+)", match =>
-                    {
-                        int price = int.Parse(match.Groups[1].Value);
-                        int molarPrice = MilkMolarController.GetMolarPrice(price, node.SharedUpgrade);
-                        return tooth + molarPrice.ToString();
-                    });
-                }
-            }
-
             List<CursorElement> cursorElements = [];
-            PageCursorElement sharedPage = GetFilteredUpgradeNodes(ref filteredNodes, ref cursorElements, (x) => x.SharedUpgrade, LguConstants.MAIN_SCREEN_TITLE, "Mega Milk Molar Upgrades", true);
-            PageCursorElement individualPage = GetFilteredUpgradeNodes(ref filteredNodes, ref cursorElements, (x) => !x.SharedUpgrade, LguConstants.MAIN_SCREEN_TITLE, "Milk Molar Upgrades", false);
+            PageCursorElement sharedPage = GetFilteredUpgradeNodes(ref filteredNodes, ref cursorElements, (x) => x.SharedUpgrade, LguConstants.MAIN_SCREEN_TITLE, LguConstants.MAIN_SCREEN_SHARED_UPGRADES_TEXT, true);
+            PageCursorElement individualPage = GetFilteredUpgradeNodes(ref filteredNodes, ref cursorElements, (x) => !x.SharedUpgrade, LguConstants.MAIN_SCREEN_TITLE, LguConstants.MAIN_SCREEN_INDIVIDUAL_UPGRADES_TEXT, false);
 
             if (cursorElements.Count > 1)
             {
@@ -119,7 +96,6 @@ namespace MilkMolars.LGU
             currentCursorMenu = currentPage.GetCurrentCursorMenu();
             currentScreen = currentPage.GetCurrentScreen();
         }
-        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         PageCursorElement GetFilteredUpgradeNodes(ref CustomTerminalNode[] nodes, ref List<CursorElement> list, Func<CustomTerminalNode, bool> predicate, string pageTitle, string cursorName, bool shared)
         {
             PageCursorElement page = null;
@@ -131,7 +107,6 @@ namespace MilkMolars.LGU
             }
             return page;
         }
-        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         void SwitchToUpgradeScreen(PageCursorElement page, bool previous, bool shared)
         {
             MilkMolarController.InUpgradeUI = !shared;
@@ -142,16 +117,14 @@ namespace MilkMolars.LGU
             SwitchScreen(page, previous);
         }
 
-        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         void OnUpgradeStoreExit(CallbackContext context)
         {
             ResetScreen();
             InteractiveTerminalAPI.Compat.InputUtils_Compat.CursorExitKey.performed += OnScreenExit;
             InteractiveTerminalAPI.Compat.InputUtils_Compat.CursorExitKey.performed -= OnUpgradeStoreExit;
-            MilkMolarController.InMegaUpgradeUI = false;
             MilkMolarController.InUpgradeUI = false;
+            MilkMolarController.InMegaUpgradeUI = false;
         }
-        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         PageCursorElement BuildUpgradePage(CustomTerminalNode[] nodes, string title)
         {
             (CustomTerminalNode[][], CursorMenu[], IScreen[]) entries = GetPageEntries(nodes);
@@ -198,14 +171,14 @@ namespace MilkMolars.LGU
                     {
                         Node = upgrade,
                         Action = () => BuyUpgrade(upgrade, () => SwitchScreen(page, previous: true)),
-                        Active = (x) => CanBuyUpgrade((CustomTerminalNode)((MMUUpgradeCursorElement)x).Node)
+                        Active = (x) => CanBuyUpgrade(((MMUUpgradeCursorElement)x).GetNode())
                     };
                 }
             }
             page = PageCursorElement.Create(0, screens, cursorMenus);
             return page;
         }
-        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+
         string GetCurrentSort()
         {
             int currentSort = currentCursorMenu.sortingIndex;
@@ -217,107 +190,96 @@ namespace MilkMolars.LGU
                 _ => "",
             };
         }
-        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         int CompareName(CursorElement cursor1, CursorElement cursor2)
         {
             if (cursor1 == null) return 1;
             if (cursor2 == null) return -1;
             MMUUpgradeCursorElement element = cursor1 as MMUUpgradeCursorElement;
             MMUUpgradeCursorElement element2 = cursor2 as MMUUpgradeCursorElement;
-
-            string name1 = ((CustomTerminalNode)element.Node).Name;
-            string name2 = ((CustomTerminalNode)element2.Node).Name;
+            string name1 = element.GetNode().Name;
+            string name2 = element2.GetNode().Name;
             return name1.CompareTo(name2);
         }
-        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         int CompareCurrentPriceReversed(CursorElement cursor1, CursorElement cursor2)
         {
             if (cursor1 == null) return 1;
             if (cursor2 == null) return -1;
             MMUUpgradeCursorElement element = cursor1 as MMUUpgradeCursorElement;
             MMUUpgradeCursorElement element2 = cursor2 as MMUUpgradeCursorElement;
-
-            int currentPrice1 = ((CustomTerminalNode)element.Node).Unlocked && ((CustomTerminalNode)element.Node).CurrentUpgrade >= ((CustomTerminalNode)element.Node).MaxUpgrade ? int.MinValue : ((CustomTerminalNode)element.Node).GetCurrentPrice();
-            int currentPrice2 = ((CustomTerminalNode)element2.Node).Unlocked && ((CustomTerminalNode)element2.Node).CurrentUpgrade >= ((CustomTerminalNode)element2.Node).MaxUpgrade ? int.MinValue : ((CustomTerminalNode)element2.Node).GetCurrentPrice();
+            int currentPrice1 = element.GetNode().Unlocked && element.GetNode().CurrentUpgrade >= element.GetNode().MaxUpgrade ? int.MinValue : MilkMolarController.GetMolarPrice(element.GetNode().GetCurrentPrice(), element.GetNode().SharedUpgrade);
+            int currentPrice2 = element2.GetNode().Unlocked && element2.GetNode().CurrentUpgrade >= element2.GetNode().MaxUpgrade ? int.MinValue : MilkMolarController.GetMolarPrice(element2.GetNode().GetCurrentPrice(), element2.GetNode().SharedUpgrade);
             return currentPrice2.CompareTo(currentPrice1);
         }
-        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         int CompareCurrentPrice(CursorElement cursor1, CursorElement cursor2)
         {
             if (cursor1 == null) return 1;
             if (cursor2 == null) return -1;
             MMUUpgradeCursorElement element = cursor1 as MMUUpgradeCursorElement;
             MMUUpgradeCursorElement element2 = cursor2 as MMUUpgradeCursorElement;
-
-            CustomTerminalNode node1 = element.Node as CustomTerminalNode;
-            CustomTerminalNode node2 = element2.Node as CustomTerminalNode;
-
-            int currentPrice1 = node1.Unlocked && node1.CurrentUpgrade >= node1.MaxUpgrade ? int.MaxValue : node1.GetCurrentPrice();
-            int currentPrice2 = node2.Unlocked && node2.CurrentUpgrade >= node2.MaxUpgrade ? int.MaxValue : node2.GetCurrentPrice();
+            int currentPrice1 = element.GetNode().Unlocked && element.GetNode().CurrentUpgrade >= element.GetNode().MaxUpgrade ? int.MaxValue : MilkMolarController.GetMolarPrice(element.GetNode().GetCurrentPrice(), element.GetNode().SharedUpgrade);
+            int currentPrice2 = element2.GetNode().Unlocked && element2.GetNode().CurrentUpgrade >= element2.GetNode().MaxUpgrade ? int.MaxValue : MilkMolarController.GetMolarPrice(element2.GetNode().GetCurrentPrice(), element2.GetNode().SharedUpgrade);
             return currentPrice1.CompareTo(currentPrice2);
         }
-        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         static bool CanBuyUpgrade(CustomTerminalNode node)
         {
             bool maxLevel = node.CurrentUpgrade >= node.MaxUpgrade;
             if (maxLevel && node.Unlocked)
                 return false;
 
+            /*int groupCredits = UpgradeBus.Instance.GetTerminal().groupCredits;
             int price = node.GetCurrentPrice();
+            return groupCredits >= price;*/
+            int molars = MilkMolarController.GetCurrentMolarCount(node.SharedUpgrade);
+            int molarPrice = MilkMolarController.GetMolarPrice(node.GetCurrentPrice(), node.SharedUpgrade);
+            return molarPrice <= molars;
 
-            if (node.SharedUpgrade)
-            {
-                int megaMolars = NetworkHandler.MegaMilkMolars.Value;
-                return megaMolars >= price;
-            }
-            else
-            {
-                return MilkMolarController.MilkMolars >= price;
-            }
         }
-        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         public void BuyUpgrade(CustomTerminalNode node, Action backAction)
         {
             bool maxLevel = node.CurrentUpgrade >= node.MaxUpgrade;
             if (maxLevel && node.Unlocked)
             {
-                ErrorMessage(node.Name, node.Description, backAction, LguConstants.REACHED_MAX_LEVEL);
+                ErrorMessage(node.Name, LGUCompatibility.GetDescription(node.Description, node.SharedUpgrade), backAction, LguConstants.REACHED_MAX_LEVEL);
                 return;
             }
-            int price = node.GetCurrentPrice();
-
-            if (node.SharedUpgrade)
+            int currentMolars = MilkMolarController.GetCurrentMolarCount(node.SharedUpgrade);
+            int molarPrice = MilkMolarController.GetMolarPrice(node.GetCurrentPrice(), node.SharedUpgrade);
+            if (molarPrice > currentMolars)
             {
-                int megaMolars = NetworkHandler.MegaMilkMolars.Value;
-                if (megaMolars < price)
+                ErrorMessage(node.Name, LGUCompatibility.GetDescription(node.Description, node.SharedUpgrade), backAction, "You do not have enough milk molars to purchase this upgrade.");
+                return;
+            }
+            /*StringBuilder discoveredItems = new();
+            List<string> items = ItemProgressionManager.GetDiscoveredItems(node);
+            if (items.Count > 0)
+            {
+                discoveredItems.Append("\n\nDiscovered items: ");
+                for (int i = 0; i < items.Count; i++)
                 {
-                    ErrorMessage(node.Name, node.Description, backAction, "You do not have enough mega milk molars to purchase this upgrade.");
-                    return;
+                    string item = items[i];
+                    discoveredItems.Append(item);
+                    if (i < items.Count - 1) discoveredItems.Append(", ");
                 }
             }
-            else
+            if (UpgradeBus.Instance.PluginConfiguration.ALTERNATIVE_ITEM_PROGRESSION && UpgradeBus.Instance.PluginConfiguration.ITEM_PROGRESSION_NO_PURCHASE_UPGRADES)
             {
-                if (MilkMolarController.MilkMolars < price)
-                {
-                    ErrorMessage(node.Name, node.Description, backAction, "You do not have enough milk molars to purchase this upgrade.");
-                    return;
-                }
-            }
-
-            Confirm(node.Name, node.Description, () => PurchaseUpgrade(node, price, backAction), backAction, $"Do you wish to purchase this upgrade for {price} molars?");
+                ErrorMessage(node.Name, node.Description, backAction, " ");
+                return;
+            }*/
+            Confirm(node.Name, LGUCompatibility.GetDescription(node.Description, node.SharedUpgrade), () => PurchaseUpgrade(node, molarPrice, backAction), backAction, $"Do you wish to purchase this upgrade for {molarPrice} milk molars?");
         }
-        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-        void PurchaseUpgrade(CustomTerminalNode node, int molarPrice, Action backAction)
+        void PurchaseUpgrade(CustomTerminalNode node, int price, Action backAction)
         {
+            //terminal.BuyItemsServerRpc([], terminal.groupCredits - price, terminal.numberOfItemsInDropship); // The only vanilla rpc that syncs credits without ownership check
+            //LguStore.Instance.AddUpgradeSpentCreditsServerRpc(price);
             if (node.SharedUpgrade)
             {
-                NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(molarPrice);
+                NetworkHandler.Instance.BuyMegaMilkMolarUpgradeServerRpc(price);
             }
             else
             {
-                MilkMolarController.MilkMolars -= molarPrice;
+                MilkMolarController.MilkMolars -= price;
             }
-
             if (!node.Unlocked)
             {
                 LguStore.Instance.HandleUpgrade(node);
@@ -337,9 +299,12 @@ namespace MilkMolars.LGU
         public object Node { get; set; }
 
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        public CustomTerminalNode GetNode() { return (CustomTerminalNode)this.Node; }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         public override string GetText(int availableLength)
         {
-            CustomTerminalNode Node = (CustomTerminalNode)this.Node;
+            CustomTerminalNode Node = GetNode(); ;
 
             StringBuilder sb = new StringBuilder();
             sb.Append(new string(LguConstants.WHITE_SPACE, 2));
@@ -379,9 +344,9 @@ namespace MilkMolars.LGU
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         void AppendPriceText(ref StringBuilder sb)
         {
-            CustomTerminalNode Node = (CustomTerminalNode)this.Node;
+            CustomTerminalNode Node = GetNode();
 
-            int price = Node.GetCurrentPrice();
+            int price = MilkMolarController.GetMolarPrice(Node.GetCurrentPrice(), Node.SharedUpgrade);
             int currentMolars = MilkMolarController.GetCurrentMolarCount(Node.SharedUpgrade);
 
             if (price <= currentMolars)

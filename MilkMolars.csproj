@@ -5,7 +5,7 @@
         <AssemblyName>Snowlance.MilkMolars</AssemblyName>
         <Product>MilkMolars</Product>
         <!-- Change to whatever version you're currently on. -->
-        <Version>0.6.1</Version>
+        <Version>0.6.2</Version>
     </PropertyGroup>
 
     <!-- Project Properties -->
