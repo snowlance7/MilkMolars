@@ -1,0 +1,42 @@
+Meat Shield -> Increase max health per tier
+Buff Lungs -> Increase sprint time per tier
+Daredevil -> Reduce fall damage per tier
+Battle Buddies -> Decrease damage from/to players
+Dissection Expert -> Big chance of enemy dropping a scrap item
+
+Lil Fist -> Maybe can work with the punching mod to increase damage and do 2 punches in one on last tier
+Chopper -> ???
+Smasher -> Increased damage with shovels
+Javelineer -> ???
+Assassin -> Knife attacks inflict bleed to enemies
+Sharpshooter -> Decrease shotgun spread or increase damage
+Barbarian -> When dealing damage with shovels, have a chance of trigering rage mode for 10 seconds. damage will be increased but you take slightly more damage. At max tier you heal 1 health per second in rage mode.
+Blademaster -> Knife attacks have a chance to inflict a debuff to enemies that lowers their attack damage for x seconds
+Whittle Wizard -> ???
+Parry Master -> Chance to not take damage from an enemy and gain a short boost of stamina
+Grass Master -> ???
+Rock Cracker -> ???
+Hauling Hero -> Increase item slots (expensive)
+Coup de Grass -> Increase crit hit chance
+Trapper Peeper -> Increase crit damage
+Rascal Rogue -> Enemies have a very small chance to drop a scrap item when hit
+Juicy -> ???
+Natural Explorer -> Increase movement speed outside of combat (if you get attacked or attack an enemy, you lose this for x seconds)
+Merteen -> Faster movement speed and breathing time under water
+Cardio Fan -> Increased stamina regen and decreased exhaustion time (when depleting stamina at max tier, it will regen stamina at a very fast rate for 5 seconds)
+Reliable friend -> Decreased cost for revive player upgrade? 
+Fresh defense -> Decreased damage from explosions? Increased vision in gas and fog? (In Grounded: Increases Resistance to gas and burning damage (25%/50%/50%). Sizzle rate reduction (25%/50%/75%).)
+Spicy Safety -> Decreased damage from certain death types (stabbing, mauling?, bees?)
+Sour Sensation -> Damage taken will reflect back to enemy. 1 shovel hit of damage per attack?
+Ant-nihilator -> ???
+Mom Genes -> ???
+Mithridatism -> Reduced damage from bunker spiders???
+Truffle Tussle -> Shovel attacks have a chance to cause an explosion that does no damage to the player.
+Mantsterious Stranger -> Chance to revive a dead player with a shovel when being attacked by a monster.
+Apex Predator -> Increased damage with any weapon that isnt in the base game (shovels, signs, knifes, shotgun)
+Corporate Kickback -> Chance to trigger a buff when attacked that heals you when you attack monsters.
+Shocking Dismissal -> Chance to summon a thunder strike when attacking a monster.
+Bardic Inspiration -> Using a boombox gives surrounding players reduced damage from monster attacks.
+Guard Dog -> Increased damage dealt to monsters when around the ship.
+Spore Lord -> ???
+Bugbassador -> Decreased chance of hoarding bugs getting angry depending on how many hoarding bugs are nearby. Max tier allows you to stand near all hoarding bugs without aggroing them (as long as you dont steal)

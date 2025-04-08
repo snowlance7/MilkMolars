@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="veMain" style="flex-grow: 1; display: none;">
+        <ui:VisualElement name="veMenu" style="flex-grow: 1; margin-top: 10%; margin-right: 35%; margin-bottom: 10%; margin-left: 35%; background-color: rgba(78, 99, 59, 0.93);">
+            <ui:VisualElement name="veTabs" style="flex-direction: row;">
+                <ui:Button text="You (0 Molars)" parse-escape-sequences="true" display-tooltip-when-elided="true" name="btnYou" style="width: 50%; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; background-color: rgb(58, 78, 53); border-left-color: rgb(168, 206, 152); border-right-color: rgb(168, 206, 152); border-top-color: rgb(168, 206, 152); border-bottom-color: rgb(168, 206, 152); border-top-width: 2px; border-right-width: 2px; border-bottom-width: 2px; border-left-width: 2px;" />
+                <ui:Button text="Group (0 Molars)" parse-escape-sequences="true" display-tooltip-when-elided="true" name="btnGroup" style="width: 50%; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; background-color: rgb(58, 78, 53); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; border-left-color: rgb(168, 206, 152); border-right-color: rgb(168, 206, 152); border-top-color: rgb(168, 206, 152); border-bottom-color: rgb(168, 206, 152);" />
+            </ui:VisualElement>
+            <ui:ScrollView name="svUpgradeList" style="height: 100%;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

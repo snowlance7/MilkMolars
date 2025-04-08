@@ -1,0 +1,11 @@
+{
+  "name": "MilkMolars",
+  "version_number": "0.6.2",
+  "website_url": "https://github.com/snowlance7/MilkMolars",
+  "description": "Collection based upgrade system compatible with LGU Upgrades.",
+  "dependencies": [
+    "BepInEx-BepInExPack-5.4.2100",
+    "Evaisa-LethalLib-0.16.1",
+    "WhiteSpike-Interactive_Terminal_API-1.2.0"
+  ]
+}

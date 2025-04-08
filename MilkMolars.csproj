@@ -51,6 +51,11 @@
       <DefineConstants>$(DefineConstants);LGU_LIBRARY_AVAILABLE</DefineConstants>
     </PropertyGroup>
     <ItemGroup>
+      <Compile Remove="MilkMolarsUnityProject\**" />
+      <EmbeddedResource Remove="MilkMolarsUnityProject\**" />
+      <None Remove="MilkMolarsUnityProject\**" />
+    </ItemGroup>
+    <ItemGroup>
       <None Remove=".editorconfig" />
       <None Remove=".gitattributes" />
       <None Remove=".gitignore" />
