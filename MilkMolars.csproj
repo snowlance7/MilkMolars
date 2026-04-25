@@ -56,7 +56,6 @@
       <None Remove="MilkMolarsUnityProject\**" />
     </ItemGroup>
     <ItemGroup>
-      <None Remove=".editorconfig" />
       <None Remove=".gitattributes" />
       <None Remove=".gitignore" />
     </ItemGroup>
@@ -88,21 +87,4 @@
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
       <Exec Command="xcopy &quot;C:\Users\snowl\source\repos\MilkMolars\Assets\milkmolar_assets&quot; &quot;C:\Users\snowl\source\repos\1Lethal Company Debugging\BepInEx\plugins&quot; /Y" />
     </Target>
-    <ItemGroup>
-      <EditorConfigFiles Remove="C:\Users\snowl\source\repos\MilkMolars\.editorconfig" />
-    </ItemGroup>
-    <ItemGroup>
-      <Reference Include="InteractiveTerminalAPI">
-        <HintPath>..\1Resources\1Assemblies\InteractiveTerminalAPI\InteractiveTerminalAPI.dll</HintPath>
-      </Reference>
-      <Reference Include="MoreShipUpgrades" Publicize="true">
-        <HintPath>..\1Resources\1Assemblies\MoreShipUpgrades\MoreShipUpgrades.dll</HintPath>
-      </Reference>
-    </ItemGroup>
-    <ItemGroup>
-      <EditorConfigFiles Remove="C:\Users\snowl\source\repos\MilkMolars\.editorconfig" />
-    </ItemGroup>
-    <ItemGroup>
-      <EditorConfigFiles Remove="C:\Users\snowl\source\repos\MilkMolars\.editorconfig" />
-    </ItemGroup>
 </Project>

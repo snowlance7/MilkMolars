@@ -21,6 +21,7 @@ namespace MilkMolars
     [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
     [BepInDependency(LethalLib.Plugin.ModGUID)]
     [BepInDependency("MoreShipUpgrades", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(DawnLib.PLUGIN_GUID)]
     internal class Plugin : BaseUnityPlugin
     {
         public static Plugin PluginInstance;
@@ -65,35 +66,6 @@ namespace MilkMolars
         public static ConfigEntry<float> configNotificationPositionX;
         public static ConfigEntry<float> configNotificationPositionY;
 
-        // Milk Molar Upgrades
-        //public static ConfigEntry<string> configShovelDamageUpgrade;
-        public static ConfigEntry<string> configDamageResistanceUpgrade;
-        //public static ConfigEntry<string> configSprintSpeedUpgrade;
-        //public static ConfigEntry<string> configSprintEnduranceUpgrade;
-        //public static ConfigEntry<string> configSprintRegenerationUpgrade;
-        //public static ConfigEntry<string> configJumpHeightUpgrade;
-        //public static ConfigEntry<string> configCarryWeightUpgrade;
-        //public static ConfigEntry<string> configIncreasedInventorySizeUpgrade;
-        //public static ConfigEntry<string> configCritChanceUpgrade;
-        //public static ConfigEntry<string> configClimbSpeedUpgrade;
-        public static ConfigEntry<string> configDaredevilUpgrade;
-        //public static ConfigEntry<string> configHealthRegenUpgrade;
-        //public static ConfigEntry<string> configBailOutUpgrade;
-        //public static ConfigEntry<string> configCorporateKickbackUpgrade;
-
-        // Mega Milk Molar Upgrades
-        //public static ConfigEntry<int> configSignalTransmitterUpgrade;
-        //public static ConfigEntry<string> configIncreasedShopDealsUpgrade;
-        //public static ConfigEntry<int> configItemDropshipLandingSpeedUpgrade;
-        public static ConfigEntry<string> configKeepItemsOnShipChanceUpgrade;
-        //public static ConfigEntry<string> configTravelDiscountUpgrade;
-        //public static ConfigEntry<string> configCompanyCruiserHealthUpgrade;
-        //public static ConfigEntry<string> configCompanyCruiserAccelerationUpgrade;
-        //public static ConfigEntry<string> configCompanyCruiserSpeedUpgrade;
-        //public static ConfigEntry<string> configCompanyCruiserTurningUpgrade;
-        //public static ConfigEntry<string> configCompanyCruiserDamageUpgrade;
-        public static ConfigEntry<int> configRevivePlayerUpgrade;
-
         public enum ActivateMethod
         {
             Grab,
@@ -119,66 +91,8 @@ namespace MilkMolars
             InitializeNetworkBehaviours();
             LoggerInstance.LogDebug("Initialized network behaviours");
 
-            // Configs
             
-            // General Configs
-            configLGUCompatible = Config.Bind("LGU Compatibility", "LGU Compatible", true, "If true, Milk Molars will be compatible with Lategame Upgrades.");
-            configLGUMilkMolarContributeAmount = Config.Bind("LGU Compatibility", "Milk Molar Contribute Amount", 100f, "How much credits Milk Molars will contribute towards LGU Upgrades.");
-            configLGUMegaMilkMolarContributeAmount = Config.Bind("LGU Compatibility", "Mega Milk Molar Contribute Amount", 100f, "How much credits Mega Milk Molars will contribute towards LGU Upgrades.");
 
-            // Milk Molar Configs
-            configMilkMolarLevelRarities = Config.Bind("Milk Molar Rarities", "Level Rarities", "ExperimentationLevel:10, AssuranceLevel:10, VowLevel:10, OffenseLevel:30, AdamanceLevel:50, MarchLevel:50, RendLevel:50, DineLevel:50, TitanLevel:80, ArtificeLevel:80, EmbrionLevel:100, Modded:30", "Rarities for each level. See default for formatting.");
-            configMilkMolarCustomLevelRarities = Config.Bind("Milk Molar Rarities", "Custom Level Rarities", "", "Rarities for modded levels. Same formatting as level rarities.");
-            configMilkMolarSpawnAmount = Config.Bind("Milk Molar Rarities", "Spawn Amount Min Max", "ExperimentationLevel:1-2, AssuranceLevel:1-4, VowLevel:1-5, OffenseLevel:3-5, AdamanceLevel:4-8, MarchLevel:2-6, RendLevel:3-10, DineLevel:4-10, TitanLevel:6-15, ArtificeLevel:7-14, EmbrionLevel:10-20, All:1-5", "The minimum and maximum amount of Milk Molars to spawn after scrap spawns in round for each moon.");
-            configMilkMolarActivateMethod = Config.Bind("Milk Molar", "Activate Method", ActivateMethod.Use, "Activation method for Milk Molars.\nGrab: Grabbing the Milk Molar will activate it.\nUse: Using the Milk Molar while its in your inventory will activate it.\nShip: Milk Molar will activate when brought inside the ship.\nSell: Milk Molar will activate when sold to the company.");
-            configSharedMilkMolars = Config.Bind("Milk Molar", "Shared Milk Molars", true, "By default (true), Milk Molars will give 1 upgrade point to each player when activated. Setting this to false will only give 1 upgrade point to the player who activated it.");
-            configUpgradePointsToFinder = Config.Bind("Milk Molar", "Upgrade Points to Finder", false, "This only works when configMilkMolarActivateMethod is SHIP or SELL and configSharedMilkMolars is false. Setting this to true will only give an upgrade point to the first person who held the Milk Molar when activating it.");
-
-            // Mega Milk Molar Configs
-            configMegaMilkMolarLevelRarities = Config.Bind("Mega Milk Molar Rarities", "Mega Milk Molar Level Rarities", "ExperimentationLevel:10, AssuranceLevel:10, VowLevel:10, OffenseLevel:30, AdamanceLevel:50, MarchLevel:50, RendLevel:50, DineLevel:50, TitanLevel:80, ArtificeLevel:80, EmbrionLevel:100, Modded:30", "Rarities for each level. See default for formatting.");
-            configMegaMilkMolarCustomLevelRarities = Config.Bind("Mega Milk Molar Rarities", "Mega Milk Molar Custom Level Rarities", "", "Rarities for modded levels. Same formatting as level rarities.");
-            configMegaMilkMolarSpawnAmount = Config.Bind("Mega Milk Molar Rarities", "Spawn Amount Min Max", "ExperimentationLevel:1-2, AssuranceLevel:1-3, VowLevel:1-3, OffenseLevel:2-3, AdamanceLevel:3-5, MarchLevel:2-3, RendLevel:3-5, DineLevel:3-6, TitanLevel:5-10, ArtificeLevel:5-12, EmbrionLevel:7-15, All:1-3", "The minimum and maximum amount of Mega Milk Molars to spawn after scrap spawns in round for each moon.");
-            configMegaMilkMolarActivateMethod = Config.Bind("Mega Milk Molar", "Activate Method", ActivateMethod.Use, "Activation method for Mega Milk Molars.\nGrab: Grabbing the Mega Milk Molar will activate it.\nUse: Using the Mega Milk Molar while its in your inventory will activate it.\nShip: Mega Milk Molar will activate when brought inside the ship.\nSell: Mega Milk Molar will activate when sold to the company.");
-
-            // Client Configs
-            configPlaySound = Config.Bind("Client Settings", "Play Sound", true, "Play sound when milk molar is activated");
-            configSoundVolume = Config.Bind("Client Settings", "Sound Volume", 1f, "Sound volume when milk molar is activated");
-            configShowNotification = Config.Bind("Client Settings", "Show Notification", true, "Show a notification on the HUD when a Milk Molar is activated");
-            configNotificationSize = Config.Bind("Client Settings", "Notification Size", 250f, "Size of the notification");
-            configNotificationPositionX = Config.Bind("Client Settings", "Notification Position X", 0f, "X position of the notification, relative to the center of the screen");
-            configNotificationPositionY = Config.Bind("Client Settings", "Notification Position Y", 175f, "Y position of the notification, relative to the center of the screen");
-
-            // Milk Molar Upgrades Configs
-            //configShovelDamageUpgrade = Config.Bind("Milk Molar Upgrades", "Shovel Damage Upgrade", "0:1, 5:2, 10:3, 18:4", "Increases the damage of the shovel. Default is 1");
-            configDamageResistanceUpgrade = Config.Bind("Milk Molar Upgrades", "Damage Resistance Upgrade", "0:0, 3:5, 4:10, 5:15, 6:20, 7:25, 8:30, 9:35, 10:40, 15:45, 20:50", "Percentage damage reduction. Default is 0");
-            //configSprintSpeedUpgrade = Config.Bind("Milk Molar Upgrades", "Sprint Speed Upgrade", "0:0.5, 1:0.51, 2:0.52, 3:0.54, 5:0.56, 7:0.57, 10:0.6, 15:0.63, 20:0.66, 30:0.7", "Default is 0.5");
-            //configSprintEnduranceUpgrade = Config.Bind("Milk Molar Upgrades", "Sprint Endurance Upgrade", "0:5, 1:6, 2:8, 3:10, 4:12, 5:14, 6:16, 10:20, 15:25, 20:30", "Increases sprint time. Default is 5");
-            //configSprintRegenerationUpgrade = Config.Bind("Milk Molar Upgrades", "Sprint Regeneration Upgrade", "", "");
-            //configJumpHeightUpgrade = Config.Bind("Milk Molar Upgrades", "Jump Height Upgrade", "0:13, 3:14, 4:16, 5:18, 6:20, 7:22, 8:25", "Jump force applied to player when jumping. Default is 5.");
-            //configCarryWeightUpgrade = Config.Bind("Milk Molar Upgrades", "Carry Weight Upgrade", "0:0, 1:2, 2:4, 3:6, 4:8, 5:10, 6:12, 7:14, 8:16, 9:18, 10:20", "Percent carry weight upgrade. Default is 0");
-            //configIncreasedInventorySizeUpgrade = Config.Bind("Milk Molar Upgrades", "Increased Inventory Upgrade", "0:4, 10:5, 15:6, 20:7, 25:8", "How many item slots the player has. Default is 4.");
-            //configCritChanceUpgrade = Config.Bind("Milk Molar Upgrades", "Crit Chance Upgrade", "0:0, 5:1, 6:3, 7:5, 10:7, 15:10, 20:15, 30:25", "Percent chance of critical hits. Critical hits will deal double damage. Default is 0");
-            //configClimbSpeedUpgrade = Config.Bind("Milk Molar Upgrades", "Climb Speed Upgrade", "0:4, 5:5, 6:6, 7:7, 8:8, 9:9, 10:10", "Climb speed when climbing ladders. Default is 4.");
-            configDaredevilUpgrade = Config.Bind("Milk Molar Upgrades", "Daredevil Upgrade", "0:0, 1:5, 2:10, 4:15, 5:20", "Percent damage reduction from falling. Default is 0");
-            //configHealthRegenUpgrade = Config.Bind("Milk Molar Upgrades", "Health Regen Upgrade", "0:0, 10:1, 20:2, 30:3, 35:4, 40:5", "Health given per second");
-            //configBailOutUpgrade = Config.Bind("Milk Molar Upgrades", "Bail Out Upgrade", "0:0, 5:1, 10:5, 15:10, 20:20, 25:30", "Chance to activate upgrade when player takes damage. When activated, the players damage will be negated. Default is 0.");
-            //configCorporateKickbackUpgrade = Config.Bind("Milk Molar Upgrades", "Corporate Kickback Upgrade", "0:0, 5:2.5, 10:5, 15:6, 20:7, 25:8, 30:9, 35:10, 40:25", "Chance to activate upgrade when player takes damage. When activated, the player will heal");
-
-            // Mega Milk Molar Upgrades Configs
-            //configSignalTransmitterUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Signal Transmitter Upgrade", 5, "Cost of the Signal Transmitter upgrade. One time purchase.");
-            //configIncreasedShopDealsUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Increased Shop Deals Upgrade", "", "");
-            //configItemDropshipLandingSpeedUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Item Dropship Landing Speed Upgrade", 10, "");
-            configKeepItemsOnShipChanceUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Keep Items On Ship Upgrade", "0:0, 5:25, 10:50, 15:75, 20:100", "Chance of keeping scrap items on ship. Default is 0");
-            //configTravelDiscountUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Travel Discount Upgrade", "0:0, 5:25, 10:50, 20:75", "Percent travel discount. Default is 0");
-            //configCompanyCruiserHealthUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Company Cruiser Health Upgrade", "", "");
-            //configCompanyCruiserAccelerationUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Company Cruiser Acceleration Upgrade", "", "");
-            //configCompanyCruiserSpeedUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Company Cruiser Speed Upgrade", "", "");
-            //configCompanyCruiserTurningUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Company Cruiser Turning Upgrade", "", "");
-            //configCompanyCruiserDamageUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Company Cruiser Damage Upgrade", "", "");
-            configRevivePlayerUpgrade = Config.Bind("Mega Milk Molar Upgrades", "Revive Player Upgrade", 5, "Repeatable upgrade. Revives the player selected on the ship monitor.");
-            // insanity drain when together
-            // increased unlockables
-            // add more days to quota
             LoggerInstance.LogDebug("Got configs");
 
 
@@ -229,120 +143,22 @@ namespace MilkMolars
             Logger.LogInfo($"{MyPluginInfo.PLUGIN_NAME} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
         }
 
-        public Dictionary<Levels.LevelTypes, int> GetLevelRarities(string levelsString)
-        {
-            try
-            {
-                Dictionary<Levels.LevelTypes, int> levelRaritiesDict = new Dictionary<Levels.LevelTypes, int>();
-
-                if (levelsString != null && levelsString != "")
-                {
-                    string[] levels = levelsString.Split(',');
-
-                    foreach (string level in levels)
-                    {
-                        string[] levelSplit = level.Split(':');
-                        if (levelSplit.Length != 2) { continue; }
-                        string levelType = levelSplit[0].Trim();
-                        string levelRarity = levelSplit[1].Trim();
-
-                        if (Enum.TryParse<Levels.LevelTypes>(levelType, out Levels.LevelTypes levelTypeEnum) && int.TryParse(levelRarity, out int levelRarityInt))
-                        {
-                            levelRaritiesDict.Add(levelTypeEnum, levelRarityInt);
-                        }
-                        else
-                        {
-                            LoggerInstance.LogError($"Error: Invalid level rarity: {levelType}:{levelRarity}");
-                        }
-                    }
-                }
-                return levelRaritiesDict;
-            }
-            catch (Exception e)
-            {
-                Logger.LogError($"Error: {e}");
-                return null;
-            }
-        }
-
-        public Dictionary<string, int> GetCustomLevelRarities(string levelsString)
-        {
-            try
-            {
-                Dictionary<string, int> customLevelRaritiesDict = new Dictionary<string, int>();
-
-                if (levelsString != null)
-                {
-                    string[] levels = levelsString.Split(',');
-
-                    foreach (string level in levels)
-                    {
-                        string[] levelSplit = level.Split(':');
-                        if (levelSplit.Length != 2) { continue; }
-                        string levelType = levelSplit[0].Trim();
-                        string levelRarity = levelSplit[1].Trim();
-
-                        if (int.TryParse(levelRarity, out int levelRarityInt))
-                        {
-                            customLevelRaritiesDict.Add(levelType, levelRarityInt);
-                        }
-                        else
-                        {
-                            LoggerInstance.LogError($"Error: Invalid level rarity: {levelType}:{levelRarity}");
-                        }
-                    }
-                }
-                return customLevelRaritiesDict;
-            }
-            catch (Exception e)
-            {
-                Logger.LogError($"Error: {e}");
-                return null;
-            }
-        }
-
-
-
-        public static void DespawnItemInSlotOnClient(int itemSlot)
-        {
-            HUDManager.Instance.itemSlotIcons[itemSlot].enabled = false;
-            localPlayer.DestroyItemInSlotAndSync(itemSlot);
-        }
-
         private static void InitializeNetworkBehaviours()
         {
-            Type[] types;
-            try
-            {
-                types = Assembly.GetExecutingAssembly().GetTypes();
-            }
-            catch (ReflectionTypeLoadException ex)
-            {
-                types = ex.Types.Where(t => t != null).ToArray();
-            }
-
+            var types = Assembly.GetExecutingAssembly().GetTypes();
             foreach (var type in types)
             {
                 var methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
                 foreach (var method in methods)
                 {
-                    //LoggerInstance.LogDebug(method.Name);
-                    try
+                    var attributes = method.GetCustomAttributes(typeof(RuntimeInitializeOnLoadMethodAttribute), false);
+                    if (attributes.Length > 0)
                     {
-                        var attributes = method.GetCustomAttributes(typeof(RuntimeInitializeOnLoadMethodAttribute), false);
-                        if (attributes.Length > 0)
-                        {
-                            method.Invoke(null, null);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        //LoggerInstance.LogError($"Error: {e}");
-                        continue;
+                        method.Invoke(null, null);
                     }
                 }
             }
-            LoggerInstance.LogDebug("Finished initializing network behaviours");
+            logger.LogDebug("Finished initializing network behaviours");
         }
     }
 }
