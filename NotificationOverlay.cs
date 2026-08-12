@@ -6,7 +6,6 @@ namespace MilkMolars
     {
         public Animator animator = null!;
         public AudioSource audioSource = null!;
-        public AudioClip activateSFX = null!;
 
         public static void ShowNotification(bool mega, bool showVisual, bool playSFX, float volume)
         {
@@ -20,7 +19,10 @@ namespace MilkMolars
                 overlay.animator.SetTrigger(mega ? "showmega" : "show");
 
             if (playSFX)
-                overlay.audioSource.PlayOneShot(overlay.activateSFX, volume);
+            {
+                overlay.audioSource.volume = volume;
+                overlay.audioSource.Play();
+            }
 
             GameObject.Destroy(obj, 6f);
         }

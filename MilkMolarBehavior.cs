@@ -14,11 +14,11 @@ namespace MilkMolars
         Vector3 restingRotation = Vector3.zero;
 
 
-        public NetworkVariable<int> ContributeAmount = new NetworkVariable<int>(1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-        public NetworkVariable<int> SharedContributeAmount = new NetworkVariable<int>(1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-        public NetworkVariable<ActivateMethod> ActivateMethod = new NetworkVariable<ActivateMethod>(Plugin.ActivateMethod.Use, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-        public NetworkVariable<bool> UpgradePointsToFinder = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-        public NetworkVariable<bool> NonPlayersCanActivate = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        [HideInInspector] public NetworkVariable<int> ContributeAmount = new NetworkVariable<int>(1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        [HideInInspector] public NetworkVariable<int> SharedContributeAmount = new NetworkVariable<int>(1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        [HideInInspector] public NetworkVariable<ActivateMethod> ActivateMethod = new NetworkVariable<ActivateMethod>(Plugin.ActivateMethod.Use, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        [HideInInspector] public NetworkVariable<bool> UpgradePointsToFinder = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        [HideInInspector] public NetworkVariable<bool> NonPlayersCanActivate = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         public static bool PlaySound = true;
         public static float SoundVolume = 1f;
@@ -238,12 +238,12 @@ namespace MilkMolars
             if (localPlayer == playerActivating && ContributeAmount.Value > 0)
             {
                 NotificationOverlay.ShowNotification(false, ShowNotification, PlaySound, SoundVolume);
-                AddPoints(ContributeAmount.Value);
+                AddCurrency(ContributeAmount.Value);
             }
             else if (localPlayer != playerActivating && SharedContributeAmount.Value > 0)
             {
                 NotificationOverlay.ShowNotification(false, ShowNotification, PlaySound, SoundVolume);
-                AddPoints(SharedContributeAmount.Value);
+                AddCurrency(SharedContributeAmount.Value);
             }
 
             switch (ActivateMethod.Value)

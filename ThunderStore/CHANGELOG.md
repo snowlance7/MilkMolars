@@ -1,3 +1,6 @@
+## 1.0.0
+- Large overhaul and fixed for v80
+
 ## 0.6.2
 - Fixed lgu upgrade prices getting lowered and bugging
 

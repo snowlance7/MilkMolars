@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c30496d6ae6d6f907456e10a94e01ec6, type: 3}
-  m_Name: MegaMilkMolarItem
+  m_Name: MegaMilkMolar
   m_EditorClassIdentifier: 
   itemId: 0
   itemName: Mega Milk Molar
@@ -19,7 +19,8 @@ MonoBehaviour:
   twoHandedAnimation: 1
   disableHandsOnWall: 1
   canBeGrabbedBeforeGameStart: 1
-  weight: 3
+  disallowUtilitySlot: 1
+  weight: 2
   itemIsTrigger: 0
   holdButtonUse: 0
   itemSpawnsOnGround: 1
@@ -41,9 +42,9 @@ MonoBehaviour:
   pocketAnim: 
   throwAnim: 
   grabAnimationTime: 0
-  grabSFX: {fileID: 0}
-  dropSFX: {fileID: 0}
-  pocketSFX: {fileID: 0}
+  grabSFX: {fileID: 8300000, guid: fa24e1ea2ce91d646bf7aa96697ecaf5, type: 3}
+  dropSFX: {fileID: 8300000, guid: c9dafcb92172eb044a90f28110744e4f, type: 3}
+  pocketSFX: {fileID: 8300000, guid: fa24e1ea2ce91d646bf7aa96697ecaf5, type: 3}
   throwSFX: {fileID: 0}
   syncGrabFunction: 0
   syncUseFunction: 0
@@ -62,5 +63,6 @@ MonoBehaviour:
   meshOffset: 0
   meshVariants: []
   materialVariants: []
+  clinkAudios: []
   usableInSpecialAnimations: 0
   canBeInspected: 0

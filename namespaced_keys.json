@@ -1,0 +1,7 @@
+{
+  "MilkmolarsItemKeys": {
+    "__type": "DawnItemInfo",
+    "MegaMilkMolar": "milkmolars:mega_milk_molar",
+    "MilkMolar": "milkmolars:milk_molar"
+  }
+}

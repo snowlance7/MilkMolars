@@ -4,7 +4,7 @@ namespace MilkMolars
 {
     public static class MilkMolarsKeys
     {
-        public static readonly NamespacedKey<DawnItemInfo> SCP005 = NamespacedKey<DawnItemInfo>.From("itemscps", "scpzerozerofive");
-        public static readonly NamespacedKey<DawnItemInfo> SCP012 = NamespacedKey<DawnItemInfo>.From("itemscps", "scpzeroonetwo");
+        public static readonly NamespacedKey<DawnItemInfo> MilkMolar = NamespacedKey<DawnItemInfo>.From("milkmolars", "milkmolar");
+        public static readonly NamespacedKey<DawnItemInfo> MegaMilkMolar = NamespacedKey<DawnItemInfo>.From("milkmolars", "megamilkmolar");
     }
 }

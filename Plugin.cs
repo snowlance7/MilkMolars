@@ -56,9 +56,9 @@ namespace MilkMolars
             Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
         }
 
-        public static void AddPoints(int amount)
+        public static void AddCurrency(int amount)
         {
-            throw new NotImplementedException(); // TODO
+            MoreShipUpgrades.Managers.CurrencyManager.Instance.AddCurrencyAmount(amount);
         }
 
         private static void InitializeNetworkBehaviours()
