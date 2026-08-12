@@ -6,6 +6,7 @@
   "dependencies": [
     "BepInEx-BepInExPack-5.4.2305",
     "TeamXiaolan-DawnLib-0.9.25",
-    "Snowlance-SnowyLib-1.13.1"
+    "Snowlance-SnowyLib-1.13.1",
+    "malco-Lategame_Upgrades-3.14.1"
   ]
 }
