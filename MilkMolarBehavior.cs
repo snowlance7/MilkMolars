@@ -1,5 +1,6 @@
 ﻿using GameNetcodeStuff;
 using SnowyLib;
+using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using static MilkMolars.Plugin;
@@ -10,6 +11,7 @@ namespace MilkMolars
     {
         [HideInInspector] public PlayerControllerB? lastPlayerHeldBy;
         [HideInInspector] public PlayerControllerB? playerFoundBy;
+
 
         Vector3 restingRotation = Vector3.zero;
 
@@ -192,12 +194,12 @@ namespace MilkMolars
                 {
                     if (localPlayer == playerHeldBy && playerHeldBy.isInHangarShipRoom)
                     {
-                        ActivateMolarRpc((int)localPlayer.actualClientId);
+                        ActivateMolarWithDelay((int)localPlayer.actualClientId);
                     }
                 }
                 else if (NonPlayersCanActivate.Value && base.transform.position.y > -100f && StartOfRound.Instance.shipInnerRoomBounds.bounds.ClosestPoint(base.transform.position) == base.transform.position)
                 {
-                    ActivateMolarRpc();
+                    ActivateMolarWithDelay();
                 }
                 playerHeldBy = null;
             }
@@ -205,6 +207,18 @@ namespace MilkMolars
             {
                 base.DiscardItem();
             }
+        }
+
+        public void ActivateMolarWithDelay(int clientId = -1)
+        {
+            IEnumerator activateMolarWithDelay(int clientId)
+            {
+                yield return null;
+                //yield return new WaitForSeconds(0.5f);
+                ActivateMolarRpc(clientId);
+            }
+
+            StartCoroutine(activateMolarWithDelay(clientId));
         }
 
         public override void InteractItem()

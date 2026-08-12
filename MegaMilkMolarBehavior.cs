@@ -1,5 +1,6 @@
 ﻿using GameNetcodeStuff;
 using SnowyLib;
+using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using static MilkMolars.Plugin;
@@ -31,14 +32,14 @@ namespace MilkMolars
         [InitConfig]
         public static void Init()
         {
-            PlaySound = PluginInstance.Config.Bind("Mega Mega Milk Molar Options", "Mega Milk Molar | Play Sound", true, "Play sound when milk molar is activated").Value;
-            SoundVolume = PluginInstance.Config.Bind("Mega Mega Milk Molar Options", "Mega Milk Molar | Sound Volume", 1f, "Sound volume when milk molar is activated").Value;
-            ShowNotification = PluginInstance.Config.Bind("Mega Mega Milk Molar Options", "Mega Milk Molar | Show Notification", true, "Show a notification on the HUD when a Mega Milk Molar is activated").Value;
-            cfgContributeAmount = PluginInstance.Config.Bind("Mega Mega Milk Molar Options", "Mega Milk Molar | Contribute Amount", 3, "How many points to give to the player who activates it").Value;
-            cfgSharedContributeAmount = PluginInstance.Config.Bind("Mega Mega Milk Molar Options", "Mega Milk Molar | Shared Contribute Amount", 3, "How many points to give to give other players (Only works if Shared is set to true)").Value;
-            cfgActivateMethod = PluginInstance.Config.Bind("Mega Mega Milk Molar Options", "Mega Milk Molar | Activate Method", Plugin.ActivateMethod.Grab, "Activation method for Mega Milk Molars.\nGrab: Grabbing the Mega Milk Molar will activate it.\nUse: Using the Mega Milk Molar while its in your inventory will activate it.\nShip: Mega Milk Molar will activate when brought inside the ship.\nSell: Mega Milk Molar will activate when sold to the company.").Value;
-            cfgUpgradePointsToFinder = PluginInstance.Config.Bind("Mega Mega Milk Molar Options", "Mega Milk Molar | Upgrade Points to Finder", false, "This only works when `ActivateMethod` is `SHIP` or `SELL`. Setting this to true will only give points(ContributeAmount) to the first person who held the Mega Milk Molar when activating it. SharedContributeAmount will be given to other players.").Value;
-            cfgNonPlayersCanActivate = PluginInstance.Config.Bind("Mega Mega Milk Molar Options", "Mega Milk Molar | NonPlayersCanActivate", false, "This only works if `ActivateMethod` is `ReturnToShip`. If true, if anything that isnt a player drops the milk molar in the ship, it will still activate and all players will get `SharedContributeAmount`.").Value;
+            PlaySound = PluginInstance.Config.Bind("Mega Milk Molar Options", "Mega Milk Molar | Play Sound", true, "Play sound when milk molar is activated").Value;
+            SoundVolume = PluginInstance.Config.Bind("Mega Milk Molar Options", "Mega Milk Molar | Sound Volume", 1f, "Sound volume when milk molar is activated").Value;
+            ShowNotification = PluginInstance.Config.Bind("Mega Milk Molar Options", "Mega Milk Molar | Show Notification", true, "Show a notification on the HUD when a Mega Milk Molar is activated").Value;
+            cfgContributeAmount = PluginInstance.Config.Bind("Mega Milk Molar Options", "Mega Milk Molar | Contribute Amount", 3, "How many points to give to the player who activates it").Value;
+            cfgSharedContributeAmount = PluginInstance.Config.Bind("Mega Milk Molar Options", "Mega Milk Molar | Shared Contribute Amount", 3, "How many points to give to give other players (Only works if Shared is set to true)").Value;
+            cfgActivateMethod = PluginInstance.Config.Bind("Mega Milk Molar Options", "Mega Milk Molar | Activate Method", Plugin.ActivateMethod.Grab, "Activation method for Mega Milk Molars.\nGrab: Grabbing the Mega Milk Molar will activate it.\nUse: Using the Mega Milk Molar while its in your inventory will activate it.\nShip: Mega Milk Molar will activate when brought inside the ship.\nSell: Mega Milk Molar will activate when sold to the company.").Value;
+            cfgUpgradePointsToFinder = PluginInstance.Config.Bind("Mega Milk Molar Options", "Mega Milk Molar | Upgrade Points to Finder", false, "This only works when `ActivateMethod` is `SHIP` or `SELL`. Setting this to true will only give points(ContributeAmount) to the first person who held the Mega Milk Molar when activating it. SharedContributeAmount will be given to other players.").Value;
+            cfgNonPlayersCanActivate = PluginInstance.Config.Bind("Mega Milk Molar Options", "Mega Milk Molar | NonPlayersCanActivate", false, "This only works if `ActivateMethod` is `ReturnToShip`. If true, if anything that isnt a player drops the milk molar in the ship, it will still activate and all players will get `SharedContributeAmount`.").Value;
         }
 
         public override void Start()
@@ -190,12 +191,12 @@ namespace MilkMolars
                 {
                     if (localPlayer == playerHeldBy && playerHeldBy.isInHangarShipRoom)
                     {
-                        ActivateMolarRpc((int)localPlayer.actualClientId);
+                        ActivateMolarWithDelay((int)localPlayer.actualClientId);
                     }
                 }
                 else if (NonPlayersCanActivate.Value && base.transform.position.y > -100f && StartOfRound.Instance.shipInnerRoomBounds.bounds.ClosestPoint(base.transform.position) == base.transform.position)
                 {
-                    ActivateMolarRpc();
+                    ActivateMolarWithDelay();
                 }
                 playerHeldBy = null;
             }
@@ -203,6 +204,18 @@ namespace MilkMolars
             {
                 base.DiscardItem();
             }
+        }
+
+        public void ActivateMolarWithDelay(int clientId = -1)
+        {
+            IEnumerator activateMolarWithDelay(int clientId)
+            {
+                yield return null;
+                //yield return new WaitForSeconds(0.5f);
+                ActivateMolarRpc(clientId);
+            }
+
+            StartCoroutine(activateMolarWithDelay(clientId));
         }
 
         public override void InteractItem()
@@ -229,7 +242,7 @@ namespace MilkMolars
         [Rpc(SendTo.Everyone)]
         public void ActivateMolarRpc(int playerActivatingId = -1)
         {
-            logger.LogDebug("Activating milk molar");
+            logger.LogDebug("Activating mega milk molar");
             PlayerControllerB? playerActivating = playerActivatingId == -1 ? null : PlayerFromId((ulong)playerActivatingId);
             playerActivating = UpgradePointsToFinder.Value && (ActivateMethod.Value == Plugin.ActivateMethod.ReturnToShip || ActivateMethod.Value == Plugin.ActivateMethod.SellToCompany) ? playerFoundBy : playerActivating;
 
